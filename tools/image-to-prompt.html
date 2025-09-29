@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image to Prompt | ToolMancer</title>
+  <link rel="stylesheet" href="../style.css"/>
+  <style>
+    .img2prompt-card {
+      max-width: 420px;
+      margin: 2em auto;
+      padding: 2em 1em;
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: 0 8px 36px #0001, 0 2px 8px #0001;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.3em;
+    }
+    .img2prompt-card h2 {
+      color: var(--accent);
+      margin-bottom: 0.7em;
+      font-size: 1.6em;
+      font-weight: bold;
+    }
+    .img2prompt-upload {
+      padding: 1em 0;
+      text-align: center;
+    }
+    .img2prompt-upload input[type="file"] {
+      display: none;
+    }
+    .img2prompt-upload label {
+      background: var(--accent);
+      color: #fff;
+      padding: 0.7em 1.3em;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1.07em;
+      transition: background 0.16s;
+    }
+    .img2prompt-upload label:hover {
+      background: #1740a5;
+    }
+    .img2prompt-preview {
+      margin-top: 1em;
+      margin-bottom: 1em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6em;
+    }
+    .img2prompt-thumb {
+      max-width: 230px;
+      max-height: 160px;
+      border-radius: 10px;
+      border: 1.5px solid #dde6ef;
+      box-shadow: 0 2px 8px #0003;
+    }
+    .img2prompt-prompt {
+      background: #f7fafc;
+      color: #233;
+      padding: 1em 1em;
+      border-radius: 10px;
+      margin-top: 1.2em;
+      font-size: 1.1em;
+      min-height: 2.7em;
+      width: 100%;
+      box-shadow: 0 1.5px 6px #0001;
+      word-break: break-word;
+    }
+    .img2prompt-loader {
+      margin: 1.2em 0 0.4em 0;
+      font-size: 1.11em;
+      color: var(--accent);
+      text-align: center;
+    }
+    @media (max-width:600px) {
+      .img2prompt-card {padding:1em 0.2em;}
+      .img2prompt-thumb {max-width:99vw;}
+      .img2prompt-prompt {padding:0.7em 0.4em;}
+    }
+  </style>
+</head>
+<body>
+  <main class="content tool-page">
+    <section class="img2prompt-card">
+      <h2>🖼️ Image to Prompt</h2>
+      <div class="img2prompt-upload">
+        <label for="imgInput">Upload Image</label>
+        <input type="file" id="imgInput" accept="image/*">
+      </div>
+      <div class="img2prompt-preview" id="imgPreview" style="display:none;">
+        <img id="thumb" class="img2prompt-thumb" src="" alt="Preview"/>
+        <span id="imgName" style="font-size:0.97em;color:#444;"></span>
+      </div>
+      <button id="genPromptBtn" style="background:var(--accent);color:#fff;border:none;padding:0.75em 1.7em;border-radius:8px;font-size:1.1em;font-weight:600;cursor:pointer;display:none;">Generate Prompt</button>
+      <div class="img2prompt-loader" id="loader" style="display:none;">Generating prompt...</div>
+      <div class="img2prompt-prompt" id="promptBox" style="display:none;"></div>
+    </section>
+  </main>
+  <script>
+    // HuggingFace BLIP API (no key needed, but limited, use your own key for higher usage)
+    // Docs: https://huggingface.co/spaces/Salesforce/BLIP
+    const HF_API_URL = "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base";
+    // For production: get your own HF Inference API key and add headers: { Authorization: `Bearer <YOUR_KEY>` }
+
+    const imgInput = document.getElementById('imgInput');
+    const imgPreview = document.getElementById('imgPreview');
+    const thumb = document.getElementById('thumb');
+    const imgName = document.getElementById('imgName');
+    const genPromptBtn = document.getElementById('genPromptBtn');
+    const loader = document.getElementById('loader');
+    const promptBox = document.getElementById('promptBox');
+
+    let currentImageBlob = null;
+
+    imgInput.onchange = function(e){
+      if (!e.target.files.length) return;
+      const file = e.target.files[0];
+      currentImageBlob = file;
+      thumb.src = URL.createObjectURL(file);
+      thumb.onload = () => URL.revokeObjectURL(thumb.src);
+      imgName.textContent = file.name;
+      imgPreview.style.display = 'flex';
+      promptBox.style.display = 'none';
+      genPromptBtn.style.display = '';
+    };
+
+    genPromptBtn.onclick = async function(){
+      if (!currentImageBlob) return;
+      promptBox.style.display = 'none';
+      loader.style.display = '';
+      loader.textContent = "Generating prompt...";
+      genPromptBtn.disabled = true;
+
+      // Convert image to base64
+      const imageData = await fileToDataURL(currentImageBlob);
+      // Remove prefix: data:image/xxx;base64,
+      const base64Data = imageData.split(',')[1];
+
+      // Call HF Inference API
+      try {
+        const res = await fetch(HF_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ "inputs": base64Data })
+        });
+        if (!res.ok) throw new Error("Failed to call API");
+        const data = await res.json();
+        let prompt = "";
+        if (Array.isArray(data) && data[0]?.generated_text) {
+          prompt = data[0].generated_text;
+        } else if (typeof data?.generated_text === "string") {
+          prompt = data.generated_text;
+        } else {
+          prompt = "Failed to generate prompt. Try a different image.";
+        }
+        loader.style.display = 'none';
+        promptBox.textContent = prompt;
+        promptBox.style.display = '';
+      } catch (err) {
+        loader.style.display = 'none';
+        promptBox.textContent = "Error: " + err.message;
+        promptBox.style.display = '';
+      }
+      genPromptBtn.disabled = false;
+    };
+
+    function fileToDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
+</body>
+</html>
