@@ -14,7 +14,6 @@
   --accent: #38bdf8;
 }
 
-/* Layout */
 body {
   font-family: "Segoe UI", "Inter", Arial, sans-serif;
   background: var(--bg);
