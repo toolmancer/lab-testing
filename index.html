@@ -1,7 +1,53 @@
 <!DOCTYPE html>
-<html>
-<head><title>Testing</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToolMancer – All-in-One Toolkit</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
-  <h1>Testing Site Ready!</h1>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">ToolMancer</div>
+    <nav>
+      <ul>
+        <li><a href="image-to-pdf.html">Image → PDF</a></li>
+        <li><a href="document-scanner.html">Document Scanner</a></li>
+        <li><a href="html-viewer.html">HTML Viewer</a></li>
+        <li><a href="qr-generator.html">QR Generator</a></li>
+        <li><a href="json-formatter.html">JSON Formatter</a></li>
+        <li><a href="text-diff.html">Text Diff</a></li>
+        <li><a href="url-encoder.html">URL Encoder/Decoder</a></li>
+        <li><a href="unit-converter.html">Unit Converter</a></li>
+        <li><a href="word-counter.html">Word Counter</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <button id="theme-toggle" class="theme-btn">🌙</button>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="content">
+    <section class="hero">
+      <h1>Welcome to <span>ToolMancer</span></h1>
+      <p>All-in-One Online Toolkit — browser-first, privacy friendly.</p>
+    </section>
+
+    <section class="grid">
+      <a href="image-to-pdf.html" class="card">📷 Image → PDF</a>
+      <a href="document-scanner.html" class="card">📑 Document Scanner</a>
+      <a href="html-viewer.html" class="card">💻 HTML Viewer</a>
+      <a href="qr-generator.html" class="card">🔗 QR Generator</a>
+      <a href="json-formatter.html" class="card">🛠 JSON Formatter</a>
+      <a href="text-diff.html" class="card">🔍 Text Diff</a>
+      <a href="url-encoder.html" class="card">🔐 URL Encoder</a>
+      <a href="unit-converter.html" class="card">⚖️ Unit Converter</a>
+      <a href="word-counter.html" class="card">✏️ Word Counter</a>
+    </section>
+  </main>
+
+  <script src="theme.js"></script>
 </body>
 </html>
