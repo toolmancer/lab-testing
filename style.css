@@ -1,110 +1,45 @@
-/* Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@media (max-width: 880px) {
+  body {
+    flex-direction: column;
+  }
 
-:root {
-  --bg: #f9f9f9;
-  --text: #111;
-  --card: #fff;
-  --accent: #2563eb;
-}
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+    padding: 0.5rem 1rem;
+  }
 
-[data-theme="dark"] {
-  --bg: #0f172a;
-  --text: #e2e8f0;
-  --card: #1e293b;
-  --accent: #38bdf8;
-}
+  .sidebar ul {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    overflow-x: auto;
+  }
 
-body {
-  font-family: "Segoe UI", sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  display: flex;
-  min-height: 100vh;
-}
+  .sidebar ul li {
+    margin: 0;
+  }
 
-/* Sidebar */
-.sidebar {
-  width: 220px;
-  background: var(--card);
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border-right: 1px solid #ccc;
-}
+  .sidebar .logo {
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    margin-right: 1rem;
+  }
 
-.sidebar .logo {
-  font-size: 1.4rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: var(--accent);
-}
+  .content {
+    padding: 1rem;
+  }
 
-.sidebar ul {
-  list-style: none;
-}
+  .grid {
+    grid-template-columns: 1fr;
+  }
 
-.sidebar ul li {
-  margin: 0.6rem 0;
-}
-
-.sidebar ul li a {
-  text-decoration: none;
-  color: var(--text);
-  transition: color 0.2s;
-}
-
-.sidebar ul li a:hover {
-  color: var(--accent);
-}
-
-.theme-btn {
-  margin-top: 1rem;
-  padding: 0.5rem;
-  border: none;
-  background: var(--accent);
-  color: #fff;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-/* Content */
-.content {
-  flex: 1;
-  padding: 2rem;
-}
-
-.hero {
-  margin-bottom: 2rem;
-}
-
-.hero h1 span {
-  color: var(--accent);
-}
-
-.grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
-
-.card {
-  background: var(--card);
-  padding: 1.2rem;
-  border-radius: 8px;
-  text-decoration: none;
-  color: var(--text);
-  font-weight: 500;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  .theme-btn {
+    margin-top: 0;
+    margin-left: 1rem;
+  }
 }
