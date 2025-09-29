@@ -23,7 +23,6 @@ body {
   min-height: 100vh;
 }
 
-/* ==== Sidebar ==== */
 .sidebar {
   width: 220px;
   background: var(--card);
@@ -33,6 +32,9 @@ body {
   justify-content: space-between;
   border-right: 1px solid #233152;
   min-height: 100vh;
+  z-index: 1000;
+  transition: left 0.3s;
+  position: relative;
 }
 .sidebar .logo {
   font-size: 1.6rem;
@@ -152,20 +154,55 @@ body {
 }
 
 /* ==== Responsive ==== */
-@media (max-width: 900px) {
-  .home-card { padding: 1.5rem 0.7rem; }
-  .tool-grid { gap: 0.8rem; }
+@media (max-width: 880px) {
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    height: 100%;
+    min-height: 100vh;
+    width: 220px;
+    z-index: 1000;
+    transition: left 0.3s;
+    border-bottom: none;
+    border-right: 1px solid #233152;
+    padding-top: 1rem;
+    background: var(--card);
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .sidebar.show {
+    left: 0;
+  }
+  .content {
+    padding: 1rem;
+  }
+  .menu-btn {
+    display: block;
+  }
+  .sidebar-header {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  .theme-btn {
+    margin-top: 0;
+    margin-left: 1rem;
+  }
+  .tool-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
-@media (max-width: 700px) {
-  .sidebar { width: 60px; padding: 0.6rem 0.2rem; }
-  .sidebar .logo { font-size: 1.02rem; margin-bottom: 1em;}
-  .sidebar nav ul li a { font-size: 0.95em; padding: 0.6em 0.3em;}
-  .theme-btn { font-size: 1em; padding: 0.5em 0.8em;}
-}
+
 @media (max-width: 600px) {
   .home-card { padding: 0.7rem 0.1rem;}
-  .tool-grid { gap: 0.4rem; }
+  .tool-grid { gap: 0.4rem; grid-template-columns: 1fr;}
   .card { font-size: 1em; padding: 0.7rem;}
+}
+
+@media (max-width: 500px) {
+  .sidebar { width: 90vw; }
+  .tool-grid { grid-template-columns: 1fr;}
+  .home-card { border-radius: 10px; }
 }
 
 /* ==== Dark Mode ==== */
