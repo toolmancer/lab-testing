@@ -1,17 +1,15 @@
 document.addEventListener('DOMContentLoaded', ()=>{
   const sidebar = document.getElementById('sidebar');
   const menuBtn = document.getElementById('menuBtn');
-  const links = document.querySelectorAll('.sidebar a');
   if(menuBtn && sidebar){
     menuBtn.addEventListener('click', ()=> sidebar.classList.toggle('show'));
   }
-  links.forEach(link => {
-    link.addEventListener('click', ()=> {
-      links.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-      if(window.innerWidth < 880 && sidebar){
+  // Optional: close sidebar when clicking outside (overlay)
+  document.addEventListener('click', function(e){
+    if(window.innerWidth < 900 && sidebar.classList.contains('show')) {
+      if(!sidebar.contains(e.target) && e.target !== menuBtn) {
         sidebar.classList.remove('show');
       }
-    });
+    }
   });
 });
