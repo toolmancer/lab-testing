@@ -1,1 +1,174 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Image to PDF</title><link rel="stylesheet" href="../style.css"></head><body><main class="main"><div class="content container"><h2>Image → PDF</h2><p class="small">Select images (PNG/JPEG). They'll be placed on A4 pages.</p><input id="files" type="file" accept="image/*" multiple style="margin-top:8px"><div style="margin-top:10px"><button class="btn" id="go">Convert & Download PDF</button></div></div></main><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script>async function fileToDataURL(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f);});}document.getElementById('go').addEventListener('click', async ()=>{const files=document.getElementById('files').files; if(!files || files.length===0){alert('Select images first');return;} const { jsPDF } = window.jspdf; const pdf=new jsPDF({unit:'pt',format:'a4'}); for(let i=0;i<files.length;i++){ const data=await fileToDataURL(files[i]); const img=new Image(); img.src=data; await new Promise(r=>img.onload=r); const pageW=pdf.internal.pageSize.getWidth(), pageH=pdf.internal.pageSize.getHeight(); const ratio=Math.min(pageW/img.width, pageH/img.height); const w=img.width*ratio, h=img.height*ratio; const x=(pageW-w)/2, y=(pageH-h)/2; if(i>0) pdf.addPage(); const type = data.indexOf('image/png')!==-1 ? 'PNG' : 'JPEG'; pdf.addImage(data, type, x, y, w, h);} pdf.save('images.pdf');});</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image to PDF Converter | ToolMancer</title>
+  <link rel="stylesheet" href="../style.css"/>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">ToolMancer</div>
+      <button id="menuBtn" class="menu-btn" aria-label="Menu">☰</button>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="image-to-pdf.html" class="active">Image → PDF</a></li>
+        <li><a href="document-scanner.html">Document Scanner</a></li>
+        <li><a href="html-viewer.html">HTML Viewer</a></li>
+        <li><a href="qr-generator.html">QR Generator</a></li>
+        <li><a href="json-formatter.html">JSON Formatter</a></li>
+        <li><a href="text-diff.html">Text Diff</a></li>
+        <li><a href="url-encoder.html">URL Encoder/Decoder</a></li>
+        <li><a href="unit-converter.html">Unit Converter</a></li>
+        <li><a href="word-counter.html">Word Counter</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <button id="theme-toggle" class="theme-btn">🌙</button>
+  </aside>
+
+  <main class="content tool-page">
+    <header class="tool-header">
+      <h1>🖼️ Image to PDF Converter</h1>
+      <p class="tool-desc">
+        Convert multiple images (JPG, PNG, etc.) into a single PDF — privacy-friendly, works in your browser. Drag & drop supported!
+      </p>
+      <span class="tool-help" title="Upload images, arrange, and convert to PDF. Nothing leaves your device!">i</span>
+    </header>
+
+    <section class="tool-body">
+      <div class="input-group drop-group" id="dropZone">
+        <label for="imgUpload">
+          <span>📂</span> Select or drop images
+        </label>
+        <input type="file" id="imgUpload" accept="image/*" multiple style="display:none"/>
+        <div class="drop-hint">Drag & Drop images here</div>
+      </div>
+
+      <div id="preview" class="preview"></div>
+
+      <div class="actions">
+        <button id="convertBtn" disabled>
+          <span class="loader" style="display:none"></span>
+          Convert to PDF
+        </button>
+        <button id="clearBtn" disabled>Clear All</button>
+      </div>
+    </section>
+
+    <section class="result-box" id="resultBox" style="display:none">
+      <h3>Result:</h3>
+      <a id="downloadBtn" class="btn" download="output.pdf">⬇️ Download PDF</a>
+      <button id="openBtn" class="btn">🔗 Open in New Tab</button>
+      <button id="copyLinkBtn" class="btn">📋 Copy Link</button>
+    </section>
+
+    <section class="how-to">
+      <h3>How to Use</h3>
+      <ol>
+        <li>Upload or drag & drop images.</li>
+        <li>Click <b>Convert to PDF</b>.</li>
+        <li>Download or open your PDF.</li>
+      </ol>
+    </section>
+
+    <section class="use-case">
+      <h3>Example</h3>
+      <p><b>Input:</b> 3 PNG images (receipts)<br>
+         <b>Output:</b> 1 PDF file containing all three pages</p>
+    </section>
+  </main>
+
+  <script src="../theme.js"></script>
+  <script src="../script.js"></script>
+  <script>
+    // Drag & drop + file select logic
+    const imgUpload = document.getElementById('imgUpload');
+    const dropZone = document.getElementById('dropZone');
+    const preview = document.getElementById('preview');
+    const convertBtn = document.getElementById('convertBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const resultBox = document.getElementById('resultBox');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const openBtn = document.getElementById('openBtn');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    let files = [], pdfBlobUrl = '';
+
+    dropZone.addEventListener('click', () => imgUpload.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault(); dropZone.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+    imgUpload.addEventListener('change', e => handleFiles(e.target.files));
+
+    function handleFiles(selected) {
+      files = Array.from(selected).filter(f => f.type.startsWith("image/"));
+      preview.innerHTML = '';
+      if (!files.length) { convertBtn.disabled = true; clearBtn.disabled = true; return;}
+      files.forEach(f => {
+        const img = document.createElement('img');
+        img.className = 'thumb'; img.src = URL.createObjectURL(f);
+        img.title = f.name;
+        preview.appendChild(img);
+      });
+      convertBtn.disabled = false; clearBtn.disabled = false;
+    }
+
+    clearBtn.onclick = () => {
+      files = [];
+      imgUpload.value = '';
+      preview.innerHTML = '';
+      convertBtn.disabled = true; clearBtn.disabled = true;
+      resultBox.style.display = 'none';
+      if (pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl);
+    };
+
+    // PDF conversion logic (browser only, uses jsPDF)
+    convertBtn.onclick = async function() {
+      if (!files.length) return;
+      const loader = convertBtn.querySelector('.loader');
+      loader.style.display = 'inline-block';
+      convertBtn.disabled = true;
+      const jsPDFScript = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+      if (!window.jspdf) await new Promise(r=>{
+        const s = document.createElement('script');
+        s.src = jsPDFScript; s.onload = r; document.body.appendChild(s);
+      });
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+      for (let i = 0; i < files.length; i++) {
+        const imgData = await fileToDataUrl(files[i]);
+        if (i > 0) pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 10, 10, 190, 277, undefined, 'FAST');
+      }
+      const blob = pdf.output('blob');
+      if (pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl);
+      pdfBlobUrl = URL.createObjectURL(blob);
+      downloadBtn.href = pdfBlobUrl;
+      openBtn.onclick = () => window.open(pdfBlobUrl, '_blank');
+      copyLinkBtn.onclick = () => {
+        navigator.clipboard.writeText(pdfBlobUrl);
+        copyLinkBtn.textContent = "✅ Copied!";
+        setTimeout(()=>copyLinkBtn.textContent="📋 Copy Link", 1200);
+      };
+      resultBox.style.display = 'block';
+      loader.style.display = 'none';
+      convertBtn.disabled = false;
+    };
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
+</body>
+</html>
