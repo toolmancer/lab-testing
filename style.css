@@ -1,36 +1,127 @@
-/* ...baaki aapka CSS... */
-.content.tool-page {
+/* ==== Reset ==== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #f9f9f9;
+  --text: #111;
+  --card: #fff;
+  --accent: #2563eb;
+}
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --text: #e2e8f0;
+  --card: #1e293b;
+  --accent: #38bdf8;
+}
+
+body {
+  font-family: "Segoe UI", "Inter", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background: var(--card);
+  padding: 1.3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid #233152;
+  min-height: 100vh;
+  z-index: 1000;
+  transition: left 0.3s;
+  position: relative;
+}
+.sidebar .logo {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--accent);
+  margin-bottom: 2rem;
+  letter-spacing: 0.5px;
+}
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--accent);
+}
+.sidebar nav ul {
+  list-style: none;
+  padding-left: 0;
+}
+.sidebar nav ul li a {
+  display: block;
+  padding: 0.6em 1em;
+  color: var(--text);
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 1.05em;
+  margin-bottom: 0.5em;
+  transition: background 0.14s, color 0.14s;
+}
+.sidebar nav ul li a:hover, .sidebar nav ul li a.active {
+  background: var(--accent);
+  color: #fff;
+}
+.theme-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.7em 1.2em;
+  font-size: 1.1em;
+  cursor: pointer;
+  margin-top: 2em;
+  transition: background 0.18s;
+}
+.theme-btn:hover { background: #0f172a; }
+
+.content.home {
   flex: 1;
-  padding: 2.5rem 0.5rem;
+  padding: 2.7rem 0;
   min-height: 100vh;
   background: var(--bg);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.tool-card {
+
+.home-card {
   background: var(--card);
   border-radius: 20px;
   box-shadow: 0 8px 36px 0 #0001, 0 1.5px 6px #0001;
-  padding: 2.5rem 2rem;
-  margin-bottom: 2.1em;
+  padding: 2.7rem 2.2rem;
+  margin-bottom: 2.5em;
   width: 100%;
-  max-width: 700px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-.tool-desc { color: #4371b7; }
-[data-theme="dark"] .tool-desc,
-[data-theme="dark"] .how-to,
-[data-theme="dark"] .use-case {
-  color: #e2e8f0;
-  background: #16213a;
-  border-color: #293656;
+
+.home-card h1 {
+  font-size: 2.4rem;
+  font-weight: bold;
+  margin-bottom: 0.5em;
 }
-[data-theme="dark"] .how-to h3,
-[data-theme="dark"] .use-case h3 {
-  color: #38bdf8;
+.home-card h1 span { color: var(--accent); }
+.home-card .subtitle {
+  font-size: 1.09rem;
+  color: #4e576b;
+  margin-bottom: 2.3em;
 }
+
 .tool-grid {
   width: 100%;
   display: grid;
@@ -38,6 +129,7 @@
   grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
   margin-top: 0.2em;
 }
+
 .card {
   background: var(--card);
   padding: 1.2rem;
@@ -58,7 +150,90 @@
   color: var(--accent);
   border-color: var(--accent);
 }
+
+.content.tool-page {
+  flex: 1;
+  padding: 2.5rem 0.5rem;
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tool-card {
+  background: var(--card);
+  border-radius: 20px;
+  box-shadow: 0 8px 36px 0 #0001, 0 1.5px 6px #0001;
+  padding: 2.5rem 2rem;
+  margin-bottom: 2.1em;
+  width: 100%;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.tool-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.3em;
+  margin-bottom: 1.1em;
+}
+.tool-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--accent);
+  letter-spacing: 0.2px;
+}
+.tool-header .tool-desc {
+  font-size: 1.08rem;
+  color: #4e576b;
+  margin-top: 0.3em;
+  flex: 1;
+}
+.tool-help {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 50%;
+  padding: 0.2em 0.52em;
+  font-size: 1.15em;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 0.5em;
+  box-shadow: 0 1.5px 4px #0002;
+}
+
+/* ==== Responsive ==== */
+@media (max-width: 900px) {
+  .home-card { padding: 1.5rem 0.7rem; }
+  .tool-grid { gap: 0.8rem; }
+}
 @media (max-width: 700px) {
+  .sidebar { width: 60px; padding: 0.6rem 0.2rem; }
+  .sidebar .logo { font-size: 1.02rem; margin-bottom: 1em;}
+  .sidebar nav ul li a { font-size: 0.95em; padding: 0.6em 0.3em;}
+  .theme-btn { font-size: 1em; padding: 0.5em 0.8em;}
+  .tool-card { padding: 0.8rem 0.2rem; }
+  .how-to, .use-case { padding: 0.7em 0.6em;}
+  .tool-header h1 { font-size: 1.2rem;}
   .tool-grid { grid-template-columns: 1fr; }
   .card { font-size: 1em; padding: 0.7rem;}
+}
+@media (max-width: 600px) {
+  .home-card { padding: 0.7rem 0.1rem;}
+  .tool-card { padding: 0.7rem 0.1rem;}
+}
+
+
+/* ==== Dark Mode ==== */
+:root {
+  --bg: #f9f9f9;
+  --text: #111;
+  --card: #fff;
+  --accent: #2563eb;
+}
+[data-theme="dark"] {
+  --bg: #101b2b;
+  --text: #e2e8f0;
+  --card: #17243b;
+  --accent: #38bdf8;
 }
