@@ -1,7 +1,3 @@
-// Re-using the provided script.js for potential sidebar/menu logic if needed.
-// The main navigation logic is in index.html, so this file might be redundant
-// unless used by a specific page layout.
-
 document.addEventListener('DOMContentLoaded', ()=>{
   const sidebar = document.getElementById('sidebar');
   const menuBtn = document.getElementById('menuBtn');
