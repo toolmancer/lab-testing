@@ -2,83 +2,134 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ToolMancer – All-in-One Toolkit</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css"/>
   <style>
-    .top-categories-bar {
+    .category-filters {
       display: flex;
-      align-items: center;
-      gap: 0.4em;
+      gap: 0.6em;
+      margin-bottom: 2em;
       flex-wrap: wrap;
       justify-content: center;
-      margin-bottom: 2.2em;
-      padding-top: 1.4em;
     }
-    .cat-tab {
+    .category-filters button {
       background: #fff;
       color: var(--accent);
       border: 1.5px solid var(--accent);
       border-radius: 10px;
-      padding: 0.5em 1.3em;
-      font-size: 1em;
+      padding: 0.6em 1.3em;
+      font-size: 1.09em;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.14s, color 0.14s;
-      margin-bottom: 0.2em;
     }
-    .cat-tab.active, .cat-tab:focus {
+    .category-filters button.active, .category-filters button:focus {
       background: var(--accent);
       color: #fff;
-      outline: none;
-      box-shadow: 0 2px 8px #2563eb22;
     }
-    .cat-dropdown {
-      background: #fff;
+    .sidebar .cat-btn {
+      width: 100%;
+      background: none;
+      border: none;
       color: var(--accent);
-      border: 1.5px solid var(--accent);
-      border-radius: 10px;
-      padding: 0.48em 0.9em;
-      font-size: 1em;
+      font-size: 1.08em;
       font-weight: 600;
-      margin-left: 0.7em;
+      text-align: left;
+      padding: 0.5em 0.5em 0.5em 0.1em;
+      margin-bottom: 0.1em;
       cursor: pointer;
+      transition: color 0.14s;
+      outline: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
     }
-    @media (max-width: 600px) {
-      .top-categories-bar {
-        flex-wrap: wrap;
-        gap: 0.2em;
-        padding-top: 0.7em;
-      }
-      .cat-tab, .cat-dropdown {
-        font-size: .97em;
-        padding: 0.38em 0.8em;
-      }
+    .sidebar .cat-btn.active { color: #1740a5; }
+    .sidebar .cat-list {
+      list-style: none;
+      padding-left: 1.2em;
+      margin-bottom: 0.4em;
+      display: none;
+      animation: fadeIn .18s;
     }
+    .sidebar .cat-list.open { display: block; }
+    .sidebar .cat-list li { margin-bottom: 0.3em; }
+    .sidebar .cat-list a { color: var(--text); font-size: 1em; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
   </style>
 </head>
 <body>
-  <main class="content home">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">ToolMancer</div>
+      <button id="menuBtn" class="menu-btn" aria-label="Menu">☰</button>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html" class="active">🏠 Home</a></li>
+        <li>
+          <button class="cat-btn" data-cat="image">🖼️ Image Tools ▼</button>
+          <ul class="cat-list" data-cat="image">
+            <li><a href="tools/image-to-pdf.html">Image → PDF</a></li>
+            <li><a href="tools/image-compressor.html">Image Compressor</a></li>
+            <li><a href="tools/image-resizer.html">Image Resizer</a></li>
+            <li><a href="tools/convert-png-jpg.html">Convert PNG↔JPG</a></li>
+            <li><a href="tools/steganography.html">Steganography</a></li>
+          </ul>
+        </li>
+        <li>
+          <button class="cat-btn" data-cat="text">📝 Text Tools ▼</button>
+          <ul class="cat-list" data-cat="text">
+            <li><a href="tools/text-diff.html">Text Diff</a></li>
+            <li><a href="tools/text-encryptor.html">Text Encryptor</a></li>
+            <li><a href="tools/text-to-pdf.html">Text → PDF</a></li>
+            <li><a href="tools/word-counter.html">Word Counter</a></li>
+          </ul>
+        </li>
+        <li>
+          <button class="cat-btn" data-cat="convert">🔄 Converter ▼</button>
+          <ul class="cat-list" data-cat="convert">
+            <li><a href="tools/unit-converter.html">Unit Converter</a></li>
+            <li><a href="tools/document-scanner.html">Document Scanner</a></li>
+          </ul>
+        </li>
+        <li>
+          <button class="cat-btn" data-cat="encode">🔐 Encoder/Decoder ▼</button>
+          <ul class="cat-list" data-cat="encode">
+            <li><a href="tools/url-encoder.html">URL Encoder/Decoder</a></li>
+            <li><a href="tools/hash-generator.html">Hash Generator</a></li>
+            <li><a href="tools/password-generator.html">Password Generator</a></li>
+            <li><a href="tools/qr-generator.html">QR Generator</a></li>
+          </ul>
+        </li>
+        <li>
+          <button class="cat-btn" data-cat="ai">🤖 AI Tools ▼</button>
+          <ul class="cat-list" data-cat="ai">
+            <li><a href="tools/image-to-prompt.html">Image to Prompt</a></li>
+            <li><a href="tools/json-formatter.html">JSON Formatter</a></li>
+          </ul>
+        </li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <button id="theme-toggle" class="theme-btn">🌙</button>
+  </aside>
+  <main class="content home" style="margin-left:220px;">
     <section class="home-card">
       <h1>Welcome to <span>ToolMancer</span></h1>
       <p class="subtitle">All-in-One Online Toolkit — browser-first, privacy friendly.</p>
-      <div class="top-categories-bar">
-        <button class="cat-tab active" data-cat="all">All</button>
-        <button class="cat-tab" data-cat="image">Image Tools</button>
-        <button class="cat-tab" data-cat="text">Text Tools</button>
-        <button class="cat-tab" data-cat="convert">Converters</button>
-        <button class="cat-tab" data-cat="encode">Encoder/Decoder</button>
-        <button class="cat-tab" data-cat="ai">AI Tools</button>
-        <!-- Dropdown for extra categories (if needed) -->
-        <select class="cat-dropdown" id="catDropdown">
-          <option value="">More...</option>
-          <option value="hash">Hash Generator</option>
-          <option value="password">Password Generator</option>
-          <!-- Add more overflow categories here -->
-        </select>
+      <div class="category-filters">
+        <button class="cat-filter active" data-cat="all">All</button>
+        <button class="cat-filter" data-cat="image">Image Tools</button>
+        <button class="cat-filter" data-cat="text">Text Tools</button>
+        <button class="cat-filter" data-cat="convert">Converters</button>
+        <button class="cat-filter" data-cat="encode">Encoder/Decoder</button>
+        <button class="cat-filter" data-cat="ai">AI Tools</button>
       </div>
       <div class="tool-grid">
-        <!-- Cards: Add data-cat for filtering -->
+        <!-- Cards: Add data-cat="category" to each card -->
         <a href="tools/image-to-pdf.html" class="card" data-cat="image">📷 Image → PDF</a>
         <a href="tools/image-compressor.html" class="card" data-cat="image">🗜️ Image Compressor</a>
         <a href="tools/image-resizer.html" class="card" data-cat="image">📏 Image Resizer</a>
@@ -91,35 +142,38 @@
         <a href="tools/unit-converter.html" class="card" data-cat="convert">⚖️ Unit Converter</a>
         <a href="tools/document-scanner.html" class="card" data-cat="convert">📑 Document Scanner</a>
         <a href="tools/url-encoder.html" class="card" data-cat="encode">🔗 URL Encoder/Decoder</a>
-        <a href="tools/hash-generator.html" class="card" data-cat="hash">🛡️ Hash Generator</a>
-        <a href="tools/password-generator.html" class="card" data-cat="password">🔑 Password Generator</a>
+        <a href="tools/hash-generator.html" class="card" data-cat="encode">🛡️ Hash Generator</a>
+        <a href="tools/password-generator.html" class="card" data-cat="encode">🔑 Password Generator</a>
         <a href="tools/qr-generator.html" class="card" data-cat="encode">📱 QR Generator</a>
         <a href="tools/image-to-prompt.html" class="card" data-cat="ai">🤖 Image to Prompt</a>
         <a href="tools/json-formatter.html" class="card" data-cat="ai">🧩 JSON Formatter</a>
       </div>
     </section>
   </main>
+  <script src="theme.js"></script>
+  <script src="script.js"></script>
   <script>
-    // Top tab filter
-    document.querySelectorAll('.cat-tab').forEach(btn => {
+    // Sidebar accordion logic
+    document.querySelectorAll('.sidebar .cat-btn').forEach(btn => {
       btn.onclick = function() {
-        document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.sidebar .cat-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.sidebar .cat-list').forEach(list=>list.classList.remove('open'));
+        btn.classList.add('active');
+        let catList = document.querySelector('.sidebar .cat-list[data-cat="'+btn.dataset.cat+'"]');
+        if(catList) catList.classList.toggle('open');
+      }
+    });
+    // Home grid filter logic
+    document.querySelectorAll('.cat-filter').forEach(btn => {
+      btn.onclick = function() {
+        document.querySelectorAll('.cat-filter').forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
         let cat = btn.dataset.cat;
         document.querySelectorAll('.tool-grid .card').forEach(card => {
           card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
         });
-        document.getElementById('catDropdown').selectedIndex = 0;
       }
     });
-    // Dropdown filter
-    document.getElementById('catDropdown').onchange = function() {
-      let cat = this.value;
-      document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
-      document.querySelectorAll('.tool-grid .card').forEach(card => {
-        card.style.display = (cat === '' || card.dataset.cat === cat) ? '' : 'none';
-      });
-    };
   </script>
 </body>
 </html>
