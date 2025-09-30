@@ -323,12 +323,18 @@
                         body: JSON.stringify({ "inputs": base64Data })
                     });
 
+                    // Check for common API errors and provide helpful feedback
                     if (!response.ok) {
-                        throw new Error(`API error: ${response.statusText}`);
+                        const errorData = await response.json().catch(() => ({}));
+                        if (errorData.error) {
+                            throw new Error(`API error: ${errorData.error}`);
+                        } else {
+                            throw new Error(`API error: ${response.status} ${response.statusText}`);
+                        }
                     }
 
                     const result = await response.json();
-                    let prompt = "Failed to generate prompt.";
+                    let prompt = "Failed to generate prompt. Please try again or with a different image.";
                     if (Array.isArray(result) && result[0] && result[0].generated_text) {
                         prompt = result[0].generated_text;
                     } else if (typeof result.generated_text === "string") {
@@ -338,7 +344,7 @@
                     promptText.textContent = prompt;
 
                 } catch (error) {
-                    promptText.textContent = `Error: ${error.message}`;
+                    promptText.textContent = `Error: ${error.message}. This might be due to heavy server load or a network issue. Please try again later.`;
                     console.error('AI generation error:', error);
                 } finally {
                     generatePromptBtn.disabled = false;
