@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Generator | ToolMancer</title>
+    <title>Steganography | ToolMancer</title>
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
     <style>
@@ -18,7 +18,7 @@
             width: 100%;
         }
         .tool-page .tool-card {
-            max-width: 600px;
+            max-width: 700px;
             padding: 2rem;
             width: 100%;
             box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
@@ -31,54 +31,46 @@
         .tool-header .tool-desc { font-size: 1rem; color: #475569; max-width: 650px; margin: 0 auto; line-height: 1.5; }
         [data-theme="dark"] .tool-header .tool-desc { color: #94a3b8; }
 
-        /* --- Custom UI for Password Generator --- */
-        .password-options { margin-top: 1rem; }
-        .password-options label { font-size: 1em; color: var(--text); display: block; margin-bottom: 0.5rem; }
-        .password-options input[type="number"] { width: 80px; text-align: center; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 6px; }
-        .password-options input[type="checkbox"] { margin-right: 0.5rem; }
-        .password-output-container { margin-top: 1.5rem; }
-        .password-output {
-            position: relative;
+        /* --- Custom UI for Steganography --- */
+        .upload-drop-zone {
+            border: 2px dashed var(--accent);
+            border-radius: 8px;
+            background: var(--bg);
+            text-align: center;
+            transition: border-color 0.2s, background 0.2s;
+            padding: 2rem 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            font-size: 1.05em;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .upload-drop-zone:hover, .upload-drop-zone.active {
+            border-color: #1e40af;
+            background: #e0ebff;
+        }
+        [data-theme="dark"] .upload-drop-zone { background: #334155; }
+        [data-theme="dark"] .upload-drop-zone:hover, [data-theme="dark"] .upload-drop-zone.active { background: #475569; border-color: #60a5fa; }
+        .upload-drop-zone .add-icon { font-size: 2.5em; color: var(--accent); margin-bottom: 0.35em; pointer-events: none; }
+        .upload-drop-zone input[type="file"] { display: none; }
+        .upload-drop-zone .drop-hint { font-size:0.9em;color:#888;margin-top:0.5em;}
+
+        .steg-image-container { margin-top: 1.5rem; text-align: center; }
+        .steg-preview-image { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border-color); }
+        .steg-message-input { margin-top: 1.5rem; }
+        .steg-message-input textarea { min-height: 100px; }
+        .steg-controls { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1rem; }
+        .result-message-container { margin-top: 1.5rem; }
+        .result-message-box {
             background: var(--bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 1rem;
-            display: flex;
-            align-items: center;
+            color: var(--text);
         }
-        .password-text { flex-grow: 1; font-family: monospace; font-size: 1.1em; word-wrap: break-word; user-select: text; }
-        .copy-button {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 0.5rem 0.8rem;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-left: 1rem;
-        }
-
-        /* Password strength indicator styles */
-        .strength-indicator {
-            height: 8px;
-            width: 100%;
-            background: #e2e8f0;
-            border-radius: 4px;
-            margin-top: 0.5rem;
-            overflow: hidden;
-            position: relative;
-        }
-        .strength-indicator-bar {
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease-in-out;
-            border-radius: 4px;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        .strength-indicator-bar.weak { background-color: #f87171; }
-        .strength-indicator-bar.medium { background-color: #fbbf24; }
-        .strength-indicator-bar.strong { background-color: #34d399; }
     </style>
 </head>
 <body>
@@ -149,58 +141,48 @@
     <main class="content tool-page">
         <section class="tool-card">
             <header class="tool-header">
-                <h1>🔑 Password Generator</h1>
-                <p class="tool-desc">Create strong, random passwords using advanced options. The password generation process runs in your browser and is completely secure.</p>
+                <h1>🕵️ Steganography</h1>
+                <p class="tool-desc">Hide secret text inside an image or extract hidden text from an image (using LSB method). For educational purposes only.</p>
             </header>
 
-            <div class="password-options">
-                <label for="len">Password Length:</label>
-                <input id='len' type='number' value='16' min="8" max="128" class="tool-input">
-                
-                <div style="margin-top: 1rem;">
-                    <label>Include:</label>
-                    <div>
-                        <input type="checkbox" id="uppercaseCheck" checked>
-                        <label for="uppercaseCheck">Uppercase (A-Z)</label>
-                    </div>
-                    <div>
-                        <input type="checkbox" id="lowercaseCheck" checked>
-                        <label for="lowercaseCheck">Lowercase (a-z)</label>
-                    </div>
-                    <div>
-                        <input type="checkbox" id="numbersCheck" checked>
-                        <label for="numbersCheck">Numbers (0-9)</label>
-                    </div>
-                    <div>
-                        <input type="checkbox" id="symbolsCheck">
-                        <label for="symbolsCheck">Symbols (!@#$...)</label>
-                    </div>
-                </div>
+            <div class="upload-drop-zone" id="dropZone">
+                <span class="add-icon">+</span>
+                <span style="font-weight:500;">Add image or drag & drop</span>
+                <input type="file" id="imgFile" accept="image/png">
+                <div class="drop-hint">Supported formats: PNG (Recommended)</div>
             </div>
 
-            <div class="tool-controls">
-                <button class="btn" id='gen'>Generate Password</button>
+            <div class="steg-image-container" id="imagePreviewContainer" style="display: none;">
+                <img id="previewImage" class="steg-preview-image" src="" alt="Image Preview">
             </div>
 
-            <div class="password-output-container" id="outputContainer" style="display: none;">
-                <div class="password-output">
-                    <span id="passwordText" class="password-text"></span>
-                    <button class="copy-button" id="copyBtn">Copy</button>
-                </div>
-                <!-- Password Strength Indicator -->
-                <div class="strength-indicator">
-                    <div class="strength-indicator-bar" id="strengthBar"></div>
-                </div>
+            <div class="steg-message-input">
+                <textarea id="msgInput" placeholder='Secret message to hide' class="tool-input"></textarea>
+                <input type="password" id="passwordInput" placeholder="Optional password" class="tool-input" style="margin-top: 10px;">
             </div>
+
+            <div class="steg-controls">
+                <button class="btn" id="encodeBtn">Hide Message</button>
+                <button class="btn" id="decodeBtn">Decode Message</button>
+            </div>
+
+            <div class="result-message-container" id="resultContainer" style="display: none;">
+                <h3>Decoded Message:</h3>
+                <div class="result-message-box" id="decodedMessage"></div>
+            </div>
+
+            <div class="result-download-container" id="downloadContainer" style="display: none;">
+                <a class="btn" id="downloadBtn" download="stego.png">⬇️ Download Encoded Image</a>
+            </div>
+
         </section>
 
         <section class="how-to">
             <h3>How to Use</h3>
             <ol>
-                <li>Choose the length of your password (min 8 characters).</li>
-                <li>Select the character sets to include (e.g., uppercase, numbers, symbols).</li>
-                <li>Click "Generate Password" to create a strong, random password.</li>
-                <li>Use the "Copy" button to save the password to your clipboard.</li>
+                <li>Upload an image file (PNG recommended for best results).</li>
+                <li>To hide a message: Enter text and an optional password, then click "Hide Message". A new image with the hidden message will be generated for download.</li>
+                <li>To decode a message: Upload the encoded image, enter the optional password (if one was used), and click "Decode Message". The hidden text will appear in the result box.</li>
             </ol>
         </section>
     </main>
@@ -275,92 +257,254 @@
                 installButton.style.display = 'none';
             });
 
-            // --- Password Generator Tool Specific Logic ---
-            const lengthInput = document.getElementById('len');
-            const uppercaseCheck = document.getElementById('uppercaseCheck');
-            const lowercaseCheck = document.getElementById('lowercaseCheck');
-            const numbersCheck = document.getElementById('numbersCheck');
-            const symbolsCheck = document.getElementById('symbolsCheck');
-            const generateBtn = document.getElementById('gen');
-            const passwordTextSpan = document.getElementById('passwordText');
-            const outputContainer = document.getElementById('outputContainer');
-            const copyBtn = document.getElementById('copyBtn');
-            const strengthBar = document.getElementById('strengthBar');
+            // --- Steganography Tool Specific Logic ---
+            const dropZone = document.getElementById('dropZone');
+            const imgInput = document.getElementById('imgFile');
+            const previewImage = document.getElementById('previewImage');
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            const msgInput = document.getElementById('msgInput');
+            const passwordInput = document.getElementById('passwordInput'); // New: Password input field
+            const encodeBtn = document.getElementById('encodeBtn');
+            const decodeBtn = document.getElementById('decodeBtn');
+            const downloadContainer = document.getElementById('downloadContainer');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const resultContainer = document.getElementById('resultContainer');
+            const decodedMessage = document.getElementById('decodedMessage');
+            let currentImageFile = null;
 
-            // Character sets
-            const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
-            const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            const numberChars = '0123456789';
-            const symbolChars = '!@#$%^&*()_+~`|}{[]\:;?><,./-=';
+            // --- Helper Functions ---
+            function toUint8(s) { return new TextEncoder().encode(s); }
+            function toStr(u) { return new TextDecoder().decode(u); }
 
-            generateBtn.addEventListener('click', () => {
-                const length = parseInt(lengthInput.value);
-                let availableChars = '';
-                let password = '';
+            // Password-based Key Derivation (using Web Crypto API)
+            async function deriveKey(password, salt) {
+                const enc = new TextEncoder();
+                const keyMaterial = await crypto.subtle.importKey(
+                    'raw',
+                    enc.encode(password),
+                    { name: 'PBKDF2' },
+                    false,
+                    ['deriveKey']
+                );
+                return crypto.subtle.deriveKey(
+                    { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+                    keyMaterial,
+                    { name: 'AES-GCM', length: 256 },
+                    false,
+                    ['encrypt', 'decrypt']
+                );
+            }
 
-                if (uppercaseCheck.checked) availableChars += uppercaseChars;
-                if (lowercaseCheck.checked) availableChars += lowercaseChars;
-                if (numbersCheck.checked) availableChars += numberChars;
-                if (symbolsCheck.checked) availableChars += symbolChars;
+            // Encrypt message using AES-GCM
+            async function encryptMessage(message, password) {
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const key = await deriveKey(password, salt);
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const enc = new TextEncoder();
+                const ciphertext = await crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv },
+                    key,
+                    enc.encode(message)
+                );
+                const combined = new Uint8Array(salt.byteLength + iv.byteLength + ciphertext.byteLength);
+                combined.set(salt, 0);
+                combined.set(iv, salt.byteLength);
+                combined.set(new Uint8Array(ciphertext), salt.byteLength + iv.byteLength);
+                return combined;
+            }
 
-                if (availableChars.length === 0) {
-                    alert('Please select at least one character set.');
-                    return;
-                }
+            // Decrypt message using AES-GCM
+            async function decryptMessage(combinedData, password) {
+                const salt = combinedData.slice(0, 16);
+                const iv = combinedData.slice(16, 28);
+                const ciphertext = combinedData.slice(28);
+                const key = await deriveKey(password, salt);
 
-                const cryptoArray = new Uint32Array(length);
-                window.crypto.getRandomValues(cryptoArray);
-
-                for (let i = 0; i < length; i++) {
-                    password += availableChars[cryptoArray[i] % availableChars.length];
-                }
-
-                passwordTextSpan.textContent = password;
-                outputContainer.style.display = 'block';
-
-                // Update strength indicator
-                updateStrengthIndicator(password, length);
-            });
-
-            function updateStrengthIndicator(password, length) {
-                let strength = 0;
-                let characterTypes = 0;
-
-                if (uppercaseCheck.checked) characterTypes++;
-                if (lowercaseCheck.checked) characterTypes++;
-                if (numbersCheck.checked) characterTypes++;
-                if (symbolsCheck.checked) characterTypes++;
-
-                // Basic strength calculation based on length and character types included
-                if (length >= 8) strength += 20;
-                if (length >= 12) strength += 20;
-                if (characterTypes > 1) strength += 20;
-                if (characterTypes > 2) strength += 20;
-                if (characterTypes > 3) strength += 20;
-
-                // Set bar width and color
-                strengthBar.style.width = strength + '%';
-                strengthBar.classList.remove('weak', 'medium', 'strong');
-                if (strength <= 40) {
-                    strengthBar.classList.add('weak');
-                } else if (strength <= 80) {
-                    strengthBar.classList.add('medium');
-                } else {
-                    strengthBar.classList.add('strong');
+                try {
+                    const decrypted = await crypto.subtle.decrypt(
+                        { name: 'AES-GCM', iv },
+                        key,
+                        ciphertext
+                    );
+                    return new TextDecoder().decode(decrypted);
+                } catch (e) {
+                    return null; // Decryption failed (wrong password)
                 }
             }
 
-            copyBtn.addEventListener('click', () => {
-                const textToCopy = passwordTextSpan.textContent;
-                navigator.clipboard.writeText(textToCopy)
-                    .then(() => {
-                        copyBtn.textContent = 'Copied!';
-                        setTimeout(() => copyBtn.textContent = 'Copy', 1500);
-                    })
-                    .catch(err => {
-                        console.error('Failed to copy: ', err);
-                        alert('Failed to copy text.');
-                    });
+            // Handle file selection (click or drag/drop)
+            dropZone.addEventListener('click', () => imgInput.click());
+            dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('active'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
+            dropZone.addEventListener('drop', e => {
+                e.preventDefault();
+                dropZone.classList.remove('active');
+                handleFiles(e.dataTransfer.files);
+            });
+            imgInput.addEventListener('change', e => handleFiles(e.target.files));
+
+            function handleFiles(files) {
+                if (files.length === 0) return;
+                const file = files[0];
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file.');
+                    return;
+                }
+                currentImageFile = file;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    previewImage.src = reader.result;
+                    imagePreviewContainer.style.display = 'block';
+                    dropZone.style.display = 'none';
+                    resultContainer.style.display = 'none'; // Clear previous decode result
+                    downloadContainer.style.display = 'none'; // Hide download link for new image
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // --- Steganography Encoding Logic (LSB) ---
+            async function encodeImage(payloadBytes) {
+                const img = new Image();
+                img.src = previewImage.src;
+                await new Promise(r => img.onload = r);
+
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+                // Check size constraint (assuming 3 bits per pixel for simple LSB)
+                // We reserve 4 bytes for length, 16 for salt, 12 for IV
+                const payloadLengthBits = (payloadBytes.length + 4) * 8; // Including length prefix
+                if (payloadLengthBits > imageData.data.length * 3) {
+                    throw new Error('Message too large for this image size.');
+                }
+
+                // Create full payload with length prefix (first 4 bytes)
+                const fullPayload = new Uint8Array(payloadBytes.length + 4);
+                fullPayload[0] = (payloadBytes.length >>> 24) & 255;
+                fullPayload[1] = (payloadBytes.length >>> 16) & 255;
+                fullPayload[2] = (payloadBytes.length >>> 8) & 255;
+                fullPayload[3] = payloadBytes.length & 255;
+                fullPayload.set(payloadBytes, 4);
+
+                let bitIndex = 0;
+                for (let i = 0; i < imageData.data.length && bitIndex < fullPayload.length * 8; i += 4) {
+                    for (let c = 0; c < 3 && bitIndex < fullPayload.length * 8; c++) {
+                        const byteIdx = Math.floor(bitIndex / 8);
+                        const bitIn = 7 - (bitIndex % 8);
+                        const bit = (fullPayload[byteIdx] >> bitIn) & 1;
+                        imageData.data[i + c] = (imageData.data[i + c] & 0xFE) | bit;
+                        bitIndex++;
+                    }
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+                return canvas.toDataURL('image/png');
+            }
+
+            async function decodeImage() {
+                const img = new Image();
+                img.src = previewImage.src;
+                await new Promise(r => img.onload = r);
+
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                let bits = [];
+
+                // Read message length (first 32 bits)
+                for (let i = 0; i < 32; i++) {
+                    const pixIdx = Math.floor(i / 3) * 4 + (i % 3);
+                    bits.push(imageData.data[pixIdx] & 1);
+                }
+
+                let len = 0;
+                for (let i = 0; i < 32; i++) {
+                    len = (len << 1) | bits[i];
+                }
+
+                if (len === 0 || len > (imageData.data.length / 4) * 3 - 4) {
+                    return null; // No hidden message or invalid length
+                }
+
+                // Read message payload
+                const totalBits = (4 + len) * 8;
+                const payloadBits = [];
+                for (let i = 0; i < totalBits; i++) {
+                    const pixIdx = Math.floor(i / 3) * 4 + (i % 3);
+                    payloadBits.push(imageData.data[pixIdx] & 1);
+                }
+
+                const payloadBytes = new Uint8Array(Math.ceil(payloadBits.length / 8));
+                for (let i = 0; i < payloadBits.length; i++) {
+                    const byteIndex = Math.floor(i / 8);
+                    payloadBytes[byteIndex] = (payloadBytes[byteIndex] << 1) | payloadBits[i];
+                }
+
+                return payloadBytes.slice(4, 4 + len);
+            }
+
+            // --- Event Listeners ---
+            encodeBtn.addEventListener('click', async () => {
+                if (!currentImageFile) return alert('Please load an image first.');
+                const message = msgInput.value || '';
+                if (!message) return alert('Enter a message to hide.');
+
+                const password = passwordInput.value;
+                let payloadBytes;
+
+                if (password) {
+                    // Encrypt message before encoding
+                    try {
+                        payloadBytes = await encryptMessage(message, password);
+                    } catch (e) {
+                        return alert('Encryption failed. Please try again.');
+                    }
+                } else {
+                    payloadBytes = toUint8(message);
+                }
+
+                try {
+                    const encodedDataUrl = await encodeImage(payloadBytes);
+                    downloadBtn.href = encodedDataUrl;
+                    downloadContainer.style.display = 'block';
+                    alert('Message successfully hidden. Download the image.');
+                } catch (e) {
+                    alert('Error during encoding: ' + e.message);
+                }
+            });
+
+            decodeBtn.addEventListener('click', async () => {
+                if (!currentImageFile) return alert('Please load an image first.');
+
+                const decodedBytes = await decodeImage();
+                if (!decodedBytes) {
+                    decodedMessage.textContent = 'No hidden message found.';
+                    resultContainer.style.display = 'block';
+                    return;
+                }
+
+                const password = passwordInput.value;
+                if (password) {
+                    // Decrypt message using password
+                    const decryptedText = await decryptMessage(decodedBytes, password);
+                    if (decryptedText === null) {
+                        decodedMessage.textContent = 'Decryption failed. Invalid password.';
+                    } else {
+                        decodedMessage.textContent = decryptedText;
+                    }
+                } else {
+                    decodedMessage.textContent = toStr(decodedBytes);
+                }
+                resultContainer.style.display = 'block';
             });
         });
     </script>
