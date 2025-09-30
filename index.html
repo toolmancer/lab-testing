@@ -1,154 +1,286 @@
-body {
-  background: #f9fafd;
-  margin: 0;
-  padding: 0;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToolMancer – All-in-One Toolkit</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: #f9fafd;
+      margin: 0;
+      padding: 0;
+    }
 
-/* Sticky Top Bar */
-.sticky-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: #fff;
-  padding: 0.7em 1em;
-  margin-bottom: 1.5em;
-  box-shadow: 0 2px 12px #0001;
-  width: 100%;
-}
+    /* Sticky Top Bar */
+    .sticky-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #fff;
+      padding: 0.7em 1em;
+      margin-bottom: 1.5em;
+      box-shadow: 0 2px 12px #0001;
+      width: 100%;
+    }
 
-/* Categories Bar */
-.top-categories-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.4em;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  padding: 0.5em 0;
-  width: 100%;
-}
+    /* Categories Bar */
+    .top-categories-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      padding: 0.5em 0;
+      width: 100%;
+    }
 
-.cat-tab {
-  background: #fff;
-  color: var(--accent);
-  border: none;
-  border-bottom: 3.5px solid transparent;
-  border-radius: 10px 10px 0 0;
-  padding: 0.7em 1.5em 0.6em 1.5em;
-  font-size: 1em;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: -3px;
-  transition: background 0.14s, color 0.14s, border-bottom 0.18s;
-  outline: none;
-  position: relative;
-}
+    .cat-tab {
+      background: #fff;
+      color: var(--accent);
+      border: none;
+      border-bottom: 3.5px solid transparent;
+      border-radius: 10px 10px 0 0;
+      padding: 0.7em 1.5em 0.6em 1.5em;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: -3px;
+      transition: background 0.14s, color 0.14s, border-bottom 0.18s;
+      outline: none;
+      position: relative;
+    }
 
-.cat-tab.active,
-.cat-tab:focus {
-  background: #e9f2ff;
-  color: #1740a5;
-  border-bottom: 3.5px solid #2563eb;
-  z-index: 2;
-  box-shadow: 0 2px 8px #2563eb22;
-}
+    .cat-tab.active,
+    .cat-tab:focus {
+      background: #e9f2ff;
+      color: #1740a5;
+      border-bottom: 3.5px solid #2563eb;
+      z-index: 2;
+      box-shadow: 0 2px 8px #2563eb22;
+    }
 
-.cat-tab:hover:not(.active) {
-  background: #f6faff;
-}
+    .cat-tab:hover:not(.active) {
+      background: #f6faff;
+    }
 
-/* Tool Grid – full width */
-.tool-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-  gap: 2em;
-  justify-content: center;
-  margin: 0 auto;
-  width: 100%;
-  padding: 0 1.5em 3em;
-}
+    /* Tool Grid – full width */
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 2em;
+      justify-content: center;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 1.5em 3em;
+    }
 
-/* Tool Cards */
-.tool-card-home {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 22px #0001, 0 1.5px 8px #0001;
-  padding: 1.6em 1.4em 1.4em 1.4em;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1.1em;
-  min-height: 184px;
-  transition: box-shadow 0.15s, transform 0.13s;
-  text-decoration: none;
-  color: #183153;
-  position: relative;
-  border: 1.5px solid #e0e7ef;
-}
+    /* Tool Cards */
+    .tool-card-home {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 22px #0001, 0 1.5px 8px #0001;
+      padding: 1.6em 1.4em 1.4em 1.4em;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.1em;
+      min-height: 184px;
+      transition: box-shadow 0.15s, transform 0.13s;
+      text-decoration: none;
+      color: #183153;
+      position: relative;
+      border: 1.5px solid #e0e7ef;
+    }
 
-.tool-card-home:hover {
-  box-shadow: 0 9px 36px #2563eb18, 0 1.5px 8px #2563eb18;
-  border-color: var(--accent);
-  transform: translateY(-3px) scale(1.04);
-  color: var(--accent);
-}
+    .tool-card-home:hover {
+      box-shadow: 0 9px 36px #2563eb18, 0 1.5px 8px #2563eb18;
+      border-color: var(--accent);
+      transform: translateY(-3px) scale(1.04);
+      color: var(--accent);
+    }
 
-.tool-logo {
-  font-size: 2.3em;
-  margin-bottom: 0.1em;
-  margin-right: 0.07em;
-  user-select: none;
-}
+    .tool-logo {
+      font-size: 2.3em;
+      margin-bottom: 0.1em;
+      margin-right: 0.07em;
+      user-select: none;
+    }
 
-.tool-title {
-  font-size: 1.21em;
-  font-weight: bold;
-  margin-bottom: 0.05em;
-  letter-spacing: 0.1px;
-  color: var(--accent);
-}
+    .tool-title {
+      font-size: 1.21em;
+      font-weight: bold;
+      margin-bottom: 0.05em;
+      letter-spacing: 0.1px;
+      color: var(--accent);
+    }
 
-.tool-desc {
-  font-size: 1.06em;
-  color: #40506b;
-  margin-bottom: 0.1em;
-  margin-top: -0.4em;
-  line-height: 1.43;
-  min-height: 2.2em;
-  max-width: 100%;
-}
+    .tool-desc {
+      font-size: 1.06em;
+      color: #40506b;
+      margin-bottom: 0.1em;
+      margin-top: -0.4em;
+      line-height: 1.43;
+      min-height: 2.2em;
+      max-width: 100%;
+    }
 
-/* Mobile */
-@media (max-width: 1000px) {
-  .tool-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  }
-}
-@media (max-width: 700px) {
-  .tool-grid {
-    grid-template-columns: repeat(auto-fit, minmax(99vw, 1fr));
-    gap: 1.1em;
-    padding: 0 0.5em 2em;
-  }
-  .cat-tab {
-    padding: 0.5em 1em 0.45em 1em;
-  }
-  .tool-card-home {
-    min-height: 110px;
-    padding: 1.1em 0.8em;
-  }
-}
+    /* Mobile */
+    @media (max-width: 1000px) {
+      .tool-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+    }
 
-/* Home Card Section */
-.home-card {
-  background: none;
-  box-shadow: none;
-  padding: 0;
-  margin: 0 auto;
-  width: 100%;
-}
-.home-card h1,
-.home-card .subtitle {
-  text-align: center;
-}
+    @media (max-width: 700px) {
+      .tool-grid {
+        grid-template-columns: repeat(auto-fit, minmax(99vw, 1fr));
+        gap: 1.1em;
+        padding: 0 0.5em 2em;
+      }
+      .cat-tab {
+        padding: 0.5em 1em 0.45em 1em;
+      }
+      .tool-card-home {
+        min-height: 110px;
+        padding: 1.1em 0.8em;
+      }
+    }
+
+    /* Home Card Section */
+    .home-card {
+      background: none;
+      box-shadow: none;
+      padding: 0;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .home-card h1,
+    .home-card .subtitle {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main class="content home">
+    <section class="home-card">
+      <h1>Welcome to <span>ToolMancer</span></h1>
+      <p class="subtitle">All-in-One Online Toolkit — browser-first, privacy friendly.</p>
+      <div class="sticky-bar">
+        <nav class="top-categories-bar" id="catBar">
+          <button class="cat-tab active" data-cat="all">All</button>
+          <button class="cat-tab" data-cat="image">Image Tools</button>
+          <button class="cat-tab" data-cat="text">Text Tools</button>
+          <button class="cat-tab" data-cat="convert">Converters</button>
+          <button class="cat-tab" data-cat="encode">Encoder/Decoder</button>
+          <button class="cat-tab" data-cat="ai">AI Tools</button>
+        </nav>
+      </div>
+      <div class="tool-grid">
+        <a href="tools/image-to-pdf.html" class="tool-card-home" data-cat="image">
+          <span class="tool-logo">📷</span>
+          <span class="tool-title">Image to PDF</span>
+          <span class="tool-desc">Convert images (JPG, PNG, WebP, etc.) into a single PDF instantly in your browser.</span>
+        </a>
+        <a href="tools/image-compressor.html" class="tool-card-home" data-cat="image">
+          <span class="tool-logo">🗜️</span>
+          <span class="tool-title">Image Compressor</span>
+          <span class="tool-desc">Reduce image file size without losing quality. Privacy-friendly and fast.</span>
+        </a>
+        <a href="tools/image-resizer.html" class="tool-card-home" data-cat="image">
+          <span class="tool-logo">📏</span>
+          <span class="tool-title">Image Resizer</span>
+          <span class="tool-desc">Resize your images to custom dimensions or presets. No upload needed.</span>
+        </a>
+        <a href="tools/convert-png-jpg.html" class="tool-card-home" data-cat="image">
+          <span class="tool-logo">🖼️</span>
+          <span class="tool-title">PNG ↔ JPG Converter</span>
+          <span class="tool-desc">Convert PNG images to JPG and vice versa in one click, offline-ready.</span>
+        </a>
+        <a href="tools/steganography.html" class="tool-card-home" data-cat="image">
+          <span class="tool-logo">🕵️</span>
+          <span class="tool-title">Steganography</span>
+          <span class="tool-desc">Hide secret text inside images or extract hidden messages easily.</span>
+        </a>
+        <a href="tools/text-diff.html" class="tool-card-home" data-cat="text">
+          <span class="tool-logo">🔍</span>
+          <span class="tool-title">Text Diff</span>
+          <span class="tool-desc">Visually compare two texts and highlight every difference.</span>
+        </a>
+        <a href="tools/text-encryptor.html" class="tool-card-home" data-cat="text">
+          <span class="tool-logo">🔐</span>
+          <span class="tool-title">Text Encryptor</span>
+          <span class="tool-desc">Encrypt or decrypt text with a password. AES-256 secure.</span>
+        </a>
+        <a href="tools/text-to-pdf.html" class="tool-card-home" data-cat="text">
+          <span class="tool-logo">📄</span>
+          <span class="tool-title">Text → PDF</span>
+          <span class="tool-desc">Turn plain text into a styled PDF document in seconds.</span>
+        </a>
+        <a href="tools/word-counter.html" class="tool-card-home" data-cat="text">
+          <span class="tool-logo">✏️</span>
+          <span class="tool-title">Word Counter</span>
+          <span class="tool-desc">Count words, characters, sentences, and paragraphs instantly.</span>
+        </a>
+        <a href="tools/unit-converter.html" class="tool-card-home" data-cat="convert">
+          <span class="tool-logo">⚖️</span>
+          <span class="tool-title">Unit Converter</span>
+          <span class="tool-desc">Convert between units (length, weight, area, etc.) with live results.</span>
+        </a>
+        <a href="tools/document-scanner.html" class="tool-card-home" data-cat="convert">
+          <span class="tool-logo">📑</span>
+          <span class="tool-title">Document Scanner</span>
+          <span class="tool-desc">Scan, crop, and enhance documents with your camera or images.</span>
+        </a>
+        <a href="tools/url-encoder.html" class="tool-card-home" data-cat="encode">
+          <span class="tool-logo">🔗</span>
+          <span class="tool-title">URL Encoder/Decoder</span>
+          <span class="tool-desc">Encode or decode URLs and query strings with one click.</span>
+        </a>
+        <a href="tools/hash-generator.html" class="tool-card-home" data-cat="encode">
+          <span class="tool-logo">🛡️</span>
+          <span class="tool-title">Hash Generator</span>
+          <span class="tool-desc">Generate secure hashes (MD5, SHA-256, etc.) for any text or file.</span>
+        </a>
+        <a href="tools/password-generator.html" class="tool-card-home" data-cat="encode">
+          <span class="tool-logo">🔑</span>
+          <span class="tool-title">Password Generator</span>
+          <span class="tool-desc">Create strong, random passwords with custom options.</span>
+        </a>
+        <a href="tools/qr-generator.html" class="tool-card-home" data-cat="encode">
+          <span class="tool-logo">📱</span>
+          <span class="tool-title">QR Generator</span>
+          <span class="tool-desc">Make QR codes for links, text, WiFi, and more—downloadable as PNG/SVG.</span>
+        </a>
+        <a href="tools/image-to-prompt.html" class="tool-card-home" data-cat="ai">
+          <span class="tool-logo">🤖</span>
+          <span class="tool-title">Image to Prompt</span>
+          <span class="tool-desc">AI describes any image and generates a prompt for you.</span>
+        </a>
+        <a href="tools/json-formatter.html" class="tool-card-home" data-cat="ai">
+          <span class="tool-logo">🧩</span>
+          <span class="tool-title">JSON Formatter</span>
+          <span class="tool-desc">Beautify, validate, and inspect any JSON instantly.</span>
+        </a>
+      </div>
+    </section>
+  </main>
+  <script>
+    // Tab filter logic
+    function setActiveTab(cat) {
+      document.querySelectorAll('.cat-tab').forEach(b => {
+        if (b.dataset.cat === cat) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+      document.querySelectorAll('.tool-card-home').forEach(card => {
+        card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+      });
+    }
+    document.querySelectorAll('.cat-tab').forEach(btn => {
+      btn.onclick = function () { setActiveTab(btn.dataset.cat); }
+    });
+  </script>
+</body>
+</html>
