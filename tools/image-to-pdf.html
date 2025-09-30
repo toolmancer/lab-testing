@@ -6,7 +6,6 @@
   <title>Image to PDF Converter | ToolMancer</title>
   <link rel="stylesheet" href="../style.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
-  <!-- Include external CSS for drag/sort functionality if needed -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.css"/>
   <style>
     /* Add specific styles here or update style.css for tool layouts */
@@ -43,7 +42,7 @@
       margin-top: 1rem;
     }
     .pdf-images, .pdf-options {
-      background: var(--bg); /* Use page background for a flatter look */
+      background: var(--bg);
       border-radius: 12px;
       border: 1px solid var(--border-color);
     }
@@ -164,7 +163,7 @@
     .how-to li { margin-bottom: 0.5rem; color: #475569; }
     [data-theme="dark"] .how-to li { color: #94a3b8; }
 
-    /* Mobile adjustments */
+    /* Mobile adjustments: Stack columns vertically for mobile devices */
     @media (max-width: 900px) {
       .pdf-tool-flex { flex-direction: column; gap: 1.2rem; align-items: stretch;}
       .pdf-images, .pdf-options { max-width: 100%; min-width: unset; }
@@ -196,8 +195,6 @@
   </header>
 
   <div class="mega-menu" id="allToolsMenu">
-    <!-- Close button for mobile menu (optional) -->
-    <!-- <button class="close-menu-btn" id="closeMenuBtn">&times;</button> -->
     <div class="mega-menu-grid">
       <div class="mega-menu-category">
         <h3>Image Tools</h3>
@@ -291,6 +288,13 @@
             <input type="checkbox" class="pdf-checkbox" id="mergeAll" checked/>
             <label for="mergeAll" style="font-size:1.05em;">Merge all images in one PDF file</label>
           </div>
+          <!-- New: Quality Option (as suggested for improvement) -->
+          <div>
+            <div class="pdf-opt-label">Image Quality</div>
+            <input type="range" id="qualitySlider" min="0.1" max="1.0" step="0.1" value="0.9">
+            <span id="qualityValue" style="font-size: 0.9em;">90%</span>
+          </div>
+
           <button class="pdf-main-btn" id="convertBtn" disabled>
             Convert to PDF <span style="font-size:1.2em;">➔</span>
           </button>
@@ -341,7 +345,6 @@
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const allToolsMenu = document.getElementById('allToolsMenu');
         const searchBtn = document.getElementById('searchBtn');
-        // const closeMenuBtn = document.getElementById('closeMenuBtn'); // If added to HTML
 
         const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
         allToolsBtn.addEventListener('click', toggleMenu);
@@ -401,6 +404,9 @@
         const downloadBtn = document.getElementById('downloadBtn');
         const openBtn = document.getElementById('openBtn');
         const copyLinkBtn = document.getElementById('copyLinkBtn');
+        const qualitySlider = document.getElementById('qualitySlider');
+        const qualityValue = document.getElementById('qualityValue');
+
         let pdfBlobUrl = '';
         let images = [];
 
@@ -429,6 +435,7 @@
           });
           renderImages();
         }
+
         function renderImages() {
           imgList.innerHTML = '';
           if (!images.length) {
@@ -469,6 +476,7 @@
           convertBtn.disabled = false;
           makeListSortable();
         }
+
         function makeListSortable() {
           Sortable.create(imgList, {
             handle: '.img-handle',
@@ -482,6 +490,7 @@
             }
           });
         }
+
         // --- PDF Options ---
         let orientation = "portrait";
         let pageSize = "a4";
@@ -503,6 +512,12 @@
             margin = this.dataset.margin;
           }
         });
+
+        // Update quality value display
+        qualitySlider.addEventListener('input', () => {
+          qualityValue.textContent = Math.round(qualitySlider.value * 100) + '%';
+        });
+
         // --- Convert to PDF ---
         convertBtn.onclick = async function(e) {
           e.preventDefault();
@@ -510,6 +525,8 @@
           const { jsPDF } = window.jspdf;
           let pdf = new jsPDF({ orientation, unit: "mm", format: pageSize });
           let marginPx = margin === "none" ? 0 : (margin === "small" ? 10 : 24);
+          let quality = parseFloat(qualitySlider.value);
+
           for (let i = 0; i < images.length; i++) {
             if (i > 0 && document.getElementById('mergeAll').checked) pdf.addPage();
             let imgData = await fileToDataUrl(images[i].file);
@@ -517,12 +534,18 @@
             let img = new Image();
             img.src = imgData;
             await new Promise(res=>img.onload=res);
+
+            // Calculate scale factor to fit image within page boundaries with margins
             let scale = Math.min((pw - 2*marginPx) / img.width, (ph - 2*marginPx) / img.height);
             let iw = img.width * scale, ih = img.height * scale;
             let ix = (pw-iw)/2, iy = (ph-ih)/2;
-            pdf.addImage(img, 'PNG', ix, iy, iw, ih);
+
+            // Add image to PDF with specified quality (only affects JPGs, but good practice)
+            pdf.addImage(img, 'JPEG', ix, iy, iw, ih, null, null, quality);
+
             if (!document.getElementById('mergeAll').checked && i < images.length-1) pdf.save(images[i].name.replace(/\.[^/.]+$/, "")+'.pdf');
           }
+
           if (document.getElementById('mergeAll').checked) {
             let blob = pdf.output('blob');
             if (pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl);
@@ -538,6 +561,7 @@
             downloadBtn.click();
           }
         };
+
         function fileToDataUrl(file) {
           return new Promise((resolve, reject) => {
             const reader = new FileReader();
