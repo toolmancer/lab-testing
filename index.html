@@ -1,576 +1,341 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Image to PDF Converter | ToolMancer</title>
-  <link rel="stylesheet" href="../style.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.css"/>
-  <style>
-    /* Add specific styles here or update style.css for tool layouts */
-    .tool-page {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding-top: 2rem;
-      flex-grow: 1;
-      width: 100%;
-    }
-    .tool-page .tool-card {
-      max-width: 1050px;
-      padding: 2rem;
-      width: 100%;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
-      background: var(--card);
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-    }
-    .tool-header { text-align: center; margin-bottom: 1.5rem; }
-    .tool-header h1 { font-size: 2rem; color: var(--accent); font-weight: 700; }
-    .tool-header .tool-desc { font-size: 1rem; color: #475569; max-width: 650px; margin: 0 auto; line-height: 1.5; }
-    [data-theme="dark"] .tool-header .tool-desc { color: #94a3b8; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToolMancer – All-in-One Online Toolkit</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
 
-    /* --- PDF Layout Specifics --- */
-    .pdf-tool-flex {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2.2rem;
-      justify-content: center;
-      align-items: flex-start;
-      margin-top: 1rem;
-    }
-    .pdf-images, .pdf-options {
-      background: var(--bg);
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-    }
-    [data-theme="dark"] .pdf-images, [data-theme="dark"] .pdf-options { background: #2a374a; }
-
-    .pdf-images {
-      padding: 1rem;
-      min-width: 340px;
-      max-width: 420px;
-      flex: 2 1 380px;
-      position: relative;
-    }
-    .pdf-options {
-      padding: 1.4rem;
-      min-width: 220px;
-      max-width: 350px;
-      flex: 1 1 220px;
-      display: flex;
-      flex-direction: column;
-      gap: 1.2em;
-    }
-    /* --- Upload Drop Zone --- */
-    .upload-drop-zone {
-      border: 2px dashed var(--accent);
-      border-radius: 8px;
-      background: var(--card);
-      text-align: center;
-      transition: border-color 0.2s, background 0.2s;
-      padding: 1.5rem 1rem;
-      margin-bottom: 1rem;
-      cursor: pointer;
-      font-size: 1.05em;
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .upload-drop-zone:hover, .upload-drop-zone.active {
-      border-color: #1e40af;
-      background: #e0ebff;
-    }
-    [data-theme="dark"] .upload-drop-zone { background: #334155; }
-    [data-theme="dark"] .upload-drop-zone:hover, [data-theme="dark"] .upload-drop-zone.active { background: #475569; border-color: #60a5fa; }
-    .upload-drop-zone .add-icon { font-size: 2.5em; color: var(--accent); margin-bottom: 0.35em; pointer-events: none; }
-    .upload-drop-zone input[type="file"] { display: none; }
-    .upload-drop-zone .drop-hint { font-size:0.9em;color:#888;margin-top:0.5em;}
-    /* --- Image preview list --- */
-    .img-list { display: flex; flex-direction: column; align-items: stretch; gap: 1em; margin-top: 1em; }
-    .img-item {
-        display: flex;
-        align-items: center;
-        gap: 1em;
-        background: var(--card);
-        border-radius: 8px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-        border: 1px solid var(--border-color);
-        padding: 0.6em;
-        width: 100%;
-        position: relative;
-        cursor: move;
-    }
-    [data-theme="dark"] .img-item { background: #334155; }
-    .img-thumb { border-radius: 6px; width: 50px; height: 50px; object-fit: cover; border: 1px solid #e2e8f0; }
-    .img-filename { font-size: 0.9em; color: var(--text); flex-grow: 1; overflow-x: auto; white-space: nowrap; }
-    .img-remove-btn {
-        background: none;
-        color: #ef4444;
-        border: none;
-        font-size: 1.1em;
-        cursor: pointer;
-        transition: color 0.2s;
-    }
-    .img-remove-btn:hover { color: #c81e1e; }
-    .img-list.empty { color: #888; font-size: 1em; margin-top: 2em; text-align: center; }
-
-    /* --- PDF Options Panel Styles --- */
-    .pdf-opt-label { font-size: 0.95em; color: #475569; margin-bottom: 0.5em; font-weight: 500; }
-    [data-theme="dark"] .pdf-opt-label { color: #94a3b8; }
-    .pdf-opt-group { display: flex; gap: 0.5rem; }
-    .pdf-opt-btn, .pdf-main-btn {
-        padding: 0.7rem 1rem;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        border: 1px solid var(--border-color);
-        transition: all 0.2s ease;
-        background: var(--card);
-        color: var(--text);
-        flex: 1;
-    }
-    .pdf-opt-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
-    .pdf-main-btn { background: var(--accent); color: white; border: none; margin-top: 1rem; width: 100%; font-size: 1.1rem; }
-    .pdf-opt-dropdown { width: 100%; padding: 0.7rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card); color: var(--text); }
-    .pdf-checkbox { width: 18px; height: 18px; margin-right: 0.5rem; }
-
-    /* --- Results Section --- */
-    .result-box {
-        background: var(--card);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-top: 2rem;
-        text-align: center;
-    }
-
-    /* --- How To Section --- */
-    .how-to {
-      max-width: 800px;
-      margin-top: 2rem;
-      padding: 1.5rem;
-      background: var(--card);
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-    }
-    .how-to h3 { color: var(--text); margin-bottom: 1rem; }
-    .how-to ol { list-style-position: inside; padding-left: 0; }
-    .how-to li { margin-bottom: 0.5rem; color: #475569; }
-    [data-theme="dark"] .how-to li { color: #94a3b8; }
-
-    /* Mobile adjustments: Stack columns vertically for mobile devices */
-    @media (max-width: 900px) {
-      .pdf-tool-flex { flex-direction: column; gap: 1.2rem; align-items: stretch;}
-      .pdf-images, .pdf-options { max-width: 100%; min-width: unset; }
-      .pdf-tool-flex { padding: 0 1rem; } /* Add padding to flex container for better spacing on mobile */
-      .upload-drop-zone { min-height: 100px; }
-    }
-    @media (max-width: 600px) {
-      .pdf-images, .pdf-options { min-width: unset; }
-      .img-thumb { width: 38px; }
-      .img-filename { font-size: 0.9em; max-width: 150px;}
-    }
-  </style>
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
-  <header class="main-header">
-    <a href="../index.html" class="logo">ToolMancer</a>
-    <button class="hamburger-btn" id="hamburgerBtn">☰</button>
-    <nav class="main-nav">
-      <ul>
-        <li><a href="../index.html#category-image">Image Tools</a></li>
-        <li><a href="../index.html#category-text">Text Tools</a></li>
-        <li><a href="../blog.html">Blog</a></li>
-      </ul>
-      <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
-      <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
-      <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
-    </nav>
-  </header>
+    <header class="main-header">
+        <a href="index.html" class="logo">ToolMancer</a>
+        <!-- Hamburger button moved to the left side in HTML structure -->
+        <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="#category-image">Image Tools</a></li>
+                <li><a href="#category-text">Text Tools</a></li>
+                <li><a href="blog.html">Blog</a></li>
+            </ul>
+            <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
+            <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
+            <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
+        </nav>
+    </header>
 
-  <div class="mega-menu" id="allToolsMenu">
-    <div class="mega-menu-grid">
-      <div class="mega-menu-category">
-        <h3>Image Tools</h3>
-        <ul>
-            <li><a href="image-to-pdf.html"><span class="tool-icon">📄</span> Image to PDF</a></li>
-            <li><a href="image-compressor.html"><span class="tool-icon">🗜️</span> Image Compressor</a></li>
-            <li><a href="image-resizer.html"><span class="tool-icon">📏</span> Image Resizer</a></li>
-            <li><a href="convert-png-jpg.html"><span class="tool-icon">🖼️</span> PNG <> JPG</a></li>
-            <li><a href="steganography.html"><span class="tool-icon">🕵️</span> Steganography</a></li>
-        </ul>
-      </div>
-      <div class="mega-menu-category">
-          <h3>Text & Writing</h3>
-          <ul>
-              <li><a href="text-diff.html"><span class="tool-icon">🔍</span> Text Diff</a></li>
-              <li><a href="text-encryptor.html"><span class="tool-icon">🔐</span> Text Encryptor</a></li>
-              <li><a href="text-to-pdf.html"><span class="tool-icon">📄</span> Text to PDF</a></li>
-              <li><a href="word-counter.html"><span class="tool-icon">✏️</span> Word Counter</a></li>
-          </ul>
-      </div>
-      <div class="mega-menu-category">
-          <h3>Converters</h3>
-          <ul>
-              <li><a href="unit-converter.html"><span class="tool-icon">⚖️</span> Unit Converter</a></li>
-              <li><a href="document-scanner.html"><span class="tool-icon">📑</span> Document Scanner</a></li>
-          </ul>
-      </div>
-      <div class="mega-menu-category">
-          <h3>Encoder/Decoder</h3>
-          <ul>
-              <li><a href="url-encoder.html"><span class="tool-icon">🔗</span> URL Encoder</a></li>
-              <li><a href="hash-generator.html"><span class="tool-icon">🛡️</span> Hash Generator</a></li>
-              <li><a href="password-generator.html"><span class="tool-icon">🔑</span> Password Generator</a></li>
-              <li><a href="qr-generator.html"><span class="tool-icon">📱</span> QR Generator</a></li>
-          </ul>
-      </div>
-      <div class="mega-menu-category">
-          <h3>AI Tools</h3>
-          <ul>
-              <li><a href="image-to-prompt.html"><span class="tool-icon">🤖</span> Image to Prompt</a></li>
-              <li><a href="json-formatter.html"><span class="tool-icon">🧩</span> JSON Formatter</a></li>
-          </ul>
-      </div>
-    </div>
-  </div>
-
-  <main class="content tool-page">
-    <section class="tool-card">
-      <header class="tool-header">
-        <h1>🖼️ Image to PDF Converter</h1>
-        <div class="tool-desc">Convert multiple images (JPG, PNG, etc.) into a single PDF — privacy-friendly, works in your browser. Drag, reorder, and customize PDF output!</div>
-      </header>
-      <div class="pdf-tool-flex">
-        <!-- Image area -->
-        <div class="pdf-images" id="pdfImages">
-          <div class="upload-drop-zone" id="dropZone">
-            <span class="add-icon">+</span>
-            <span style="font-weight:500;">Add images or drag & drop</span>
-            <input type="file" id="imgInput" accept="image/*" multiple>
-            <div class="drop-hint">Supported: JPG, PNG, WebP...</div>
-          </div>
-          <div class="img-list" id="imgList"></div>
-          <div id="noImgMsg" class="img-list empty">No images selected</div>
+    <div class="mega-menu" id="allToolsMenu">
+        <!-- Add a close button for mobile sidebar (optional, but good practice for clarity) -->
+        <!-- <button class="close-menu-btn" id="closeMenuBtn">&times;</button> -->
+        <div class="mega-menu-grid">
+            <div class="mega-menu-category">
+                <h3>Image Tools</h3>
+                <ul>
+                    <li><a href="tools/image-to-pdf.html"><span class="tool-icon">📄</span> Image to PDF</a></li>
+                    <li><a href="tools/image-compressor.html"><span class="tool-icon">🗜️</span> Image Compressor</a></li>
+                    <li><a href="tools/image-resizer.html"><span class="tool-icon">📏</span> Image Resizer</a></li>
+                    <li><a href="tools/convert-png-jpg.html"><span class="tool-icon">🖼️</span> PNG <> JPG</a></li>
+                    <li><a href="tools/steganography.html"><span class="tool-icon">🕵️</span> Steganography</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Text & Writing</h3>
+                <ul>
+                    <li><a href="tools/text-diff.html"><span class="tool-icon">🔍</span> Text Diff</a></li>
+                    <li><a href="tools/text-encryptor.html"><span class="tool-icon">🔐</span> Text Encryptor</a></li>
+                    <li><a href="tools/text-to-pdf.html"><span class="tool-icon">📄</span> Text to PDF</a></li>
+                    <li><a href="tools/word-counter.html"><span class="tool-icon">✏️</span> Word Counter</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Converters</h3>
+                <ul>
+                    <li><a href="tools/unit-converter.html"><span class="tool-icon">⚖️</span> Unit Converter</a></li>
+                    <li><a href="tools/document-scanner.html"><span class="tool-icon">📑</span> Document Scanner</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Encoder/Decoder</h3>
+                <ul>
+                    <li><a href="tools/url-encoder.html"><span class="tool-icon">🔗</span> URL Encoder</a></li>
+                    <li><a href="tools/hash-generator.html"><span class="tool-icon">🛡️</span> Hash Generator</a></li>
+                    <li><a href="tools/password-generator.html"><span class="tool-icon">🔑</span> Password Generator</a></li>
+                    <li><a href="tools/qr-generator.html"><span class="tool-icon">📱</span> QR Generator</a></li>
+                </ul>
+            </div>
+             <div class="mega-menu-category">
+                <h3>AI Tools</h3>
+                <ul>
+                    <li><a href="tools/image-to-prompt.html"><span class="tool-icon">🤖</span> Image to Prompt</a></li>
+                    <li><a href="tools/json-formatter.html"><span class="tool-icon">🧩</span> JSON Formatter</a></li>
+                </ul>
+            </div>
         </div>
-        <!-- PDF options panel -->
-        <form class="pdf-options" id="pdfOptions" onsubmit="return false;">
-          <div>
-            <div class="pdf-opt-label">Page orientation</div>
-            <div class="pdf-opt-group">
-              <button type="button" class="pdf-opt-btn active" data-orient="portrait" id="orientPortrait">Portrait</button>
-              <button type="button" class="pdf-opt-btn" data-orient="landscape" id="orientLandscape">Landscape</button>
+    </div>
+
+    <main>
+        <section class="home-hero">
+            <h1>Every tool you need, right in your browser</h1>
+            <p class="subtitle">A powerful collection of online tools for developers and everyday tasks.</p>
+            <div class="quick-search-bar">
+                <input type="text" id="heroSearchInput" placeholder="Search for a tool..." autocomplete="off">
             </div>
-          </div>
-          <div>
-            <div class="pdf-opt-label">Page size</div>
-            <select class="pdf-opt-dropdown" id="pageSize">
-              <option value="a4">A4 (297x210 mm)</option>
-              <option value="letter">Letter (279x216 mm)</option>
-              <option value="legal">Legal (356x216 mm)</option>
-            </select>
-          </div>
-          <div>
-            <div class="pdf-opt-label">Margin</div>
-            <div class="pdf-opt-group">
-              <button type="button" class="pdf-opt-btn active" data-margin="none" id="marginNone">No margin</button>
-              <button type="button" class="pdf-opt-btn" data-margin="small" id="marginSmall">Small</button>
-              <button type="button" class="pdf-opt-btn" data-margin="big" id="marginBig">Big</button>
+        </section>
+
+        <section class="feature-highlights" id="featureHighlights">
+            <div class="highlight-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <span>Privacy First</span>
+                <p>No files uploaded. Everything runs in your browser.</p>
             </div>
-          </div>
-          <div>
-            <input type="checkbox" class="pdf-checkbox" id="mergeAll" checked/>
-            <label for="mergeAll" style="font-size:1.05em;">Merge all images in one PDF file</label>
-          </div>
-          <!-- New: Quality Option (as suggested for improvement) -->
-          <div>
-            <div class="pdf-opt-label">Image Quality</div>
-            <input type="range" id="qualitySlider" min="0.1" max="1.0" step="0.1" value="0.9">
-            <span id="qualityValue" style="font-size: 0.9em;">90%</span>
-          </div>
+            <div class="highlight-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                <span>100% Free</span>
+                <p>Full access to all tools without any hidden fees.</p>
+            </div>
+            <div class="highlight-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <span>Secure & Fast</span>
+                <p>Fast processing on your device without server communication.</p>
+            </div>
+        </section>
 
-          <button class="pdf-main-btn" id="convertBtn" disabled>
-            Convert to PDF <span style="font-size:1.2em;">➔</span>
-          </button>
-        </form>
-      </div>
-      <section class="result-box" id="resultBox" style="display:none; text-align: center; margin-top: 2rem;">
-        <h3>Result:</h3>
-        <a id="downloadBtn" class="btn" download="output.pdf">⬇️ Download PDF</a>
-        <button id="openBtn" class="btn">🔗 Open in New Tab</button>
-        <button id="copyLinkBtn" class="btn">📋 Copy Link</button>
-      </section>
-    </section>
-    <section class="how-to">
-      <h3>How to Use</h3>
-      <ol>
-        <li>Click anywhere in the box or drag & drop images.</li>
-        <li>Reorder if needed, set options.</li>
-        <li>Click <b>Convert to PDF</b>.</li>
-        <li>Download or open your PDF.</li>
-      </ol>
-    </section>
-  </main>
+        <section class="popular-tools" id="popularTools">
+            <h2 class="section-title">Popular Tools</h2>
+            <div class="tool-grid-home popular-grid">
+                <a href="tools/image-to-pdf.html" class="tool-card-home" data-category="image" data-keywords="image pdf jpg png convert">
+                    <div class="tool-header-home">
+                        <div class="tool-logo tool-logo-image"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg></div>
+                        <h2 class="tool-title">Image to PDF</h2>
+                    </div>
+                    <p class="tool-desc">Combine multiple images into a single PDF.</p>
+                </a>
+                <a href="tools/image-compressor.html" class="tool-card-home" data-category="image" data-keywords="image compress reduce size quality">
+                    <div class="tool-header-home">
+                        <div class="tool-logo tool-logo-image"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m14-7-5 5-5-5m5 5V3"></path></svg></div>
+                        <h2 class="tool-title">Image Compressor</h2>
+                    </div>
+                    <p class="tool-desc">Reduce image file size without losing quality.</p>
+                </a>
+                <a href="tools/password-generator.html" class="tool-card-home" data-category="encode" data-keywords="password generator strong random secure">
+                    <div class="tool-header-home">
+                        <div class="tool-logo tool-logo-encode"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg></div>
+                        <h2 class="tool-title">Password Generator</h2>
+                    </div>
+                    <p class="tool-desc">Create strong, random passwords.</p>
+                </a>
+                <a href="tools/text-diff.html" class="tool-card-home" data-category="text" data-keywords="text diff compare difference checker">
+                    <div class="tool-header-home">
+                        <div class="tool-logo tool-logo-text"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg></div>
+                        <h2 class="tool-title">Text Diff Checker</h2>
+                    </div>
+                    <p class="tool-desc">Visually compare two texts to see the differences.</p>
+                </a>
+            </div>
+        </section>
 
-  <!-- PWA Install Button -->
-  <div class="pwa-install-container">
-    <button class="btn" id="installButton" style="display:none;">Install App</button>
-  </div>
+        <h2 class="section-title" id="allToolsTitle">All Tools by Category</h2>
+        <div class="filter-tabs" id="filterTabs">
+            <button class="tab-btn active" data-filter="all">All</button>
+            <button class="tab-btn" data-filter="image">Image</button>
+            <button class="tab-btn" data-filter="text">Text</button>
+            <button class="tab-btn" data-filter="convert">Converters</button>
+            <button class="tab-btn" data-filter="encode">Encoders</button>
+            <button class="tab-btn" data-filter="ai">AI</button>
+        </div>
 
-  <footer class="main-footer">
-    <ul class="footer-links">
-        <li><a href="../about.html">About Us</a></li>
-        <li><a href="../contact.html">Contact</a></li>
-        <li><a href="../blog.html">Blog</a></li>
-        <li><a href="../privacy.html">Privacy Policy</a></li>
-        <li><a href="../disclaimer.html">Disclaimer</a></li>
-    </ul>
-    <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
-  </footer>
+        <div class="tool-grid-home" id="toolGrid">
+            <a href="tools/image-to-pdf.html" class="tool-card-home" data-category="image" data-keywords="image pdf jpg png convert"><div class="tool-header-home"><div class="tool-logo tool-logo-image"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg></div><h2 class="tool-title">Image to PDF</h2></div><p class="tool-desc">Combine multiple images into a single PDF.</p></a>
+            <a href="tools/image-compressor.html" class="tool-card-home" data-category="image" data-keywords="image compress reduce size quality"><div class="tool-header-home"><div class="tool-logo tool-logo-image"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m14-7-5 5-5-5m5 5V3"></path></svg></div><h2 class="tool-title">Image Compressor</h2></div><p class="tool-desc">Reduce image file size without losing quality.</p></a>
+            <a href="tools/image-resizer.html" class="tool-card-home" data-category="image" data-keywords="image resize scale dimensions"><div class="tool-header-home"><div class="tool-logo tool-logo-image"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg></div><h2 class="tool-title">Image Resizer</h2></div><p class="tool-desc">Easily resize your images to specific dimensions.</p></a>
+            <a href="tools/convert-png-jpg.html" class="tool-card-home" data-category="image" data-keywords="png jpg convert image format"><div class="tool-header-home"><div class="tool-logo tool-logo-image"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="8 21 3 21 3 16"></polyline><line x1="15" y1="15" x2="3" y2="20"></line></svg></div><h2 class="tool-title">PNG <> JPG</h2></div><p class="tool-desc">Convert PNG images to JPG and vice versa.</p></a>
+            <a href="tools/steganography.html" class="tool-card-home" data-category="image" data-keywords="steganography hide text image secret"><div class="tool-header-home"><div class="tool-logo tool-logo-image"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div><h2 class="tool-title">Steganography</h2></div><p class="tool-desc">Hide secret text inside images or extract it.</p></a>
+            <a href="tools/text-diff.html" class="tool-card-home" data-category="text" data-keywords="text diff compare difference checker"><div class="tool-header-home"><div class="tool-logo tool-logo-text"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg></div><h2 class="tool-title">Text Diff Checker</h2></div><p class="tool-desc">Visually compare two texts to see the differences.</p></a>
+            <a href="tools/word-counter.html" class="tool-card-home" data-category="text" data-keywords="word character count sentences paragraphs"><div class="tool-header-home"><div class="tool-logo tool-logo-text"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg></div><h2 class="tool-title">Word Counter</h2></div><p class="tool-desc">Count words, characters, sentences, and paragraphs.</p></a>
+            <a href="tools/text-encryptor.html" class="tool-card-home" data-category="text" data-keywords="text encrypt decrypt password aes secure"><div class="tool-header-home"><div class="tool-logo tool-logo-text"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div><h2 class="tool-title">Text Encryptor</h2></div><p class="tool-desc">Encrypt or decrypt text with a password.</p></a>
+            <a href="tools/text-to-pdf.html" class="tool-card-home" data-category="text" data-keywords="text pdf document convert"><div class="tool-header-home"><div class="tool-logo tool-logo-text"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg></div><h2 class="tool-title">Text to PDF</h2></div><p class="tool-desc">Turn plain text into a styled PDF document.</p></a>             <a href="tools/unit-converter.html" class="tool-card-home" data-category="convert" data-keywords="unit converter length weight area"><div class="tool-header-home"><div class="tool-logo tool-logo-convert"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.49 19l-5.73-5.73a1 1 0 0 0-1.42 0l-5.73 5.73a1 1 0 0 0 0 1.42l5.73 5.73a1 1 0 0 0 1.42 0l5.73-5.73a1 1 0 0 0 0-1.42zM3.51 5l5.73 5.73a1 1 0 0 0 1.42 0l5.73-5.73a1 1 0 0 0 0-1.42L10.66.29a1 1 0 0 0-1.42 0L3.51 3.58a1 1 0 0 0 0 1.42z"></path></svg></div><h2 class="tool-title">Unit Converter</h2></div><p class="tool-desc">Convert between various units with live results.</p></a>
+            <a href="tools/document-scanner.html" class="tool-card-home" data-category="convert" data-keywords="document scanner camera crop enhance"><div class="tool-header-home"><div class="tool-logo tool-logo-convert"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="3"></circle></svg></div><h2 class="tool-title">Document Scanner</h2></div><p class="tool-desc">Scan documents with your camera or images.</p></a>
+            <a href="tools/url-encoder.html" class="tool-card-home" data-category="encode" data-keywords="url encode decode query string"><div class="tool-header-home"><div class="tool-logo tool-logo-encode"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg></div><h2 class="tool-title">URL Encoder</h2></div><p class="tool-desc">Encode or decode URLs and query strings.</p></a>
+            <a href="tools/hash-generator.html" class="tool-card-home" data-category="encode" data-keywords="hash generator md5 sha256 secure"><div class="tool-header-home"><div class="tool-logo tool-logo-encode"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div><h2 class="tool-title">Hash Generator</h2></div><p class="tool-desc">Generate secure hashes (MD5, SHA-256).</p></a>
+            <a href="tools/password-generator.html" class="tool-card-home" data-category="encode" data-keywords="password generator strong random secure"><div class="tool-header-home"><div class="tool-logo tool-logo-encode"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg></div><h2 class="tool-title">Password Generator</h2></div><p class="tool-desc">Create strong, random passwords.</p></a>
+            <a href="tools/qr-generator.html" class="tool-card-home" data-category="encode" data-keywords="qr code generator link url text"><div class="tool-header-home"><div class="tool-logo tool-logo-encode"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg></div><h2 class="tool-title">QR Generator</h2></div><p class="tool-desc">Make QR codes for links, text, WiFi, and more.</p></a>
+            <a href="tools/image-to-prompt.html" class="tool-card-home" data-category="ai" data-keywords="ai image prompt generator"><div class="tool-header-home"><div class="tool-logo tool-logo-ai"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="3" y="15" width="7" height="5"></rect><rect x="14" y="11" width="7" height="9"></rect></svg></div><h2 class="tool-title">Image to Prompt</h2></div><p class="tool-desc">AI describes any image and generates a prompt.</p></a>
+            <a href="tools/json-formatter.html" class="tool-card-home" data-category="ai" data-keywords="json formatter beautify validate"><div class="tool-header-home"><div class="tool-logo tool-logo-ai"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div><h2 class="tool-title">JSON Formatter</h2></div><p class="tool-desc">Beautify, validate, and inspect any JSON.</p></a>
+        </div>
+    </main>
 
-  <!-- Scripts -->
-  <script src="../theme.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- Navigation and Theme Toggle Logic ---
-        const allToolsBtn = document.getElementById('allToolsBtn');
-        const hamburgerBtn = document.getElementById('hamburgerBtn');
-        const allToolsMenu = document.getElementById('allToolsMenu');
-        const searchBtn = document.getElementById('searchBtn');
+    <!-- PWA Install Button -->
+    <div class="pwa-install-container">
+        <button class="btn" id="installButton" style="display:none;">Install App</button>
+    </div>
 
-        const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
-        allToolsBtn.addEventListener('click', toggleMenu);
-        hamburgerBtn.addEventListener('click', () => {
-            allToolsMenu.classList.toggle('show');
-            document.body.classList.toggle('menu-open');
-        });
-        document.addEventListener('click', (event) => {
-            if (window.innerWidth > 900) {
-                if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
-                    allToolsMenu.classList.remove('show'); allToolsBtn.classList.remove('open');
+    <footer class="main-footer">
+        <ul class="footer-links">
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="disclaimer.html">Disclaimer</a></li>
+        </ul>
+        <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
+    </footer>
+
+    <!-- PWA Service Worker Registration Script -->
+    <script src="theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const allToolsBtn = document.getElementById('allToolsBtn');
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const allToolsMenu = document.getElementById('allToolsMenu');
+            const searchBtn = document.getElementById('searchBtn');
+            const heroSearchInput = document.getElementById('heroSearchInput');
+            const allToolCards = Array.from(document.querySelectorAll('.tool-card-home'));
+            const tabButtons = document.querySelectorAll('.tab-btn');
+
+            // --- Elements to manage during search ---
+            const featureHighlights = document.getElementById('featureHighlights');
+            const popularTools = document.getElementById('popularTools');
+            const allToolsTitle = document.getElementById('allToolsTitle');
+            const filterTabs = document.getElementById('filterTabs');
+            const toolGrid = document.getElementById('toolGrid');
+
+            // --- PWA Install Logic ---
+            let deferredPrompt;
+            const installButton = document.getElementById('installButton');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installButton.style.display = 'block';
+            });
+
+            installButton.addEventListener('click', () => {
+                installButton.style.display = 'none';
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the PWA installation prompt');
+                        } else {
+                            console.log('User dismissed the PWA installation prompt');
+                        }
+                        deferredPrompt = null;
+                    });
                 }
-            } else {
-                if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
-                    allToolsMenu.classList.remove('show');
-                    document.body.classList.remove('menu-open');
-                }
-            }
-        });
+            });
 
-        // --- PWA Install Logic ---
-        let deferredPrompt;
-        const installButton = document.getElementById('installButton');
+            window.addEventListener('appinstalled', () => {
+                installButton.style.display = 'none';
+            });
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installButton.style.display = 'block';
-        });
-
-        installButton.addEventListener('click', () => {
-            installButton.style.display = 'none';
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the PWA installation prompt');
-                    } else {
-                        console.log('User dismissed the PWA installation prompt');
-                    }
-                    deferredPrompt = null;
+            // --- Service Worker Registration ---
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/service-worker.js')
+                        .then(registration => {
+                            console.log('Service Worker registered successfully:', registration);
+                        })
+                        .catch(error => {
+                            console.log('Service Worker registration failed:', error);
+                        });
                 });
             }
-        });
 
-        window.addEventListener('appinstalled', () => {
-            installButton.style.display = 'none';
-        });
+            // --- Mega Menu Logic ---
+            // Desktop logic (open/close mega menu)
+            allToolsBtn.addEventListener('click', (event) => {
+                if (window.innerWidth > 900) { // Check screen width
+                    event.stopPropagation();
+                    allToolsMenu.classList.toggle('show');
+                    allToolsBtn.classList.toggle('open');
+                }
+            });
 
-        // --- Tool Specific Logic ---
-        const dropZone = document.getElementById('dropZone');
-        const imgInput = document.getElementById('imgInput');
-        const imgList = document.getElementById('imgList');
-        const noImgMsg = document.getElementById('noImgMsg');
-        const convertBtn = document.getElementById('convertBtn');
-        const resultBox = document.getElementById('resultBox');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const openBtn = document.getElementById('openBtn');
-        const copyLinkBtn = document.getElementById('copyLinkBtn');
-        const qualitySlider = document.getElementById('qualitySlider');
-        const qualityValue = document.getElementById('qualityValue');
+            // Mobile logic (open/close hamburger menu / mega menu)
+            hamburgerBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                allToolsMenu.classList.toggle('show');
+                document.body.classList.toggle('menu-open'); // To prevent main body scrolling
+            });
 
-        let pdfBlobUrl = '';
-        let images = [];
+            // Close menu when clicking outside
+            document.addEventListener('click', (event) => {
+                // Check if we are on desktop
+                if (window.innerWidth > 900) {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
+                        allToolsMenu.classList.remove('show');
+                        allToolsBtn.classList.remove('open');
+                    }
+                } else { // Mobile logic
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
+                        allToolsMenu.classList.remove('show');
+                        document.body.classList.remove('menu-open');
+                    }
+                }
+            });
 
-        // Full box click
-        dropZone.addEventListener('click', (e) => {
-          if (e.target === imgInput) return;
-          imgInput.click();
-        });
-        // Drag & drop
-        dropZone.addEventListener('dragover', e => {
-          e.preventDefault();
-          dropZone.classList.add('active');
-        });
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
-        dropZone.addEventListener('drop', e => {
-          e.preventDefault();
-          dropZone.classList.remove('active');
-          handleFiles(e.dataTransfer.files);
-        });
-        imgInput.addEventListener('change', e => handleFiles(e.target.files));
+            // --- Search Logic (In-place) ---
+            searchBtn.addEventListener('click', () => { heroSearchInput.focus(); });
 
-        function handleFiles(files) {
-          let filesArr = Array.from(files);
-          filesArr.forEach(f => {
-            if (f.type.startsWith("image/")) images.push({file: f, name: f.name, url: URL.createObjectURL(f)});
-          });
-          renderImages();
-        }
+            heroSearchInput.addEventListener('input', () => {
+                const query = heroSearchInput.value.toLowerCase().trim();
+                performInPlaceSearch(query);
+            });
 
-        function renderImages() {
-          imgList.innerHTML = '';
-          if (!images.length) {
-            noImgMsg.style.display = '';
-            convertBtn.disabled = true;
-            return;
-          }
-          noImgMsg.style.display = 'none';
-          images.forEach((img, i) => {
-            let div = document.createElement('div');
-            div.className = 'img-item';
-            div.setAttribute('data-index', i);
-            let handle = document.createElement('span');
-            handle.className = 'img-handle';
-            handle.innerHTML = '☰';
-            let thumb = document.createElement('img');
-            thumb.className = 'img-thumb';
-            thumb.src = img.url;
-            thumb.title = img.name;
-            let fname = document.createElement('div');
-            fname.className = 'img-filename';
-            fname.textContent = img.name.length > 24 ? img.name.slice(0, 20)+'...' : img.name;
-            let removeBtn = document.createElement('button');
-            removeBtn.className = 'img-remove-btn';
-            removeBtn.textContent = '✕';
-            removeBtn.title = 'Remove';
-            removeBtn.onclick = () => {
-              URL.revokeObjectURL(img.url);
-              images.splice(i, 1);
-              renderImages();
-            };
-            div.appendChild(handle);
-            div.appendChild(thumb);
-            div.appendChild(fname);
-            div.appendChild(removeBtn);
-            imgList.appendChild(div);
-          });
-          convertBtn.disabled = false;
-          makeListSortable();
-        }
+            function performInPlaceSearch(query) {
+                const lowerCaseQuery = query.toLowerCase().trim();
 
-        function makeListSortable() {
-          Sortable.create(imgList, {
-            handle: '.img-handle',
-            animation: 170,
-            onEnd: function (evt) {
-              if (evt.oldIndex !== evt.newIndex) {
-                const moved = images.splice(evt.oldIndex, 1)[0];
-                images.splice(evt.newIndex, 0, moved);
-                renderImages();
-              }
+                if (lowerCaseQuery.length === 0) {
+                    featureHighlights.style.display = 'flex';
+                    popularTools.style.display = 'block';
+                    allToolsTitle.style.display = 'block';
+                    filterTabs.style.display = 'flex';
+                    updateToolVisibility();
+                    return;
+                }
+
+                featureHighlights.style.display = 'none';
+                popularTools.style.display = 'none';
+                allToolsTitle.style.display = 'none';
+                filterTabs.style.display = 'none';
+
+                let resultsFound = false;
+                allToolCards.forEach(card => {
+                    const keywords = card.dataset.keywords.toLowerCase();
+                    const title = card.querySelector('.tool-title').textContent.toLowerCase();
+                    if (keywords.includes(lowerCaseQuery) || title.includes(lowerCaseQuery)) {
+                        card.style.display = 'block';
+                        resultsFound = true;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
             }
-          });
-        }
 
-        // --- PDF Options ---
-        let orientation = "portrait";
-        let pageSize = "a4";
-        let margin = "none";
-        document.querySelectorAll(".pdf-opt-btn[data-orient]").forEach(btn => {
-          btn.onclick = function() {
-            document.querySelectorAll(".pdf-opt-btn[data-orient]").forEach(b=>b.classList.remove('active'));
-            this.classList.add('active');
-            orientation = this.dataset.orient;
-          }
+            // --- Filter Tabs Logic ---
+            function updateToolVisibility() {
+                const activeTab = document.querySelector('.tab-btn.active').dataset.filter;
+                allToolCards.forEach(card => {
+                    if (activeTab === 'all' || card.dataset.category === activeTab) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    updateToolVisibility();
+                });
+            });
+            updateToolVisibility(); // Initial call
         });
-        document.getElementById('pageSize').onchange = function() {
-          pageSize = this.value;
-        };
-        document.querySelectorAll(".pdf-opt-btn[data-margin]").forEach(btn => {
-          btn.onclick = function() {
-            document.querySelectorAll(".pdf-opt-btn[data-margin]").forEach(b=>b.classList.remove('active'));
-            this.classList.add('active');
-            margin = this.dataset.margin;
-          }
-        });
-
-        // Update quality value display
-        qualitySlider.addEventListener('input', () => {
-          qualityValue.textContent = Math.round(qualitySlider.value * 100) + '%';
-        });
-
-        // --- Convert to PDF ---
-        convertBtn.onclick = async function(e) {
-          e.preventDefault();
-          if (!images.length) return;
-          const { jsPDF } = window.jspdf;
-          let pdf = new jsPDF({ orientation, unit: "mm", format: pageSize });
-          let marginPx = margin === "none" ? 0 : (margin === "small" ? 10 : 24);
-          let quality = parseFloat(qualitySlider.value);
-
-          for (let i = 0; i < images.length; i++) {
-            if (i > 0 && document.getElementById('mergeAll').checked) pdf.addPage();
-            let imgData = await fileToDataUrl(images[i].file);
-            let [pw, ph] = [pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight()];
-            let img = new Image();
-            img.src = imgData;
-            await new Promise(res=>img.onload=res);
-
-            // Calculate scale factor to fit image within page boundaries with margins
-            let scale = Math.min((pw - 2*marginPx) / img.width, (ph - 2*marginPx) / img.height);
-            let iw = img.width * scale, ih = img.height * scale;
-            let ix = (pw-iw)/2, iy = (ph-ih)/2;
-
-            // Add image to PDF with specified quality (only affects JPGs, but good practice)
-            pdf.addImage(img, 'JPEG', ix, iy, iw, ih, null, null, quality);
-
-            if (!document.getElementById('mergeAll').checked && i < images.length-1) pdf.save(images[i].name.replace(/\.[^/.]+$/, "")+'.pdf');
-          }
-
-          if (document.getElementById('mergeAll').checked) {
-            let blob = pdf.output('blob');
-            if (pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl);
-            pdfBlobUrl = URL.createObjectURL(blob);
-            downloadBtn.href = pdfBlobUrl;
-            openBtn.onclick = () => window.open(pdfBlobUrl, '_blank');
-            copyLinkBtn.onclick = () => {
-              navigator.clipboard.writeText(pdfBlobUrl);
-              copyLinkBtn.textContent = "✅ Copied!";
-              setTimeout(()=>copyLinkBtn.textContent="📋 Copy Link", 1200);
-            };
-            resultBox.style.display = 'block';
-            downloadBtn.click();
-          }
-        };
-
-        function fileToDataUrl(file) {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = e => resolve(e.target.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
-        }
-    });
-  </script>
+    </script>
 </body>
 </html>
