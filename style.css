@@ -24,465 +24,189 @@ body {
   min-height: 100vh;
 }
 
+/* ==== Sidebar and Global Styles ==== */
 .sidebar {
-  width: 220px;
-  background: var(--card);
-  padding: 1.3rem 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border-right: 1px solid var(--border-color);
-  min-height: 100vh;
-  z-index: 1000;
-  transition: left 0.3s;
-  position: relative;
+  width: 220px; background: var(--card); padding: 1.3rem 1rem; display: flex;
+  flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border-color);
+  min-height: 100vh; z-index: 1000; transition: left 0.3s; position: relative;
 }
-.sidebar .logo {
-  font-size: 1.6rem;
-  font-weight: bold;
-  color: var(--accent);
-  margin-bottom: 2rem;
-  letter-spacing: 0.5px;
-}
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-.menu-btn {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  cursor: pointer;
-  color: var(--accent);
-}
-.sidebar nav ul {
-  list-style: none;
-  padding-left: 0;
-}
-.sidebar nav ul li a {
-  display: block;
-  padding: 0.6em 1em;
-  color: var(--text);
-  border-radius: 6px;
-  text-decoration: none;
-  font-size: 1.08em;
-  margin-bottom: 0.5em;
-  transition: background 0.14s, color 0.14s;
-  font-weight: 500;
-}
-.sidebar nav ul li a:hover, .sidebar nav ul li a.active {
-  background: var(--accent);
-  color: #fff;
-}
-.theme-btn {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  padding: 0.7em 1.2em;
-  font-size: 1.1em;
-  cursor: pointer;
-  margin-top: 2em;
-  transition: background 0.18s;
-}
-.theme-btn:hover { background: #0f172a; }
+.sidebar .logo { font-size: 1.6rem; font-weight: bold; color: var(--accent); margin-bottom: 2rem; letter-spacing: 0.5px; }
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.menu-btn { display: none; background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--accent); }
+.sidebar nav ul { list-style: none; padding-left: 0; }
+.sidebar nav ul li a { display: block; padding: 0.6em 1em; color: var(--text); border-radius: 6px; text-decoration: none; font-size: 1.08em; margin-bottom: 0.5em; transition: background 0.14s, color 0.14s; font-weight: 500; }
+.sidebar nav ul li a:hover, .sidebar nav ul li a.active { background: var(--accent); color: #fff; }
 
-/* Home Card & Tool Grid */
-.content.home {
-  flex: 1;
-  padding: 2.7rem 0;
-  min-height: 100vh;
-  background: var(--bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.home-card {
-  background: var(--card);
-  border-radius: 20px;
-  box-shadow: 0 8px 36px 0 #0001, 0 1.5px 6px #0001;
-  padding: 2.7rem 2.2rem;
-  margin-bottom: 2.5em;
-  width: 100%;
-  max-width: 900px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.home-card h1 {
-  font-size: 2.4rem;
-  font-weight: bold;
-  margin-bottom: 0.5em;
-}
-.home-card h1 span { color: var(--accent); }
-.home-card .subtitle {
-  font-size: 1.09rem;
-  color: #4e576b;
-  margin-bottom: 2.3em;
-}
-.tool-grid {
-  width: 100%;
-  display: grid;
-  gap: 1.2rem;
-  grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
-  margin-top: 0.2em;
-}
-
-.tool-group-title {
-  grid-column: 1 / -1;
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
-  font-size: 1.4rem;
-  color: var(--accent);
-  border-bottom: 2px solid var(--border-color);
-  padding-bottom: 0.4em;
-}
-.tool-group-title:first-child {
-  margin-top: 0;
-}
-
-.card {
-  background: var(--card);
-  padding: 1.2rem;
-  border-radius: 8px;
-  text-align: center;
-  text-decoration: none;
-  color: var(--text);
-  font-weight: 500;
-  font-size: 1.1rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-  transition: transform 0.17s, box-shadow 0.17s, background 0.17s;
-  border: 1.5px solid var(--border-color);
-}
-.card:hover {
-  transform: translateY(-3px) scale(1.04);
-  background: #f0f7ff;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.16);
-  color: var(--accent);
-  border-color: var(--accent);
-}
-
-.tool-logo svg {
-  width: 1em;
-  height: 1em;
-  stroke-width: 1.5;
-  color: var(--accent);
-}
-
-.tool-card-home:hover .tool-logo svg {
-  color: var(--accent);
-}
-
-
-/* Tool Page Card */
-.content.tool-page {
-  flex: 1;
-  padding: 2.5rem 0.5rem;
-  min-height: 100vh;
-  background: var(--bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.tool-card {
-  background: var(--card);
-  border-radius: 20px;
-  box-shadow: 0 8px 36px 0 #0001, 0 1.5px 6px #0001;
-  padding: 2.5rem 2rem;
-  margin-bottom: 2.1em;
-  width: 100%;
-  max-width: 700px;
-  margin-left: auto;
-  margin-right: auto;
-}
-.tool-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.3em;
-  margin-bottom: 1.1em;
-}
-.tool-header h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--accent);
-  letter-spacing: 0.2px;
-}
-.tool-header .tool-desc {
-  font-size: 1.08rem;
-  color: #4e576b;
-  margin-top: 0.3em;
-  flex: 1;
-}
-.tool-help {
-  background: var(--accent);
-  color: #fff;
-  border-radius: 50%;
-  padding: 0.2em 0.52em;
-  font-size: 1.15em;
-  font-weight: 700;
-  cursor: pointer;
-  margin-left: 0.5em;
-  box-shadow: 0 1.5px 4px #0002;
-}
-.breadcrumb {
-  font-size: 0.96em;
-  color: #888;
-  margin-bottom: 0.7em;
-  margin-top: 0.4em;
-}
-.breadcrumb a { color: var(--accent); text-decoration: none; }
-.breadcrumb a:hover { text-decoration: underline; }
-.back-home-btn {
-  display: inline-block;
-  background: var(--accent);
-  color: #fff;
-  border-radius: 6px;
-  padding: 0.5em 1.1em;
-  font-weight: 600;
-  text-decoration: none;
-  margin-bottom: 1em;
-  margin-left: 0.2em;
-  transition: background 0.16s;
-}
-.back-home-btn:hover { background: #1740a5; color: #fff; }
-@media (max-width:700px) {
-  .back-home-btn { margin-bottom: 0.7em; padding: 0.45em 0.8em; font-size: 1em;}
-}
-/* FAB floating home button */
-.fab-home {
-  display: none;
-  position: fixed;
-  bottom: 1.3em; right: 1.3em;
-  background: var(--accent);
-  color: #fff;
-  border-radius: 50%;
-  width: 50px; height: 50px;
-  box-shadow: 0 2px 8px #0003;
-  font-size: 1.7em;
-  align-items: center; justify-content: center;
-  z-index: 2000;
-  text-align: center;
-  line-height: 50px;
-  transition: background 0.15s;
-}
-@media (max-width:900px) {
-  .fab-home { display: flex; }
-}
-.fab-home:hover { background: #1740a5; }
-
-/* Actions, Inputs, Drag & Drop, Result Box */
-.actions {
-  display: flex;
-  gap: 1.2em;
-  margin-bottom: 2.1em;
-}
-.actions button {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.85em 1.8em;
-  font-size: 1.12em;
-  font-weight: 600;
-  cursor: pointer;
+/* ==== General Content & Button Styles ==== */
+.btn {
+  background: var(--accent); color: #fff; border: none; border-radius: 8px;
+  padding: 0.7em 1.5em; font-size: 1em; font-weight: 600; cursor: pointer;
   transition: background 0.16s, box-shadow 0.16s, transform 0.16s;
-  box-shadow: 0 2px 8px #2563eb2b;
+  box-shadow: 0 2px 8px #2563eb2b; text-decoration: none; display: inline-block;
 }
-.actions button:hover:not([disabled]) {
+.btn:hover:not([disabled]) {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px #2563eb3a;
 }
+.btn[disabled] { opacity: 0.55; cursor: not-allowed; }
 
-.actions button[disabled] {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-.actions .loader {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid var(--accent);
-  border-radius: 50%;
-  width: 18px; height: 18px;
-  animation: spinner 0.7s linear infinite;
-  display: inline-block;
-  vertical-align: middle;
-}
-@keyframes spinner {to{transform: rotate(360deg);} }
-
-.input-group {
-  margin-bottom: 1.6em;
-}
-
-input, textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  margin-top: 8px;
-}
-
-input[type='text'], input[type='email'], input[type='number'], input[type='password'], textarea {
-  background-color: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--border-color);
+input, textarea, select {
+  width: 100%; padding: 10px; border-radius: 8px; margin-top: 8px;
+  background-color: var(--bg); color: var(--text); border: 1px solid var(--border-color);
   transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit; font-size: 1em;
 }
-
-input[type='text']:focus, input[type='email']:focus, input[type='number']:focus, input[type='password']:focus, textarea:focus {
-  outline: none;
-  border-color: var(--accent);
+input:focus, textarea:focus, select:focus {
+  outline: none; border-color: var(--accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
-.drop-group {
-  border: 2.5px dashed #b3c1e1;
-  border-radius: 12px;
-  background: #f4f7fd;
-  text-align: center;
-  transition: border-color 0.2s, background 0.2s;
-  padding: 2.2em 1em;
-  cursor: pointer;
-  position: relative;
-  outline: none;
-  font-size: 1.06em;
-  color: #234;
+pre {
+  margin-top: 12px; background: #f1f5f9; padding: 12px; border-radius: 8px;
+  white-space: pre-wrap; word-break: break-all; border: 1px solid var(--border-color);
 }
-.drop-group.dragover {
-  border-color: var(--accent);
-  background: #e0ebff;
-}
-.drop-group label {
-  font-size: 1.18em;
-  font-weight: 500;
-  color: #555;
-  cursor: pointer;
-  display: block;
-  margin-bottom: 0.2em;
-}
-.drop-hint {
-  font-size: 0.95em;
-  color: #7b7d81;
-}
-.thumb {
-  width: 70px; height: 70px;
-  object-fit: cover;
-  margin: 0.35em;
-  border-radius: 10px;
-  border: 1.5px solid var(--border-color);
-  box-shadow: 0 1px 3px #0001;
-  vertical-align: middle;
-}
+[data-theme="dark"] pre { background-color: #2a3a55; }
 
-.result-box {
-  background: #f7fafc;
-  border: 1.5px solid #dbeafe;
-  border-radius: 13px;
-  margin-bottom: 2.1em;
-  padding: 1.2em 1.1em;
+/* ==== Tool Page Layout ==== */
+.content.tool-page {
+  flex: 1; padding: 2rem; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
 }
-.result-box .btn {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.5em 1.3em;
-  margin-right: 0.6em;
-  cursor: pointer;
-  font-size: 1.05em;
-  font-weight: 600;
-  transition: background 0.18s;
-  box-shadow: 0 2px 7px #2563eb1a;
+.breadcrumb {
+  font-size: 0.96em; color: #888; width: 100%; max-width: 800px;
 }
-.result-box .btn:hover {
-  background: #1346b3;
-  color: #fff;
-}
+.breadcrumb a { color: var(--accent); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
 
-.how-to, .use-case {
-  background: #f1f5f9;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  padding: 1.1em 1.1em;
-  margin-bottom: 1.6em;
-  width: 100%;
-  max-width: 660px;
-  box-shadow: 0 1.5px 6px #0000;
+.tool-card {
+  background: var(--card); border-radius: 20px; box-shadow: 0 8px 36px #0001, 0 1.5px 6px #0001;
+  padding: 2.5rem 2rem; width: 100%; max-width: 800px;
+  display: flex; flex-direction: column; gap: 1.5em;
 }
-.how-to h3, .use-case h3 {
-  margin-bottom: 0.5em;
-  color: var(--accent);
+.tool-header {
+  text-align: center; margin-bottom: 0.5em;
 }
-.how-to ol, .use-case p {
-  margin-left: 1.2em;
-  margin-bottom: 0.6em;
-  font-size: 1.03em;
+.tool-header h1 {
+  font-size: 2.2rem; font-weight: 700; color: var(--accent); letter-spacing: 0.2px;
 }
+.tool-header .small {
+  font-size: 1.05rem; color: #64748b; margin-top: 0.5em;
+}
+.tool-controls { display: flex; gap: 1em; flex-wrap: wrap; align-items: center; }
+.tool-controls > .btn { flex-grow: 1; }
+
+.how-to {
+  background: var(--card); border: 1px solid var(--border-color); border-radius: 16px;
+  padding: 1.5em; width: 100%; max-width: 800px; box-shadow: 0 4px 24px #0001;
+}
+.how-to h3 { margin-bottom: 0.7em; color: var(--accent); font-size: 1.3rem; }
+.how-to ol { margin-left: 1.2em; padding-left: 0.5em; font-size: 1.03em; line-height: 1.6; }
+
+/* ==== Home Page Specifics ==== */
+.content.home { padding: 2.7rem 0.5rem; }
+.tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 2.1em; max-width: 1300px; margin: 2.1em auto 3em auto; }
+.tool-card-home { background: var(--card); border-radius: 16px; box-shadow: 0 4px 22px #0001; padding: 1.6em 1.4em; display: flex; flex-direction: column; gap: 1.1em; min-height: 184px; transition: box-shadow 0.15s, transform 0.13s; text-decoration: none; color: #183153; position: relative; border: 1.5px solid var(--border-color); }
+.tool-card-home:hover { box-shadow: 0 9px 36px #2563eb18; border-color: var(--accent); transform: translateY(-3px) scale(1.04); color: var(--accent); }
+.tool-logo { font-size: 2.3em; user-select: none; }
+.tool-title { font-size: 1.21em; font-weight: bold; color: var(--accent); }
+.tool-desc { font-size: 1.06em; color: #40506b; line-height: 1.43; }
+.tool-logo svg { width: 1em; height: 1em; stroke-width: 1.5; color: var(--accent); }
+.tool-group-title { grid-column: 1 / -1; margin-top: 1.5em; font-size: 1.4rem; color: var(--accent); border-bottom: 2px solid var(--border-color); padding-bottom: 0.4em; }
+.tool-group-title:first-child { margin-top: 0; }
+.sticky-bar { position: sticky; top: 0; z-index: 100; background: var(--bg); padding-top: 1.7em; margin-bottom: 2.4em; box-shadow: 0 2px 12px #0001; }
+.top-categories-bar { display: flex; align-items: center; gap: 0.4em; flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; padding-bottom: 0.5em; }
+.cat-tab { background: #fff; color: var(--accent); border: none; border-bottom: 3.5px solid transparent; border-radius: 10px 10px 0 0; padding: 0.7em 1.5em; font-size: 1em; font-weight: 600; cursor: pointer; margin-bottom: -3px; transition: all 0.18s; outline: none; }
+.cat-tab.active, .cat-tab:focus { background: #e9f2ff; color: #1740a5; border-bottom: 3.5px solid #2563eb; z-index: 2; }
+.cat-tab:hover:not(.active) { background: #f6faff; }
 
 /* ==== Responsive ==== */
 @media (max-width: 900px) {
-  .sidebar {
-    position: fixed;
-    left: -100vw;
-    top: 0;
-    width: 220px;
-    min-height: 100vh;
-    height: 100vh;
-    z-index: 1002;
-    transition: left 0.33s cubic-bezier(.4,2,.5,1);
-    box-shadow: 2px 0 16px #0002;
-    border-right: 1px solid var(--border-color);
-    background: var(--card);
-  }
-  .sidebar.show {
-    left: 0;
-  }
-  .menu-btn {
-    display: block;
-  }
-  .content,
-  .content.home {
-    margin-left: 0 !important;
-    padding: 1.1rem 0.2rem !important;
-  }
-  .home-card {
-    max-width: 99vw;
-    margin: 0.4em auto;
-    border-radius: 10px;
-    padding: 1rem 0.2rem;
-  }
-  .tool-grid {
-    grid-template-columns: 1fr !important;
-    gap: 0.7rem !important;
-  }
-  .tool-card {
-    max-width: 99vw;
-    border-radius: 10px;
-    padding: 1rem 0.2rem;
-  }
-  .how-to, .use-case {
-    max-width: 99vw;
-    border-radius: 8px;
-    padding: 0.7em 0.3em;
-  }
+  .sidebar { position: fixed; left: -100vw; top: 0; height: 100vh; z-index: 1002; box-shadow: 2px 0 16px #0002; }
+  .sidebar.show { left: 0; }
+  .menu-btn { display: block; }
+  .content, .content.home, .content.tool-page { padding: 1.1rem !important; }
 }
+```---
 
-/* Overlay for mobile sidebar */
-@media (max-width: 900px) {
-  .sidebar.show ~ .content:before,
-  .sidebar.show ~ main:before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 1001;
-    background: rgba(0,0,0,0.13);
-    pointer-events: auto;
-  }
-}
+### 2. सभी टूल पेजों के लिए अपडेटेड कोड
 
-@media (max-width: 600px) {
-  .sidebar { width: 85vw; }
-  .home-card, .tool-card { padding: 0.8rem 0.25rem; }
-  .card { padding: 0.8rem; }
-}
+अब, नीचे दिए गए हर फ़ाइल के कोड को अपनी संबंधित टूल फ़ाइल से बदल दें। सभी फ़ाइलें `tools/` फ़ोल्डर के अंदर होनी चाहिए।
+
+**`tools/image-to-pdf.html`**
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image to PDF Converter | ToolMancer</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <main class="content tool-page">
+    <nav class="breadcrumb"><a href="../index.html">Home</a> / Image to PDF</nav>
+
+    <section class="tool-card">
+      <div class="tool-header">
+        <h1>🖼️ Image to PDF Converter</h1>
+        <p class="small">Convert multiple images (JPG, PNG, etc.) into a single PDF file, right in your browser.</p>
+      </div>
+      <input id="files" type="file" accept="image/*" multiple>
+      <div id="thumbs" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"></div>
+      <div class="tool-controls">
+        <button class="btn" id="makePdf">Generate PDF</button>
+      </div>
+    </section>
+
+    <div class="how-to">
+      <h3>How to Use</h3>
+      <ol>
+        <li>Click the "Choose Files" button and select one or more images.</li>
+        <li>The selected images will appear as thumbnails.</li>
+        <li>Click the "Generate PDF" button to combine all images into a single PDF.</li>
+        <li>Your PDF will be automatically downloaded.</li>
+      </ol>
+    </div>
+  </main>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    // Note: This script is a simplified version of the document scanner for demonstration.
+    const image_files = [];
+    document.getElementById('files').addEventListener('change', (e)=>{
+      document.getElementById('thumbs').innerHTML = '';
+      image_files.length = 0;
+      for(const f of e.target.files){
+        const r = new FileReader();
+        r.onload = () => {
+          image_files.push(r.result);
+          const img = document.createElement('img');
+          img.src = r.result;
+          img.style.width = '120px';
+          img.style.borderRadius = '8px';
+          document.getElementById('thumbs').appendChild(img);
+        };
+        r.readAsDataURL(f);
+      }
+    });
+    document.getElementById('makePdf').addEventListener('click', async () => {
+      const { jsPDF } = window.jspdf;
+      if(image_files.length === 0){ alert('No images selected'); return; }
+      const pdf = new jsPDF({unit:'pt', format:'a4'});
+      for(let i = 0; i < image_files.length; i++){
+        const img = new Image();
+        img.src = image_files[i];
+        await new Promise(r => img.onload=r);
+        const pageW = pdf.internal.pageSize.getWidth(), pageH = pdf.internal.pageSize.getHeight();
+        const ratio = Math.min(pageW / img.width, pageH / img.height);
+        const w = img.width * ratio, h = img.height * ratio;
+        const x = (pageW - w) / 2, y = (pageH - h) / 2;
+        if(i > 0) pdf.addPage();
+        const type = image_files[i].includes('image/png') ? 'PNG' : 'JPEG';
+        pdf.addImage(image_files[i], type, x, y, w, h);
+      }
+      pdf.save('images.pdf');
+    });
+  </script>
+</body>
+</html>
