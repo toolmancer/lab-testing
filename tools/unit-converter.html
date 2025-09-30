@@ -1,1 +1,328 @@
-<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Unit Converter</title><link rel='stylesheet' href='../style.css'></head><body><main class='main'><div class='content container'><h2>Unit Converter</h2><p class='small'>Length and weight conversions (basic).</p><div>Value: <input id='val' type='number' style='width:120px'></div><div style='margin-top:8px'>From: <select id='from'><option value='m'>Meter</option><option value='km'>Kilometer</option><option value='cm'>Centimeter</option><option value='in'>Inch</option><option value='ft'>Foot</option></select> To: <select id='to'><option value='m'>Meter</option><option value='km'>Kilometer</option><option value='cm'>Centimeter</option><option value='in'>Inch</option><option value='ft'>Foot</option></select></div><div style='margin-top:10px'><button class='btn' id='go'>Convert</button></div><div id='out' style='margin-top:10px' class='small'></div></div></main><script>const conv={'m':1,'km':1000,'cm':0.01,'in':0.0254,'ft':0.3048};document.getElementById('go').addEventListener('click', ()=>{const v=parseFloat(document.getElementById('val').value)||0; const f=document.getElementById('from').value; const t=document.getElementById('to').value; const meters = v * conv[f]; const res = meters / conv[t]; document.getElementById('out').textContent = res + ' ' + t;});</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Converter | ToolMancer</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Tool-specific styles based on the common layout */
+        .tool-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 2rem;
+            flex-grow: 1;
+            width: 100%;
+        }
+        .tool-page .tool-card {
+            max-width: 700px;
+            padding: 2rem;
+            width: 100%;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .tool-header { text-align: center; margin-bottom: 1.5rem; }
+        .tool-header h1 { font-size: 2rem; color: var(--accent); font-weight: 700; }
+        .tool-header .tool-desc { font-size: 1rem; color: #475569; max-width: 650px; margin: 0 auto; line-height: 1.5; }
+        [data-theme="dark"] .tool-header .tool-desc { color: #94a3b8; }
+
+        /* --- Custom UI for Unit Converter --- */
+        .converter-layout { display: flex; flex-direction: column; gap: 1rem; }
+        .converter-layout select, .converter-layout input { padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); }
+        .converter-category { margin-bottom: 1rem; }
+
+        .converter-input-group { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1rem; }
+        .converter-input-field { display: flex; flex-direction: column; flex-grow: 1; }
+        .converter-input-field label { font-size: 0.9em; margin-bottom: 0.2rem; }
+        .converter-input-field input { font-size: 1.1em; }
+        .converter-input-field select { font-size: 1.1em; }
+
+        .result-output { margin-top: 1.5rem; font-size: 1.2em; font-weight: 600; color: var(--text); }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <a href="../index.html" class="logo">ToolMancer</a>
+        <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="../index.html#category-image">Image Tools</a></li>
+                <li><a href="../index.html#category-text">Text Tools</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+            </ul>
+            <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
+            <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
+            <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
+        </nav>
+    </header>
+
+    <div class="mega-menu" id="allToolsMenu">
+        <!-- Mega menu content (full menu) -->
+        <div class="mega-menu-grid">
+            <div class="mega-menu-category">
+                <h3>Image Tools</h3>
+                <ul>
+                    <li><a href="image-to-pdf.html"><span class="tool-icon">📄</span> Image to PDF</a></li>
+                    <li><a href="image-compressor.html"><span class="tool-icon">🗜️</span> Image Compressor</a></li>
+                    <li><a href="image-resizer.html"><span class="tool-icon">📏</span> Image Resizer</a></li>
+                    <li><a href="convert-png-jpg.html"><span class="tool-icon">🖼️</span> PNG <> JPG</a></li>
+                    <li><a href="steganography.html"><span class="tool-icon">🕵️</span> Steganography</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Text & Writing</h3>
+                <ul>
+                    <li><a href="text-diff.html"><span class="tool-icon">🔍</span> Text Diff</a></li>
+                    <li><a href="text-encryptor.html"><span class="tool-icon">🔐</span> Text Encryptor</a></li>
+                    <li><a href="text-to-pdf.html"><span class="tool-icon">📄</span> Text to PDF</a></li>
+                    <li><a href="word-counter.html"><span class="tool-icon">✏️</span> Word Counter</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Converters</h3>
+                <ul>
+                    <li><a href="unit-converter.html"><span class="tool-icon">⚖️</span> Unit Converter</a></li>
+                    <li><a href="document-scanner.html"><span class="tool-icon">📑</span> Document Scanner</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Encoder/Decoder</h3>
+                <ul>
+                    <li><a href="url-encoder.html"><span class="tool-icon">🔗</span> URL Encoder</a></li>
+                    <li><a href="hash-generator.html"><span class="tool-icon">🛡️</span> Hash Generator</a></li>
+                    <li><a href="password-generator.html"><span class="tool-icon">🔑</span> Password Generator</a></li>
+                    <li><a href="qr-generator.html"><span class="tool-icon">📱</span> QR Generator</a></li>
+                </ul>
+            </div>
+             <div class="mega-menu-category">
+                <h3>AI Tools</h3>
+                <ul>
+                    <li><a href="image-to-prompt.html"><span class="tool-icon">🤖</span> Image to Prompt</a></li>
+                    <li><a href="json-formatter.html"><span class="tool-icon">🧩</span> JSON Formatter</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <main class="content tool-page">
+        <section class="tool-card">
+            <header class="tool-header">
+                <h1>⚖️ Unit Converter</h1>
+                <p class="tool-desc">Convert between various units of measurement for length, weight, area, and more.</p>
+            </header>
+
+            <div class="converter-layout">
+                <div class="converter-category">
+                    <label for="categorySelect">Select Category:</label>
+                    <select id="categorySelect" class="tool-input">
+                        <option value="length">Length</option>
+                        <option value="weight">Weight</option>
+                        <option value="area">Area</option>
+                        <option value="time">Time</option>
+                    </select>
+                </div>
+                
+                <div class="converter-input-group">
+                    <div class="converter-input-field">
+                        <label for="fromInput">From:</label>
+                        <input type="number" id="fromInput" value="1" class="tool-input">
+                        <select id="fromUnit" class="tool-input"></select>
+                    </div>
+                    <div class="converter-input-field">
+                        <label for="toInput">To:</label>
+                        <input type="number" id="toInput" readonly class="tool-input">
+                        <select id="toUnit" class="tool-input"></select>
+                    </div>
+                </div>
+            </div>
+
+            <section class="how-to">
+                <h3>How to Use</h3>
+                <ol>
+                    <li>Select the unit category (e.g., Length, Weight).</li>
+                    <li>Enter the value you want to convert in the "From" input field.</li>
+                    <li>Choose the "From" and "To" units from the dropdown menus.</li>
+                    <li>The result will automatically appear in the "To" input field.</li>
+                </ol>
+            </section>
+        </section>
+    </main>
+
+    <!-- PWA Install Button -->
+    <div class="pwa-install-container">
+        <button class="btn" id="installButton" style="display:none;">Install App</button>
+    </div>
+
+    <footer class="main-footer">
+        <ul class="footer-links">
+            <li><a href="../about.html">About Us</a></li>
+            <li><a href="../contact.html">Contact</a></li>
+            <li><a href="../blog.html">Blog</a></li>
+            <li><a href="../privacy.html">Privacy Policy</a></li>
+            <li><a href="../disclaimer.html">Disclaimer</a></li>
+        </ul>
+        <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Navigation and Theme Toggle Logic ---
+            const allToolsBtn = document.getElementById('allToolsBtn');
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const allToolsMenu = document.getElementById('allToolsMenu');
+            const searchBtn = document.getElementById('searchBtn');
+
+            const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
+            allToolsBtn.addEventListener('click', toggleMenu);
+            hamburgerBtn.addEventListener('click', () => {
+                allToolsMenu.classList.toggle('show');
+                document.body.classList.toggle('menu-open');
+            });
+            document.addEventListener('click', (event) => {
+                if (window.innerWidth > 900) {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
+                        allToolsMenu.classList.remove('show'); allToolsBtn.classList.remove('open');
+                    }
+                } else {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
+                        allToolsMenu.classList.remove('show');
+                        document.body.classList.remove('menu-open');
+                    }
+                }
+            });
+
+            // --- PWA Install Logic ---
+            let deferredPrompt;
+            const installButton = document.getElementById('installButton');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installButton.style.display = 'block';
+            });
+
+            installButton.addEventListener('click', () => {
+                installButton.style.display = 'none';
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        console.log('User response to install prompt:', choiceResult.outcome);
+                        deferredPrompt = null;
+                    });
+                }
+            });
+
+            window.addEventListener('appinstalled', () => {
+                installButton.style.display = 'none';
+            });
+
+            // --- Unit Converter Tool Specific Logic ---
+            const categorySelect = document.getElementById('categorySelect');
+            const fromUnitSelect = document.getElementById('fromUnit');
+            const toUnitSelect = document.getElementById('toUnit');
+            const fromInput = document.getElementById('fromInput');
+            const toInput = document.getElementById('toInput');
+
+            // Conversion data for different categories
+            const unitData = {
+                length: {
+                    m: { label: 'Meter', conversionFactor: 1 },
+                    km: { label: 'Kilometer', conversionFactor: 1000 },
+                    cm: { label: 'Centimeter', conversionFactor: 0.01 },
+                    mm: { label: 'Millimeter', conversionFactor: 0.001 },
+                    in: { label: 'Inch', conversionFactor: 0.0254 },
+                    ft: { label: 'Foot', conversionFactor: 0.3048 },
+                    yd: { label: 'Yard', conversionFactor: 0.9144 },
+                    mi: { label: 'Mile', conversionFactor: 1609.34 }
+                },
+                weight: {
+                    g: { label: 'Gram', conversionFactor: 1 },
+                    kg: { label: 'Kilogram', conversionFactor: 1000 },
+                    mg: { label: 'Milligram', conversionFactor: 0.001 },
+                    lb: { label: 'Pound', conversionFactor: 453.592 },
+                    oz: { label: 'Ounce', conversionFactor: 28.3495 }
+                },
+                area: {
+                    sqm: { label: 'Square Meter', conversionFactor: 1 },
+                    sqkm: { label: 'Square Kilometer', conversionFactor: 1000000 },
+                    sqft: { label: 'Square Foot', conversionFactor: 0.092903 },
+                    sqin: { label: 'Square Inch', conversionFactor: 0.00064516 },
+                    ha: { label: 'Hectare', conversionFactor: 10000 }
+                },
+                time: {
+                    s: { label: 'Second', conversionFactor: 1 },
+                    min: { label: 'Minute', conversionFactor: 60 },
+                    hr: { label: 'Hour', conversionFactor: 3600 },
+                    day: { label: 'Day', conversionFactor: 86400 },
+                    week: { label: 'Week', conversionFactor: 604800 },
+                    month: { label: 'Month', conversionFactor: 2629746 }, // Average month length
+                    year: { label: 'Year', conversionFactor: 31556952 } // Average year length
+                }
+            };
+
+            // Function to populate dropdown menus based on selected category
+            function populateUnits(category) {
+                fromUnitSelect.innerHTML = '';
+                toUnitSelect.innerHTML = '';
+                const units = unitData[category];
+                for (const unitId in units) {
+                    const option = document.createElement('option');
+                    option.value = unitId;
+                    option.textContent = units[unitId].label;
+                    fromUnitSelect.appendChild(option);
+
+                    const option2 = document.createElement('option');
+                    option2.value = unitId;
+                    option2.textContent = units[unitId].label;
+                    toUnitSelect.appendChild(option2);
+                }
+                // Select different defaults for better user experience
+                if (category === 'length') {
+                    toUnitSelect.value = 'in';
+                } else if (category === 'weight') {
+                    toUnitSelect.value = 'lb';
+                }
+            }
+
+            // Function to perform unit conversion
+            function convertUnit() {
+                const inputValue = parseFloat(fromInput.value);
+                if (isNaN(inputValue)) {
+                    toInput.value = '';
+                    return;
+                }
+
+                const category = categorySelect.value;
+                const fromUnit = fromUnitSelect.value;
+                const toUnit = toUnitSelect.value;
+
+                const baseValue = inputValue * unitData[category][fromUnit].conversionFactor;
+                const convertedValue = baseValue / unitData[category][toUnit].conversionFactor;
+
+                toInput.value = convertedValue.toFixed(4); // Display result with 4 decimal places
+            }
+
+            // Event listeners for changes in input and selects
+            categorySelect.addEventListener('change', () => {
+                populateUnits(categorySelect.value);
+                convertUnit();
+            });
+            fromUnitSelect.addEventListener('change', convertUnit);
+            toUnitSelect.addEventListener('change', convertUnit);
+            fromInput.addEventListener('input', convertUnit);
+
+            // Initial setup on page load
+            populateUnits(categorySelect.value);
+            convertUnit();
+        });
+    </script>
+</body>
+</html>
