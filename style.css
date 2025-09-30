@@ -158,18 +158,18 @@ main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2r
 .hamburger-btn { display: none; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text); }
 
 @media (max-width: 900px) {
-  /* Hide desktop "All Tools" button on mobile */
+  /* Change 1: Hide desktop "All Tools" button on mobile */
   .all-tools-btn { display: none; }
 
-  /* Show Hamburger Menu on mobile */
+  /* Change 2: Show Hamburger Menu on mobile */
   .hamburger-btn { display: block; }
 
-  /* Mobile Mega Menu as Side Menu */
+  /* Change 3: Mobile Mega Menu as Side Menu */
   .mega-menu {
     position: fixed;
     top: 0;
     left: 0;
-    width: 300px;
+    width: 300px; /* Adjust width as needed */
     height: 100vh;
     padding: 2rem;
     transform: translateX(-100%);
@@ -177,22 +177,27 @@ main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2r
     visibility: hidden;
     transition: transform 0.3s ease-in-out, visibility 0s 0.3s;
     border-radius: 0;
-    overflow-y: auto;
+    overflow-y: auto; /* Enable scrolling for long content */
     box-shadow: 0 0 20px rgba(0,0,0,0.2);
   }
   .mega-menu.show { transform: translateX(0); visibility: visible; transition: transform 0.3s ease-in-out; }
   .mega-menu-grid { display: block; }
   .mega-menu-category { margin-bottom: 1rem; }
 
-  /* Horizontal scroll fix */
-  main { padding: 1rem; overflow-x: hidden; }
+  /* Other mobile-specific styles for main content */
+  /* Hide desktop navigation list on mobile */
+  .main-nav ul { display: none; }
+  .main-header { padding: 0 1rem; }
 
-  /* Mobile layout for tool grids (2 columns) */
-  .popular-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+  /* Change 4: Mobile layout for tool grids (2 columns) */
   .tool-grid-home { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+  .popular-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
 
-  /* Mobile layout for feature highlights */
+  /* Change 5: Mobile layout for feature highlights (single line) */
   .feature-highlights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1rem; margin-bottom: 2rem; }
   .highlight-item { max-width: unset; }
   .highlight-item p { display: none; }
+
+  /* Change 6: Horizontal scroll fix */
+  main { padding: 1rem; overflow-x: hidden; }
 }
