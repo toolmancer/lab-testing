@@ -50,7 +50,9 @@ body.search-open { overflow: hidden; }
 
 /* ==== Main Content & Homepage ==== */
 main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2rem; }
-.home-hero { text-align: center; padding: 1.5rem 1rem; }
+
+/* Change 1: Reduce space in Hero section for desktop */
+.home-hero { text-align: center; padding-top: 1rem; /* Reduced padding from 1.5rem */ padding-bottom: 1.5rem; }
 .home-hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.75rem; color: var(--text); }
 .home-hero .subtitle { font-size: 1.05rem; color: #475569; max-width: 650px; margin: 0 auto; }
 [data-theme="dark"] .home-hero .subtitle { color: #94a3b8; }
@@ -162,4 +164,10 @@ main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2r
   .hamburger-btn { display: block; }
   .main-header { padding: 0 1rem; }
   main { padding: 1.5rem; }
+  /* Change 2: Mobile layout for Popular Tools grid (two columns) */
+  .popular-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  /* Change 3: Mobile layout for feature highlights (single line) */
+  .feature-highlights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1rem; margin-bottom: 2rem; }
+  .highlight-item { max-width: unset; }
+  .highlight-item p { display: none; } /* Hide descriptions on mobile for compactness */
 }
