@@ -199,22 +199,33 @@
             // --- Mega Menu Logic ---
             // Desktop logic (open/close mega menu)
             allToolsBtn.addEventListener('click', (event) => {
-                event.stopPropagation();
-                allToolsMenu.classList.toggle('show');
-                allToolsBtn.classList.toggle('open');
+                if (window.innerWidth > 900) { // Check screen width
+                    event.stopPropagation();
+                    allToolsMenu.classList.toggle('show');
+                    allToolsBtn.classList.toggle('open');
+                }
             });
 
             // Mobile logic (open/close hamburger menu / mega menu)
             hamburgerBtn.addEventListener('click', (event) => {
                 event.stopPropagation();
                 allToolsMenu.classList.toggle('show');
+                document.body.classList.toggle('menu-open'); // To prevent main body scrolling
             });
 
             // Close menu when clicking outside (on desktop, to close mega menu)
             document.addEventListener('click', (event) => {
-                if (window.innerWidth > 900 && allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
-                    allToolsMenu.classList.remove('show');
-                    allToolsBtn.classList.remove('open');
+                if (window.innerWidth > 900) {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
+                        allToolsMenu.classList.remove('show');
+                        allToolsBtn.classList.remove('open');
+                    }
+                } else {
+                    // Mobile close logic
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
+                        allToolsMenu.classList.remove('show');
+                        document.body.classList.remove('menu-open');
+                    }
                 }
             });
 
