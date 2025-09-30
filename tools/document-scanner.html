@@ -1,1 +1,354 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Document Scanner</title><link rel="stylesheet" href="../style.css"></head><body><main class="main"><div class="content container"><h2>Document Scanner</h2><p class="small">Use camera or upload images. Capture pages and save as PDF.</p><input id="files" type="file" accept="image/*" multiple style="margin-top:8px"><br><video id="camera" autoplay playsinline style="display:none;margin-top:8px;width:100%;max-width:480px"></video><div style="margin-top:10px"><button class="btn" id="camBtn">Start Camera</button> <button class="btn" id="capBtn" style="display:none">Capture</button> <button class="btn" id="makePdf">Generate PDF</button></div><div id="thumbs" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"></div></div></main><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script>let stream; const video=document.getElementById('camera'); const caps=[]; document.getElementById('camBtn').addEventListener('click',async ()=>{ if(!stream){ try{ stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}); video.srcObject = stream; video.style.display='block'; document.getElementById('capBtn').style.display='inline-block'; document.getElementById('camBtn').textContent='Stop Camera'; }catch(e){ alert('Camera unavailable'); } } else { stream.getTracks().forEach(t=>t.stop()); stream=null; video.style.display='none'; document.getElementById('capBtn').style.display='none'; document.getElementById('camBtn').textContent='Start Camera'; } }); document.getElementById('capBtn').addEventListener('click', ()=>{ const c=document.createElement('canvas'); c.width=video.videoWidth; c.height=video.videoHeight; c.getContext('2d').drawImage(video,0,0); const d=c.toDataURL('image/png'); caps.push(d); const img=document.createElement('img'); img.src=d; img.style.width='120px'; document.getElementById('thumbs').appendChild(img); }); document.getElementById('files').addEventListener('change', (e)=>{ const files=e.target.files; for(const f of files){ const r=new FileReader(); r.onload=()=>{ caps.push(r.result); const img=document.createElement('img'); img.src=r.result; img.style.width='120px'; document.getElementById('thumbs').appendChild(img); }; r.readAsDataURL(f); } }); document.getElementById('makePdf').addEventListener('click', async ()=>{ const { jsPDF } = window.jspdf; if(caps.length===0){ alert('No pages captured'); return;} const pdf=new jsPDF({unit:'pt',format:'a4'}); for(let i=0;i<caps.length;i++){ const img=new Image(); img.src=caps[i]; await new Promise(r=>img.onload=r); const pageW=pdf.internal.pageSize.getWidth(), pageH=pdf.internal.pageSize.getHeight(); const ratio=Math.min(pageW/img.width, pageH/img.height); const w=img.width*ratio, h=img.height*ratio; const x=(pageW-w)/2, y=(pageH-h)/2; if(i>0) pdf.addPage(); const type = caps[i].indexOf('image/png')!==-1 ? 'PNG' : 'JPEG'; pdf.addImage(caps[i], type, x, y, w, h); } pdf.save('scanned.pdf'); });</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Scanner | ToolMancer</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Tool-specific styles based on the common layout */
+        .tool-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 2rem;
+            flex-grow: 1;
+            width: 100%;
+        }
+        .tool-page .tool-card {
+            max-width: 700px;
+            padding: 2rem;
+            width: 100%;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .tool-header { text-align: center; margin-bottom: 1.5rem; }
+        .tool-header h1 { font-size: 2rem; color: var(--accent); font-weight: 700; }
+        .tool-header .tool-desc { font-size: 1rem; color: #475569; max-width: 650px; margin: 0 auto; line-height: 1.5; }
+        [data-theme="dark"] .tool-header .tool-desc { color: #94a3b8; }
+
+        /* --- Custom UI for Scanner --- */
+        .scanner-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
+        .scanner-video-container { width: 100%; max-width: 600px; margin-top: 1rem; }
+        .scanner-video-container video { width: 100%; border-radius: 8px; border: 1px solid var(--border-color); }
+        .scanner-image-previews { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1rem; justify-content: center; }
+        .scanner-image-previews img { width: 100px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); }
+
+        /* --- Upload Drop Zone (reused from image-to-pdf) --- */
+        .upload-drop-zone {
+            border: 2px dashed var(--accent);
+            border-radius: 8px;
+            background: var(--bg);
+            text-align: center;
+            transition: border-color 0.2s, background 0.2s;
+            padding: 2rem 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            font-size: 1.05em;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .upload-drop-zone:hover, .upload-drop-zone.active {
+            border-color: #1e40af;
+            background: #e0ebff;
+        }
+        [data-theme="dark"] .upload-drop-zone { background: #334155; }
+        [data-theme="dark"] .upload-drop-zone:hover, [data-theme="dark"] .upload-drop-zone.active { background: #475569; border-color: #60a5fa; }
+        .upload-drop-zone .add-icon { font-size: 2.5em; color: var(--accent); margin-bottom: 0.35em; pointer-events: none; }
+        .upload-drop-zone input[type="file"] { display: none; }
+        .upload-drop-zone .drop-hint { font-size:0.9em;color:#888;margin-top:0.5em;}
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <a href="../index.html" class="logo">ToolMancer</a>
+        <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="../index.html#category-image">Image Tools</a></li>
+                <li><a href="../index.html#category-text">Text Tools</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+            </ul>
+            <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
+            <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
+            <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
+        </nav>
+    </header>
+
+    <div class="mega-menu" id="allToolsMenu">
+        <!-- Mega menu content (full menu) -->
+        <div class="mega-menu-grid">
+            <div class="mega-menu-category">
+                <h3>Image Tools</h3>
+                <ul>
+                    <li><a href="image-to-pdf.html"><span class="tool-icon">📄</span> Image to PDF</a></li>
+                    <li><a href="image-compressor.html"><span class="tool-icon">🗜️</span> Image Compressor</a></li>
+                    <li><a href="image-resizer.html"><span class="tool-icon">📏</span> Image Resizer</a></li>
+                    <li><a href="convert-png-jpg.html"><span class="tool-icon">🖼️</span> PNG <> JPG</a></li>
+                    <li><a href="steganography.html"><span class="tool-icon">🕵️</span> Steganography</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Text & Writing</h3>
+                <ul>
+                    <li><a href="text-diff.html"><span class="tool-icon">🔍</span> Text Diff</a></li>
+                    <li><a href="text-encryptor.html"><span class="tool-icon">🔐</span> Text Encryptor</a></li>
+                    <li><a href="text-to-pdf.html"><span class="tool-icon">📄</span> Text to PDF</a></li>
+                    <li><a href="word-counter.html"><span class="tool-icon">✏️</span> Word Counter</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Converters</h3>
+                <ul>
+                    <li><a href="unit-converter.html"><span class="tool-icon">⚖️</span> Unit Converter</a></li>
+                    <li><a href="document-scanner.html"><span class="tool-icon">📑</span> Document Scanner</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Encoder/Decoder</h3>
+                <ul>
+                    <li><a href="url-encoder.html"><span class="tool-icon">🔗</span> URL Encoder</a></li>
+                    <li><a href="hash-generator.html"><span class="tool-icon">🛡️</span> Hash Generator</a></li>
+                    <li><a href="password-generator.html"><span class="tool-icon">🔑</span> Password Generator</a></li>
+                    <li><a href="qr-generator.html"><span class="tool-icon">📱</span> QR Generator</a></li>
+                </ul>
+            </div>
+             <div class="mega-menu-category">
+                <h3>AI Tools</h3>
+                <ul>
+                    <li><a href="image-to-prompt.html"><span class="tool-icon">🤖</span> Image to Prompt</a></li>
+                    <li><a href="json-formatter.html"><span class="tool-icon">🧩</span> JSON Formatter</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <main class="content tool-page">
+        <section class="tool-card">
+            <header class="tool-header">
+                <h1>📑 Document Scanner</h1>
+                <p class="tool-desc">Use your camera or upload images to scan documents and save as PDF. Capture multiple pages and convert in one click.</p>
+            </header>
+
+            <!-- File Upload Area -->
+            <div class="upload-drop-zone" id="dropZone">
+                <span class="add-icon">+</span>
+                <span style="font-weight:500;">Add images or drag & drop</span>
+                <input type="file" id="files" accept="image/*" multiple>
+                <div class="drop-hint">Supported formats: JPG, PNG</div>
+            </div>
+
+            <!-- Camera Video Feed Area -->
+            <div class="scanner-video-container">
+                <video id="camera" autoplay playsinline style="display:none;"></video>
+            </div>
+
+            <!-- Controls -->
+            <div class="scanner-controls">
+                <button class="btn" id="camBtn">Start Camera</button>
+                <button class="btn" id="capBtn" style="display:none" disabled>Capture Page</button>
+                <button class="btn" id="makePdf" disabled>Generate PDF</button>
+            </div>
+
+            <!-- Image Previews -->
+            <div id="thumbs" class="scanner-image-previews"></div>
+
+        </section>
+
+        <section class="how-to">
+            <h3>How to Use</h3>
+            <ol>
+                <li>Click "Start Camera" to capture documents using your device's camera.</li>
+                <li>Alternatively, drag and drop existing document images onto the upload box.</li>
+                <li>For each page, click "Capture Page" or add an image file.</li>
+                <li>Click "Generate PDF" to create a single PDF containing all captured pages.</li>
+            </ol>
+        </section>
+    </main>
+
+    <!-- PWA Install Button -->
+    <div class="pwa-install-container">
+        <button class="btn" id="installButton" style="display:none;">Install App</button>
+    </div>
+
+    <footer class="main-footer">
+        <ul class="footer-links">
+            <li><a href="../about.html">About Us</a></li>
+            <li><a href="../contact.html">Contact</a></li>
+            <li><a href="../blog.html">Blog</a></li>
+            <li><a href="../privacy.html">Privacy Policy</a></li>
+            <li><a href="../disclaimer.html">Disclaimer</a></li>
+        </ul>
+        <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../theme.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Navigation and Theme Toggle Logic ---
+            const allToolsBtn = document.getElementById('allToolsBtn');
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const allToolsMenu = document.getElementById('allToolsMenu');
+            const searchBtn = document.getElementById('searchBtn');
+
+            const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
+            allToolsBtn.addEventListener('click', toggleMenu);
+            hamburgerBtn.addEventListener('click', () => {
+                allToolsMenu.classList.toggle('show');
+                document.body.classList.toggle('menu-open');
+            });
+            document.addEventListener('click', (event) => {
+                if (window.innerWidth > 900) {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
+                        allToolsMenu.classList.remove('show'); allToolsBtn.classList.remove('open');
+                    }
+                } else {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
+                        allToolsMenu.classList.remove('show');
+                        document.body.classList.remove('menu-open');
+                    }
+                }
+            });
+
+            // --- PWA Install Logic ---
+            let deferredPrompt;
+            const installButton = document.getElementById('installButton');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installButton.style.display = 'block';
+            });
+
+            installButton.addEventListener('click', () => {
+                installButton.style.display = 'none';
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        console.log('User response to install prompt:', choiceResult.outcome);
+                        deferredPrompt = null;
+                    });
+                }
+            });
+
+            window.addEventListener('appinstalled', () => {
+                installButton.style.display = 'none';
+            });
+
+            // --- Document Scanner Tool Specific Logic ---
+            let stream;
+            const video = document.getElementById('camera');
+            const camBtn = document.getElementById('camBtn');
+            const capBtn = document.getElementById('capBtn');
+            const makePdfBtn = document.getElementById('makePdf');
+            const thumbsContainer = document.getElementById('thumbs');
+            const fileInput = document.getElementById('files');
+            const dropZone = document.getElementById('dropZone');
+            const caps = [];
+
+            // Add drag and drop functionality
+            dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('active'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
+            dropZone.addEventListener('drop', e => {
+                e.preventDefault();
+                dropZone.classList.remove('active');
+                handleFiles(e.dataTransfer.files);
+            });
+            fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+            // Start/Stop Camera
+            camBtn.addEventListener('click', async () => {
+                if (!stream) {
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                        video.srcObject = stream;
+                        video.style.display = 'block';
+                        capBtn.style.display = 'inline-block';
+                        camBtn.textContent = 'Stop Camera';
+                        makePdfBtn.disabled = false; // Enable Generate PDF button when camera starts
+                    } catch (e) {
+                        alert('Camera unavailable or permission denied.');
+                        console.error('Camera error:', e);
+                    }
+                } else {
+                    stream.getTracks().forEach(t => t.stop());
+                    stream = null;
+                    video.style.display = 'none';
+                    capBtn.style.display = 'none';
+                    camBtn.textContent = 'Start Camera';
+                    if (caps.length === 0) { makePdfBtn.disabled = true; }
+                }
+            });
+
+            // Capture Frame from Camera
+            capBtn.addEventListener('click', () => {
+                const c = document.createElement('canvas');
+                c.width = video.videoWidth;
+                c.height = video.videoHeight;
+                c.getContext('2d').drawImage(video, 0, 0);
+                const dataUrl = c.toDataURL('image/png');
+                addCapturedImage(dataUrl);
+            });
+
+            // Handle file upload
+            function handleFiles(files) {
+                for (const file of files) {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = () => { addCapturedImage(reader.result); };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            }
+
+            // Add image preview and store for PDF creation
+            function addCapturedImage(dataUrl) {
+                caps.push(dataUrl);
+                const img = document.createElement('img');
+                img.src = dataUrl;
+                thumbsContainer.appendChild(img);
+                makePdfBtn.disabled = false;
+            }
+
+            // Create PDF from captured images
+            makePdfBtn.addEventListener('click', async () => {
+                const { jsPDF } = window.jspdf;
+                if (caps.length === 0) {
+                    alert('No pages captured. Please capture or upload images first.');
+                    return;
+                }
+
+                const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
+                for (let i = 0; i < caps.length; i++) {
+                    const img = new Image();
+                    img.src = caps[i];
+                    await new Promise(r => img.onload = r);
+
+                    const pageW = pdf.internal.pageSize.getWidth();
+                    const pageH = pdf.internal.pageSize.getHeight();
+                    const ratio = Math.min(pageW / img.width, pageH / img.height);
+                    const w = img.width * ratio;
+                    const h = img.height * ratio;
+                    const x = (pageW - w) / 2;
+                    const y = (pageH - h) / 2;
+
+                    if (i > 0) pdf.addPage();
+                    pdf.addImage(caps[i], 'PNG', x, y, w, h);
+                }
+
+                pdf.save('scanned_document.pdf');
+            });
+        });
+    </script>
+</body>
+</html>
