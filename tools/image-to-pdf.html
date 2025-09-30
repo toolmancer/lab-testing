@@ -14,14 +14,17 @@
     [data-theme="dark"] .pdf-images, [data-theme="dark"] .pdf-options { box-shadow: 0 3px 24px rgba(0,0,0,0.1); }
     .pdf-images { padding: 1.3rem 1.1rem; min-width: 340px; max-width: 420px; flex: 2 1 380px; text-align: center; position: relative; }
     .pdf-options { padding: 1.4rem 1.1rem 1.1rem 1.1rem; min-width: 220px; max-width: 350px; flex: 1 1 220px; display: flex; flex-direction: column; gap: 1.2em;}
+
+    /* === UI Refinements based on feedback === */
+    /* Adjust padding and size for a cleaner look for the drop zone */
     .upload-drop-zone {
       border: 2.5px dashed var(--accent);
       border-radius: 12px;
       background: var(--bg);
       text-align: center;
       transition: border-color 0.2s, background 0.2s;
-      padding: 2.7em 1em;
-      margin-bottom: 1.2em;
+      padding: 1.5rem 1rem; /* Reduced padding from 2.7em */
+      margin-bottom: 1rem; /* Reduced margin from 1.2em */
       cursor: pointer;
       position: relative;
       font-size: 1.13em;
@@ -35,8 +38,10 @@
     }
     .upload-drop-zone:hover, .upload-drop-zone.active { border-color: var(--accent); background: #e0ebff; }
     [data-theme="dark"] .upload-drop-zone:hover, [data-theme="dark"] .upload-drop-zone.active { background: #334155; }
-    .upload-drop-zone .add-icon { font-size: 3em; color: var(--accent); margin-bottom: 0.35em; pointer-events: none; }
+    .upload-drop-zone .add-icon { font-size: 2em; /* Reduced icon size */ color: var(--accent); margin-bottom: 0.35em; pointer-events: none; }
     .upload-drop-zone .drop-hint { font-size:0.97em;color:var(--text);margin-top:0.5em;}
+    /* === END UI Refinements === */
+
     .img-list { display: flex; flex-direction: column; align-items: center; gap: 1.1em; margin-top: 1em; margin-bottom: 0.9em;}
     .img-item { display: flex; flex-direction: row; align-items: center; gap: 1em; background: var(--bg); border-radius: 12px; box-shadow: 0 1px 6px #0001; padding: 0.6em 0.7em; width: 95%; max-width: 390px; position: relative;}
     [data-theme="dark"] .img-item { background: #475569; }
@@ -65,6 +70,11 @@
     .pdf-main-btn { background: var(--accent); color: white; border: none; margin-top: 1rem; width: 100%; font-size: 1.1rem; }
     .pdf-opt-dropdown { width: 100%; padding: 0.7rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text); }
     .pdf-checkbox { width: 18px; height: 18px; }
+
+    /* Centering Fix */
+    main { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - var(--header-height) - 100px); }
+    .tool-page { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 1280px; padding: 2rem; }
+    .tool-card { width: 100%; }
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.css"/>
 </head>
@@ -86,11 +96,59 @@
   </header>
 
   <div class="mega-menu" id="allToolsMenu">
-    <!-- Mega menu content from index.html (omitted here for brevity, copy from index.html) -->
+    <div class="mega-menu-grid">
+      <div class="mega-menu-category">
+        <h3>Image Tools</h3>
+        <ul>
+            <li><a href="image-to-pdf.html"><span class="tool-icon">📄</span> Image to PDF</a></li>
+            <li><a href="image-compressor.html"><span class="tool-icon">🗜️</span> Image Compressor</a></li>
+            <li><a href="image-resizer.html"><span class="tool-icon">📏</span> Image Resizer</a></li>
+            <li><a href="convert-png-jpg.html"><span class="tool-icon">🖼️</span> PNG <> JPG</a></li>
+            <li><a href="steganography.html"><span class="tool-icon">🕵️</span> Steganography</a></li>
+        </ul>
+      </div>
+      <div class="mega-menu-category">
+          <h3>Text & Writing</h3>
+          <ul>
+              <li><a href="text-diff.html"><span class="tool-icon">🔍</span> Text Diff</a></li>
+              <li><a href="text-encryptor.html"><span class="tool-icon">🔐</span> Text Encryptor</a></li>
+              <li><a href="text-to-pdf.html"><span class="tool-icon">📄</span> Text to PDF</a></li>
+              <li><a href="word-counter.html"><span class="tool-icon">✏️</span> Word Counter</a></li>
+          </ul>
+      </div>
+      <div class="mega-menu-category">
+          <h3>Converters</h3>
+          <ul>
+              <li><a href="unit-converter.html"><span class="tool-icon">⚖️</span> Unit Converter</a></li>
+              <li><a href="document-scanner.html"><span class="tool-icon">📑</span> Document Scanner</a></li>
+          </ul>
+      </div>
+      <div class="mega-menu-category">
+          <h3>Encoder/Decoder</h3>
+          <ul>
+              <li><a href="url-encoder.html"><span class="tool-icon">🔗</span> URL Encoder</a></li>
+              <li><a href="hash-generator.html"><span class="tool-icon">🛡️</span> Hash Generator</a></li>
+              <li><a href="password-generator.html"><span class="tool-icon">🔑</span> Password Generator</a></li>
+              <li><a href="qr-generator.html"><span class="tool-icon">📱</span> QR Generator</a></li>
+          </ul>
+      </div>
+      <div class="mega-menu-category">
+          <h3>AI Tools</h3>
+          <ul>
+              <li><a href="image-to-prompt.html"><span class="tool-icon">🤖</span> Image to Prompt</a></li>
+              <li><a href="json-formatter.html"><span class="tool-icon">🧩</span> JSON Formatter</a></li>
+          </ul>
+      </div>
+    </div>
   </div>
 
   <div class="search-overlay" id="searchOverlay">
-    <!-- Search overlay content from index.html (omitted here for brevity, copy from index.html) -->
+    <button class="search-close-btn" id="searchCloseBtn" aria-label="Close Search">&times;</button>
+    <div class="search-box">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="searchInput" placeholder="Search for a tool..." autocomplete="off">
+    </div>
+    <div id="search-results"></div>
   </div>
 
   <main class="content tool-page">
@@ -170,7 +228,14 @@
   </main>
 
   <footer class="main-footer">
-    <!-- Footer content from index.html (omitted here for brevity, copy from index.html) -->
+    <ul class="footer-links">
+        <li><a href="../about.html">About Us</a></li>
+        <li><a href="../contact.html">Contact</a></li>
+        <li><a href="../blog.html">Blog</a></li>
+        <li><a href="../privacy.html">Privacy Policy</a></li>
+        <li><a href="../disclaimer.html">Disclaimer</a></li>
+    </ul>
+    <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
   </footer>
 
   <script src="../theme.js"></script>
@@ -178,7 +243,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // ... Mega Menu, Search Overlay logic from index.html ... (copy paste here)
+        // --- Navigation and Theme Toggle Logic (Copied from index.html) ---
         const allToolsBtn = document.getElementById('allToolsBtn');
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const allToolsMenu = document.getElementById('allToolsMenu');
@@ -187,7 +252,6 @@
         const searchOverlay = document.getElementById('searchOverlay');
         const searchInput = document.getElementById('searchInput');
 
-        // Mega Menu Logic (simplified for non-home pages)
         const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
         allToolsBtn.addEventListener('click', toggleMenu);
         hamburgerBtn.addEventListener('click', toggleMenu);
@@ -197,7 +261,6 @@
             }
         });
 
-        // Search Overlay Logic
         searchBtn.addEventListener('click', () => { searchOverlay.classList.add('show'); document.body.classList.add('search-open'); searchInput.focus(); });
         const closeSearch = () => { searchOverlay.classList.remove('show'); document.body.classList.remove('search-open'); searchInput.value = ''; };
         searchCloseBtn.addEventListener('click', closeSearch);
