@@ -13,7 +13,6 @@
       box-shadow: 0 2px 16px #0001;
       display: flex;
       align-items: center;
-      justify-content: space-between;
       padding: 0 2em;
       min-height: 68px;
       position: sticky;
@@ -28,9 +27,13 @@
       display: flex;
       align-items: center;
       gap: 0.5em;
+      margin-right: 2em; /* gap between logo and menu */
     }
     .topbar-nav .menu-main {
-      display: flex; gap: 2em; align-items: center;
+      display: flex;
+      gap: 2em;
+      align-items: center;
+      flex: 1; /* stretch menu to take available space */
     }
     .topbar-nav .menu-main a,
     .topbar-nav .menu-main .dropdown {
@@ -59,7 +62,12 @@
       padding: 0.5em 1.2em; border-radius: 7px; text-decoration: none; font-weight: 500; font-size: .98em;
     }
     .topbar-nav .menu-main .dropdown-menu a:hover { background: #f0f6ff; color: #1740a5;}
-    .topbar-nav .menu-auth {display:flex; gap:0.7em; align-items: center;}
+    .topbar-nav .menu-auth {
+      display: flex;
+      gap: 0.7em;
+      align-items: center;
+      margin-left: auto; /* push login/signup to right */
+    }
     .topbar-nav .login-btn { color: #2563eb; background: none; border: none; font-weight: 600; font-size: 1em; cursor: pointer;}
     .topbar-nav .signup-btn { background: #ef4444; color: #fff; font-weight: bold; border: none; border-radius: 8px; padding: 0.53em 1.4em; margin-left: 0.35em; cursor: pointer; font-size: 1em; box-shadow: 0 2px 8px #ef444420; transition: background 0.14s;}
     .topbar-nav .signup-btn:hover { background: #c81e1e; }
@@ -153,7 +161,7 @@
       </div>
     </section>
     <div class="tool-grid">
-      <!-- ...your tool cards... (see previous block) ... -->
+      <!-- ...your tool cards... -->
     </div>
   </main>
   <script>
