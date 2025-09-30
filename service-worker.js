@@ -1,6 +1,7 @@
 // Service Worker Code for PWA installation and caching
 
-const CACHE_NAME = 'toolmancer-cache-v1';
+// 1. Define Cache Name and Files to Cache
+const CACHE_NAME = 'toolmancer-cache-v1'; // Cache version name
 const urlsToCache = [
   '/', // The start page of your app
   '/index.html',
@@ -9,6 +10,9 @@ const urlsToCache = [
   // Add other necessary pages and assets here
   '/about.html',
   '/contact.html',
+  '/privacy.html',
+  '/disclaimer.html',
+  '/blog.html',
   // Add tool-specific files here:
   '/tools/image-to-pdf.html',
   '/tools/image-compressor.html',
@@ -31,34 +35,37 @@ const urlsToCache = [
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/diff-match-patch/20121119/diff_match_patch.js'
 ];
 
-// Install event: Cache all files listed in urlsToCache
+// 2. Install event: Cache all files listed in urlsToCache
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        return cache.addAll(urlsToCache); // Cache all files for offline use
       })
   );
 });
 
-// Fetch event: Serve content from cache if available, otherwise fetch from network
+// 3. Fetch event: Intercept network requests and serve from cache first
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
         if (response) {
-          return response; // Return cached response
+          return response; // Return cached response if found
         }
-        return fetch(event.request); // Fetch from network
+        return fetch(event.request); // Fetch from network if not in cache
       })
   );
 });
 
-// Activate event: Clean up old caches
+// 4. Activate event: Clean up old caches (if you update CACHE_NAME)
 self.addEventListener('activate', event => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
@@ -66,7 +73,7 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
+            return caches.delete(cacheName); // Delete old caches
           }
         })
       );
