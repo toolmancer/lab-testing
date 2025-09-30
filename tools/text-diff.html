@@ -72,10 +72,16 @@
         }
         [data-theme="dark"] .diff-output-area { background: #334155; }
 
+        /* Highlighting styles */
+        .diff-line { display: block; white-space: pre-wrap; word-wrap: break-word; }
         .diff-added { background-color: #d1fae5; color: #065f46; } /* Tailwind green-100/green-700 */
         .diff-removed { background-color: #fee2e2; color: #991b1b; } /* Tailwind red-100/red-700 */
         [data-theme="dark"] .diff-added { background-color: #102a2a; color: #6ee7b7; }
         [data-theme="dark"] .diff-removed { background-color: #3f1010; color: #fca5a5; }
+
+        /* Word-level diff styles */
+        .diff-word-added { background-color: #bbf7d0; color: #065f46; } /* Slightly darker highlight for word-level */
+        .diff-word-removed { background-color: #fecaca; color: #991b1b; } /* Slightly darker highlight for word-level */
 
         /* Mobile adjustments */
         @media (max-width: 600px) {
@@ -346,9 +352,9 @@
                         htmlA += text;
                         htmlB += text;
                     } else if (type === 1) { // Added text
-                        htmlB += `<span class="diff-added">${text}</span>`;
+                        htmlB += `<span class="diff-word-added">${text}</span>`;
                     } else if (type === -1) { // Removed text
-                        htmlA += `<span class="diff-removed">${text}</span>`;
+                        htmlA += `<span class="diff-word-removed">${text}</span>`;
                     }
                 });
 
