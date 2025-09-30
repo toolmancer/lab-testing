@@ -6,6 +6,8 @@
     <title>Text Diff Checker | ToolMancer</title>
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <!-- Include Google's diff-match-patch library for word-level highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/diff-match-patch/20121119/diff_match_patch.js"></script>
     <style>
         /* Tool-specific styles based on the common layout */
         .tool-page {
@@ -43,6 +45,15 @@
             font-size: 0.95em;
         }
 
+        .diff-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9em;
+            color: #64748b;
+        }
+        [data-theme="dark"] .diff-stats { color: #94a3b8; }
+
         .diff-output-layout {
             display: flex;
             margin-top: 1.5rem;
@@ -56,13 +67,16 @@
             padding: 1rem;
             overflow: auto;
             max-height: 400px; /* Limit height for readability */
+            font-family: monospace;
+            font-size: 0.95em;
         }
-        .diff-line { display: block; white-space: pre-wrap; word-wrap: break-word; font-family: monospace; }
+        [data-theme="dark"] .diff-output-area { background: #334155; }
+
         .diff-added { background-color: #d1fae5; color: #065f46; } /* Tailwind green-100/green-700 */
         .diff-removed { background-color: #fee2e2; color: #991b1b; } /* Tailwind red-100/red-700 */
         [data-theme="dark"] .diff-added { background-color: #102a2a; color: #6ee7b7; }
         [data-theme="dark"] .diff-removed { background-color: #3f1010; color: #fca5a5; }
-        
+
         /* Mobile adjustments */
         @media (max-width: 600px) {
             .diff-input-layout { flex-direction: column; }
@@ -143,8 +157,14 @@
             </header>
 
             <div class="diff-input-layout">
-                <textarea id="textA" placeholder="Original Text (Text A)" class="tool-input"></textarea>
-                <textarea id="textB" placeholder="Modified Text (Text B)" class="tool-input"></textarea>
+                <div>
+                    <div class="diff-stats" id="statsA">Words: 0 | Characters: 0</div>
+                    <textarea id="textA" placeholder="Original Text (Text A)" class="tool-input"></textarea>
+                </div>
+                <div>
+                    <div class="diff-stats" id="statsB">Words: 0 | Characters: 0</div>
+                    <textarea id="textB" placeholder="Modified Text (Text B)" class="tool-input"></textarea>
+                </div>
             </div>
             
             <div class="tool-controls">
@@ -247,6 +267,23 @@
             const outputLayout = document.getElementById('outputLayout');
             const outputA = document.getElementById('outputA');
             const outputB = document.getElementById('outputB');
+            const statsA = document.getElementById('statsA');
+            const statsB = document.getElementById('statsB');
+
+            // --- Utility: Get word and character counts ---
+            function getCounts(text) {
+                const words = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+                const characters = text.length;
+                return { words, characters };
+            }
+
+            // --- Render statistics ---
+            function updateStats() {
+                const countA = getCounts(textA.value);
+                const countB = getCounts(textB.value);
+                statsA.textContent = `Words: ${countA.words} | Characters: ${countA.characters}`;
+                statsB.textContent = `Words: ${countB.words} | Characters: ${countB.characters}`;
+            }
 
             // --- Comparison Logic (LCS algorithm) ---
             function diffLines(a, b) {
@@ -292,6 +329,32 @@
                 return { resultA, resultB };
             }
 
+            // --- Word-level diff highlighting using diff-match-patch library ---
+            function highlightWords(lineA, lineB) {
+                const dmp = new diff_match_patch();
+                const diffs = dmp.diff_main(lineA, lineB);
+                dmp.diff_cleanupSemantic(diffs); // Cleanup diffs for better readability
+
+                let htmlA = '';
+                let htmlB = '';
+
+                diffs.forEach(part => {
+                    const type = part[0];
+                    const text = part[1];
+
+                    if (type === 0) { // Same text
+                        htmlA += text;
+                        htmlB += text;
+                    } else if (type === 1) { // Added text
+                        htmlB += `<span class="diff-added">${text}</span>`;
+                    } else if (type === -1) { // Removed text
+                        htmlA += `<span class="diff-removed">${text}</span>`;
+                    }
+                });
+
+                return { htmlA, htmlB };
+            }
+
             // --- Render Output ---
             function renderDiff() {
                 const linesA = textA.value.split('\n');
@@ -303,22 +366,17 @@
                 outputB.innerHTML = '';
 
                 for (let i = 0; i < resultA.length; i++) {
-                    if (resultA[i] === resultB[i]) {
-                        // Unchanged line
-                        outputA.innerHTML += `<span class="diff-line">${resultA[i]}</span>`;
-                        outputB.innerHTML += `<span class="diff-line">${resultB[i]}</span>`;
+                    const lineA = resultA[i];
+                    const lineB = resultB[i];
+
+                    if (lineA === lineB) {
+                        outputA.innerHTML += `<div class="diff-line">${lineA}</div>`;
+                        outputB.innerHTML += `<div class="diff-line">${lineB}</div>`;
                     } else {
-                        // Added or Removed line
-                        if (resultA[i] !== '') {
-                            outputA.innerHTML += `<span class="diff-line diff-removed">${resultA[i]}</span>`;
-                        } else {
-                            outputA.innerHTML += `<span class="diff-line"></span>`;
-                        }
-                        if (resultB[i] !== '') {
-                            outputB.innerHTML += `<span class="diff-line diff-added">${resultB[i]}</span>`;
-                        } else {
-                            outputB.innerHTML += `<span class="diff-line"></span>`;
-                        }
+                        // Perform word-level diff for non-identical lines
+                        const { htmlA, htmlB } = highlightWords(lineA, lineB);
+                        outputA.innerHTML += `<div class="diff-line diff-removed">${htmlA}</div>`;
+                        outputB.innerHTML += `<div class="diff-line diff-added">${htmlB}</div>`;
                     }
                 }
                 outputLayout.style.display = 'flex';
@@ -332,7 +390,15 @@
                 outputA.innerHTML = '';
                 outputB.innerHTML = '';
                 outputLayout.style.display = 'none';
+                updateStats(); // Clear stats too
             });
+
+            // Update stats on input change
+            textA.addEventListener('input', updateStats);
+            textB.addEventListener('input', updateStats);
+
+            // Initial stats load
+            updateStats();
         });
     </script>
 </body>
