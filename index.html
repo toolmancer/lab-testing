@@ -11,6 +11,8 @@
 
     <header class="main-header">
         <a href="index.html" class="logo">ToolMancer</a>
+        <!-- Hamburger button moved to the left side in HTML structure -->
+        <button class="hamburger-btn" id="hamburgerBtn">☰</button>
         <nav class="main-nav">
             <ul>
                 <li><a href="#category-image">Image Tools</a></li>
@@ -20,11 +22,12 @@
             <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
             <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
             <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
-            <button class="hamburger-btn" id="hamburgerBtn">☰</button>
         </nav>
     </header>
 
     <div class="mega-menu" id="allToolsMenu">
+        <!-- Add a close button for mobile sidebar -->
+        <button class="close-menu-btn" id="closeMenuBtn">&times;</button>
         <div class="mega-menu-grid">
             <div class="mega-menu-category">
                 <h3>Image Tools</h3>
@@ -79,11 +82,6 @@
                 <input type="text" id="heroSearchInput" placeholder="Search for a tool..." autocomplete="off">
             </div>
         </section>
-
-        <!-- New: Dedicated Search Results Container -->
-        <div class="search-results-container" id="searchResultsContainer" style="display: none;">
-            <!-- Search results will appear here -->
-        </div>
 
         <section class="feature-highlights" id="featureHighlights">
             <div class="highlight-item">
@@ -197,13 +195,28 @@
             const toolGrid = document.getElementById('toolGrid');
 
             // --- Mega Menu Logic ---
-            const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
-            allToolsBtn.addEventListener('click', toggleMenu);
-            hamburgerBtn.addEventListener('click', toggleMenu);
+            // Desktop logic (open/close mega menu)
+            allToolsBtn.addEventListener('click', (event) => {
+                if (window.innerWidth > 900) { // Check screen width
+                    event.stopPropagation();
+                    allToolsMenu.classList.toggle('show');
+                    allToolsBtn.classList.toggle('open');
+                }
+            });
+
+            // Mobile logic (open/close hamburger menu / mega menu)
+            hamburgerBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                allToolsMenu.classList.toggle('show');
+                document.body.classList.toggle('menu-open'); // To prevent main body scrolling
+            });
+
+            // Close menu when clicking outside (on desktop, to close mega menu)
             document.addEventListener('click', (event) => {
                 if (window.innerWidth > 900) {
                     if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
-                        allToolsMenu.classList.remove('show'); allToolsBtn.classList.remove('open');
+                        allToolsMenu.classList.remove('show');
+                        allToolsBtn.classList.remove('open');
                     }
                 } else {
                     if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
@@ -225,16 +238,14 @@
                 const lowerCaseQuery = query.toLowerCase().trim();
 
                 if (lowerCaseQuery.length === 0) {
-                    // Show regular content when search is empty
                     featureHighlights.style.display = 'flex';
                     popularTools.style.display = 'block';
                     allToolsTitle.style.display = 'block';
                     filterTabs.style.display = 'flex';
-                    updateToolVisibility(); // Restore category filtering
+                    updateToolVisibility();
                     return;
                 }
 
-                // Hide sections during search
                 featureHighlights.style.display = 'none';
                 popularTools.style.display = 'none';
                 allToolsTitle.style.display = 'none';
@@ -251,9 +262,6 @@
                         card.style.display = 'none';
                     }
                 });
-
-                // Optional: show a "no results found" message
-                // if (!resultsFound) { /* Add no results message here */ }
             }
 
             // --- Filter Tabs Logic ---
@@ -274,7 +282,7 @@
                     updateToolVisibility();
                 });
             });
-            updateToolVisibility(); // Initial call
+            updateToolVisibility();
         });
     </script>
 </body>
