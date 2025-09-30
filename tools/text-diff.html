@@ -1,1 +1,56 @@
-<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Text Diff</title><link rel='stylesheet' href='../style.css'></head><body><main class='main'><div class='content container'><h2>Text Diff</h2><p class='small'>Compare two texts line-by-line.</p><textarea id='a' placeholder='Text A' style='width:48%;min-height:200px;display:inline-block;margin-right:2%'></textarea><textarea id='b' placeholder='Text B' style='width:48%;min-height:200px;display:inline-block'></textarea><div style='margin-top:10px'><button class='btn' id='cmp'>Compare</button></div><pre id='out' style='margin-top:10px;background:#f1f5f9;padding:10px;border-radius:8px;white-space:pre-wrap'></pre></div></main><script>document.getElementById('cmp').addEventListener('click', ()=>{const A=document.getElementById('a').value.split('\n'); const B=document.getElementById('b').value.split('\n'); let out=''; const n=Math.max(A.length,B.length); for(let i=0;i<n;i++){ if(A[i]===B[i]) out += '  '+(A[i]||'')+'\\n'; else out += '- '+(A[i]||'')+'\\n+ '+(B[i]||'')+'\\n'; } document.getElementById('out').textContent = out;});</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text Difference Checker | ToolMancer</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <main class="content tool-page">
+    <nav class="breadcrumb"><a href="../index.html">Home</a> / Text Diff</nav>
+
+    <section class="tool-card">
+      <div class="tool-header">
+        <h1>🔍 Text Difference Checker</h1>
+        <p class="small">Paste two blocks of text below to find and highlight the differences between them.</p>
+      </div>
+      <div style="display: flex; gap: 1rem;">
+        <textarea id="a" placeholder="Text A" rows="10"></textarea>
+        <textarea id="b" placeholder="Text B" rows="10"></textarea>
+      </div>
+      <div class="tool-controls">
+        <button class="btn" id="cmp">Compare Texts</button>
+      </div>
+      <pre id="out"></pre>
+    </section>
+
+    <div class="how-to">
+      <h3>How to Use</h3>
+      <ol>
+        <li>Paste the original text into the "Text A" box.</li>
+        <li>Paste the modified text into the "Text B" box.</li>
+        <li>Click the "Compare Texts" button.</li>
+        <li>The result box will show the differences: `+` for added lines, `-` for removed lines.</li>
+      </ol>
+    </div>
+  </main>
+  <script>
+    document.getElementById('cmp').addEventListener('click', ()=>{
+      const A=document.getElementById('a').value.split('\n');
+      const B=document.getElementById('b').value.split('\n');
+      let out='';
+      const n=Math.max(A.length, B.length);
+      for(let i=0; i<n; i++){
+        if(A[i] === B[i]) {
+          out += '  ' + (A[i] || '') + '\n';
+        } else {
+          if (A[i] !== undefined) out += '- ' + (A[i] || '') + '\n';
+          if (B[i] !== undefined) out += '+ ' + (B[i] || '') + '\n';
+        }
+      }
+      document.getElementById('out').textContent = out.trim();
+    });
+  </script>
+</body>
+</html>
