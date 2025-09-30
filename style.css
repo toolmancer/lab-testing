@@ -164,20 +164,20 @@ main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2r
   /* Change 2: Show Hamburger Menu on mobile */
   .hamburger-btn { display: block; }
 
-  /* Change 3: Mobile Mega Menu as Side Menu */
+  /* Change 3: Mobile Mega Menu as Side Menu (Right side opening) */
   .mega-menu {
     position: fixed;
     top: 0;
-    left: 0;
-    width: 300px; /* Adjust width as needed */
+    right: 0; /* Changed from left: 0; */
+    width: 300px;
     height: 100vh;
     padding: 2rem;
-    transform: translateX(-100%);
+    transform: translateX(100%); /* Changed from translateX(-100%); */
     opacity: 1;
     visibility: hidden;
     transition: transform 0.3s ease-in-out, visibility 0s 0.3s;
     border-radius: 0;
-    overflow-y: auto; /* Enable scrolling for long content */
+    overflow-y: auto;
     box-shadow: 0 0 20px rgba(0,0,0,0.2);
   }
   .mega-menu.show { transform: translateX(0); visibility: visible; transition: transform 0.3s ease-in-out; }
@@ -189,15 +189,15 @@ main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2r
   .main-nav ul { display: none; }
   .main-header { padding: 0 1rem; }
 
-  /* Change 4: Mobile layout for tool grids (2 columns) */
-  .tool-grid-home { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
-  .popular-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  /* Horizontal scroll fix */
+  main { padding: 1rem; overflow-x: hidden; }
 
-  /* Change 5: Mobile layout for feature highlights (single line) */
+  /* Mobile layout for tool grids (2 columns) */
+  .popular-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+  .tool-grid-home { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+
+  /* Mobile layout for feature highlights */
   .feature-highlights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1rem; margin-bottom: 2rem; }
   .highlight-item { max-width: unset; }
   .highlight-item p { display: none; }
-
-  /* Change 6: Horizontal scroll fix */
-  main { padding: 1rem; overflow-x: hidden; }
 }
