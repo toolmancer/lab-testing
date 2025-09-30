@@ -6,6 +6,8 @@
     <title>Document Scanner | ToolMancer</title>
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <!-- JSZip Library for creating ZIP archives (needed for downloading multiple images) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         /* Tool-specific styles based on the common layout */
         .tool-page {
@@ -68,6 +70,9 @@
         /* New: Image processing controls */
         .image-process-controls { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
         .image-process-controls button { font-size: 0.9em; padding: 0.5rem 1rem; }
+
+        /* Results area with dynamic buttons */
+        .result-actions { display: none; justify-content: center; gap: 1rem; margin-top: 1rem; }
     </style>
 </head>
 <body>
@@ -164,7 +169,7 @@
             <!-- New: Image Processing Controls (Filters) -->
             <div class="image-process-controls" id="imageProcessControls" style="display:none;">
                 <button class="btn" id="noFilterBtn">Original</button>
-                <button class="btn" id="bwBtn">Document Clear</button>
+                <button class="btn" id="documentClearBtn">Document Clear</button>
                 <button class="btn" id="grayBtn">Greyscale</button>
             </div>
             
@@ -172,6 +177,13 @@
 
             <!-- Image Previews -->
             <div id="thumbs" class="scanner-image-previews"></div>
+
+            <!-- New: Results actions -->
+            <div class="result-actions" id="resultActions">
+                <a class="btn" id="downloadPdfLink">Download PDF</a>
+                <a class="btn" id="downloadZipLink">Download Images (ZIP)</a>
+                <button class="btn" id="shareBtn">Share PDF</button>
+            </div>
 
         </section>
 
@@ -182,6 +194,7 @@
                 <li>While the camera is on, apply live filters like "Black & White" or "Sharpen" to improve image clarity.</li>
                 <li>For each page, click "Capture Page" or add an image file.</li>
                 <li>Click "Generate PDF" to create a single PDF containing all captured pages.</li>
+                <li>Download or share the final document.</li>
             </ol>
         </section>
     </main>
@@ -205,6 +218,7 @@
     <!-- Scripts -->
     <script src="../theme.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- Navigation and Theme Toggle Logic ---
@@ -267,13 +281,65 @@
             const fileInput = document.getElementById('files');
             const dropZone = document.getElementById('dropZone');
             const imageProcessControls = document.getElementById('imageProcessControls');
+            const resultActions = document.getElementById('resultActions');
             const noFilterBtn = document.getElementById('noFilterBtn');
-            const bwBtn = document.getElementById('bwBtn');
+            const documentClearBtn = document.getElementById('documentClearBtn'); // Changed name from bwBtn
             const grayBtn = document.getElementById('grayBtn');
+            const shareBtn = document.getElementById('shareBtn');
+            const downloadPdfLink = document.getElementById('downloadPdfLink');
+            const downloadZipLink = document.getElementById('downloadZipLink');
 
             let caps = []; // Array to store image data URLs or Blobs
 
-            // Add drag and drop functionality
+            // --- Helper Functions ---
+            function updateUIState(state) {
+                switch (state) {
+                    case 'initial':
+                        camBtn.style.display = 'inline-block';
+                        capBtn.style.display = 'none';
+                        makePdfBtn.style.display = 'block';
+                        makePdfBtn.disabled = caps.length === 0;
+                        imageProcessControls.style.display = 'none';
+                        dropZone.style.display = 'flex';
+                        resultActions.style.display = 'none';
+                        video.style.filter = 'none'; // Reset filter
+                        break;
+                    case 'cameraActive':
+                        camBtn.textContent = 'Stop Camera';
+                        video.style.display = 'block';
+                        capBtn.style.display = 'inline-block';
+                        dropZone.style.display = 'none';
+                        imageProcessControls.style.display = 'flex';
+                        makePdfBtn.style.display = 'block';
+                        makePdfBtn.disabled = caps.length === 0; // Keep state consistent with caps length
+                        resultActions.style.display = 'none';
+                        break;
+                    case 'resultsReady':
+                        camBtn.style.display = 'none';
+                        capBtn.style.display = 'none';
+                        makePdfBtn.style.display = 'none';
+                        imageProcessControls.style.display = 'none';
+                        dropZone.style.display = 'none'; // Hide dropzone after conversion
+                        resultActions.style.display = 'flex';
+                        break;
+                }
+            }
+            // Add image preview and store for PDF creation
+            function addCapturedImage(dataUrl) {
+                caps.push(dataUrl);
+                const img = document.createElement('img');
+                img.src = dataUrl;
+                thumbsContainer.appendChild(img);
+                makePdfBtn.disabled = false;
+                updateUIState('initial'); // Re-evaluate state
+            }
+            function clearUI() {
+                thumbsContainer.innerHTML = '';
+                caps = [];
+                updateUIState('initial');
+            }
+            
+            // --- Event Listeners ---
             dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('active'); });
             dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
             dropZone.addEventListener('drop', e => {
@@ -283,18 +349,12 @@
             });
             fileInput.addEventListener('change', e => handleFiles(e.target.files));
 
-            // Start/Stop Camera Logic (Improved UX)
             camBtn.addEventListener('click', async () => {
                 if (!stream) {
                     try {
                         stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
                         video.srcObject = stream;
-                        video.style.display = 'block';
-                        capBtn.style.display = 'inline-block';
-                        camBtn.textContent = 'Stop Camera';
-                        makePdfBtn.disabled = false; // Enable Generate PDF button when camera starts
-                        dropZone.style.display = 'none'; // Hide dropzone while camera is active
-                        imageProcessControls.style.display = 'flex'; // Show filter options
+                        updateUIState('cameraActive');
                     } catch (e) {
                         alert('Camera unavailable or permission denied.');
                         console.error('Camera error:', e);
@@ -302,33 +362,23 @@
                 } else {
                     stream.getTracks().forEach(t => t.stop());
                     stream = null;
+                    video.srcObject = null; // Reset video source
                     video.style.display = 'none';
-                    capBtn.style.display = 'none';
-                    camBtn.textContent = 'Start Camera';
-                    dropZone.style.display = 'flex'; // Show dropzone again
-                    imageProcessControls.style.display = 'none'; // Hide filter options when camera stops
-                    if (caps.length === 0) { makePdfBtn.disabled = true; }
+                    updateUIState('initial');
                 }
             });
 
-            // Capture Frame from Camera
             capBtn.addEventListener('click', () => {
                 // Create canvas and draw current video frame with live filter applied
                 const c = document.createElement('canvas');
                 c.width = video.videoWidth;
                 c.height = video.videoHeight;
                 const ctx = c.getContext('2d');
-
-                // Apply current CSS filter to canvas context before drawing
-                const currentFilter = video.style.filter;
-                ctx.filter = currentFilter;
+                ctx.filter = video.style.filter; // Apply live filter before drawing
                 ctx.drawImage(video, 0, 0);
-
-                const dataUrl = c.toDataURL('image/png');
-                addCapturedImage(dataUrl);
+                addCapturedImage(c.toDataURL('image/png'));
             });
 
-            // Handle file upload
             function handleFiles(files) {
                 for (const file of files) {
                     if (file.type.startsWith('image/')) {
@@ -339,24 +389,17 @@
                 }
             }
 
-            // Add image preview and store for PDF creation
-            function addCapturedImage(dataUrl) {
-                caps.push(dataUrl);
-                const img = document.createElement('img');
-                img.src = dataUrl;
-                thumbsContainer.appendChild(img);
-                makePdfBtn.disabled = false;
-                imageProcessControls.style.display = 'flex'; // Show filter options after capturing first image
-            }
-
             // --- Live Image Processing Functions (Apply CSS filters directly to video) ---
             noFilterBtn.addEventListener('click', () => { video.style.filter = 'none'; });
-            // New "Document Clear" filter: Greyscale + high contrast + sharpen
-            bwBtn.addEventListener('click', () => { video.style.filter = 'grayscale(100%) brightness(1.3) contrast(1.5)'; });
+            documentClearBtn.addEventListener('click', () => { video.style.filter = 'grayscale(100%) brightness(1.3) contrast(1.5)'; });
             grayBtn.addEventListener('click', () => { video.style.filter = 'grayscale(100%)'; });
 
-            // Create PDF from captured images
+            // --- Final Processing ---
+            let pdfBlobCache;
+            let zipBlobCache;
+
             makePdfBtn.addEventListener('click', async () => {
+                // Generate PDF (Code from previous iteration)
                 const { jsPDF } = window.jspdf;
                 if (caps.length === 0) {
                     alert('No pages captured. Please capture or upload images first.');
@@ -380,9 +423,48 @@
                     if (i > 0) pdf.addPage();
                     pdf.addImage(caps[i], 'PNG', x, y, w, h);
                 }
-
-                pdf.save('scanned_document.pdf');
+                
+                pdfBlobCache = pdf.output('blob');
+                downloadPdfLink.href = URL.createObjectURL(pdfBlobCache);
+                downloadPdfLink.download = 'scanned_document.pdf';
+                updateUIState('resultsReady');
             });
+
+            // --- Download Images as ZIP ---
+            downloadZipLink.addEventListener('click', async () => {
+                if (caps.length === 0) return;
+                const zip = new JSZip();
+                for (let i = 0; i < caps.length; i++) {
+                    const base64Data = caps[i].split(',')[1];
+                    zip.file(`image_${i + 1}.png`, base64Data, { base64: true });
+                }
+                zip.generateAsync({ type: 'blob' }).then(blob => {
+                    zipBlobCache = blob;
+                    const downloadUrl = URL.createObjectURL(blob);
+                    downloadZipLink.href = downloadUrl;
+                    downloadZipLink.download = 'scanned_images.zip';
+                });
+            });
+
+            // --- Web Share API Logic ---
+            shareBtn.addEventListener('click', async () => {
+                if (!pdfBlobCache) {
+                    // Force PDF generation if not already done
+                    await makePdfBtn.click();
+                }
+                if (navigator.share && pdfBlobCache) {
+                    const file = new File([pdfBlobCache], 'scanned_document.pdf', { type: 'application/pdf' });
+                    navigator.share({
+                        files: [file],
+                        title: 'Scanned Document',
+                        text: 'Sharing a document scanned with ToolMancer!'
+                    }).catch(error => console.error('Error sharing:', error));
+                } else {
+                    alert('Sharing failed. Please use the download button.');
+                }
+            });
+
+            updateUIState('initial'); // Initialize UI on load
         });
     </script>
 </body>
