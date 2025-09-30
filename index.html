@@ -6,13 +6,14 @@
     <title>ToolMancer – All-in-One Online Toolkit</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    
+    <!-- PWA Manifest Link added here -->
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
     <header class="main-header">
         <a href="index.html" class="logo">ToolMancer</a>
-        <!-- Hamburger button moved to the left side in HTML structure -->
-        <button class="hamburger-btn" id="hamburgerBtn">☰</button>
         <nav class="main-nav">
             <ul>
                 <li><a href="#category-image">Image Tools</a></li>
@@ -22,6 +23,7 @@
             <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
             <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
             <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
+            <button class="hamburger-btn" id="hamburgerBtn">☰</button>
         </nav>
     </header>
 
@@ -181,6 +183,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const allToolsBtn = document.getElementById('allToolsBtn');
             const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const closeMenuBtn = document.getElementById('closeMenuBtn'); // New close button for mobile menu
             const allToolsMenu = document.getElementById('allToolsMenu');
             const searchBtn = document.getElementById('searchBtn');
             const heroSearchInput = document.getElementById('heroSearchInput');
@@ -209,6 +212,12 @@
                 event.stopPropagation();
                 allToolsMenu.classList.toggle('show');
                 document.body.classList.toggle('menu-open'); // To prevent main body scrolling
+            });
+
+            // Mobile close button logic
+            closeMenuBtn.addEventListener('click', () => {
+                allToolsMenu.classList.remove('show');
+                document.body.classList.remove('menu-open');
             });
 
             // Close menu when clicking outside (on desktop, to close mega menu)
