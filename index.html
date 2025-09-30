@@ -117,15 +117,13 @@
       const allToolsMenu = document.getElementById('allToolsMenu');
 
       allToolsBtn.addEventListener('click', (event) => {
-        // Stop the click from bubbling up to the document
         event.stopPropagation();
         allToolsMenu.classList.toggle('show');
         allToolsBtn.classList.toggle('open');
       });
 
-      // Close the menu if user clicks outside of it
       document.addEventListener('click', (event) => {
-        if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target)) {
+        if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !allToolsBtn.contains(event.target)) {
           allToolsMenu.classList.remove('show');
           allToolsBtn.classList.remove('open');
         }
