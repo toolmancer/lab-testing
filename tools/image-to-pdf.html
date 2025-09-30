@@ -6,6 +6,7 @@
   <title>Image to PDF Converter | ToolMancer</title>
   <link rel="stylesheet" href="../style.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <!-- Include external CSS for drag/sort functionality if needed -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.css"/>
   <style>
     /* Add specific styles here or update style.css for tool layouts */
@@ -42,7 +43,7 @@
       margin-top: 1rem;
     }
     .pdf-images, .pdf-options {
-      background: var(--bg);
+      background: var(--bg); /* Use page background or a light card color */
       border-radius: 12px;
       border: 1px solid var(--border-color);
     }
@@ -148,6 +149,7 @@
         margin-top: 2rem;
         text-align: center;
     }
+    .result-box button, .result-box a { margin: 0.5rem; } /* Add spacing between result buttons */
 
     /* --- How To Section --- */
     .how-to {
@@ -303,6 +305,7 @@
       <section class="result-box" id="resultBox" style="display:none; text-align: center; margin-top: 2rem;">
         <h3>Result:</h3>
         <a id="downloadBtn" class="btn" download="output.pdf">⬇️ Download PDF</a>
+        <button id="shareBtn" class="btn">Share PDF</button> <!-- New Share Button -->
         <button id="openBtn" class="btn">🔗 Open in New Tab</button>
         <button id="copyLinkBtn" class="btn">📋 Copy Link</button>
       </section>
@@ -314,6 +317,7 @@
         <li>Reorder if needed, set options.</li>
         <li>Click <b>Convert to PDF</b>.</li>
         <li>Download or open your PDF.</li>
+        <li>(New) Share the file directly to your apps.</li>
       </ol>
     </section>
   </main>
@@ -380,11 +384,7 @@
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the PWA installation prompt');
-                    } else {
-                        console.log('User dismissed the PWA installation prompt');
-                    }
+                    console.log('User response to install prompt:', choiceResult.outcome);
                     deferredPrompt = null;
                 });
             }
@@ -402,6 +402,7 @@
         const convertBtn = document.getElementById('convertBtn');
         const resultBox = document.getElementById('resultBox');
         const downloadBtn = document.getElementById('downloadBtn');
+        const shareBtn = document.getElementById('shareBtn'); // New share button element
         const openBtn = document.getElementById('openBtn');
         const copyLinkBtn = document.getElementById('copyLinkBtn');
         const qualitySlider = document.getElementById('qualitySlider');
@@ -540,10 +541,7 @@
             let iw = img.width * scale, ih = img.height * scale;
             let ix = (pw-iw)/2, iy = (ph-ih)/2;
 
-            // Add image to PDF with specified quality (only affects JPGs, but good practice)
             pdf.addImage(img, 'JPEG', ix, iy, iw, ih, null, null, quality);
-
-            if (!document.getElementById('mergeAll').checked && i < images.length-1) pdf.save(images[i].name.replace(/\.[^/.]+$/, "")+'.pdf');
           }
 
           if (document.getElementById('mergeAll').checked) {
@@ -551,6 +549,12 @@
             if (pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl);
             pdfBlobUrl = URL.createObjectURL(blob);
             downloadBtn.href = pdfBlobUrl;
+
+            // Prepare for sharing
+            shareBtn.addEventListener('click', () => {
+                shareFile(blob, 'application/pdf', 'output.pdf');
+            });
+
             openBtn.onclick = () => window.open(pdfBlobUrl, '_blank');
             copyLinkBtn.onclick = () => {
               navigator.clipboard.writeText(pdfBlobUrl);
@@ -558,7 +562,6 @@
               setTimeout(()=>copyLinkBtn.textContent="📋 Copy Link", 1200);
             };
             resultBox.style.display = 'block';
-            downloadBtn.click();
           }
         };
 
@@ -569,6 +572,25 @@
             reader.onerror = reject;
             reader.readAsDataURL(file);
           });
+        }
+
+        // --- Web Share API Logic ---
+        async function shareFile(blob, type, filename) {
+            if (navigator.share) {
+                const file = new File([blob], filename, { type });
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Converted PDF',
+                        text: 'Sharing my PDF created with ToolMancer!'
+                    });
+                } catch (error) {
+                    console.error('Error sharing:', error);
+                    alert('Sharing failed: ' + error.message);
+                }
+            } else {
+                alert('Web Share API not supported in this browser. Please use the download button.');
+            }
         }
     });
   </script>
