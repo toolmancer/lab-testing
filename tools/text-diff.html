@@ -1,56 +1,339 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Text Difference Checker | ToolMancer</title>
-  <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Diff Checker | ToolMancer</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Tool-specific styles based on the common layout */
+        .tool-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 2rem;
+            flex-grow: 1;
+            width: 100%;
+        }
+        .tool-page .tool-card {
+            max-width: 900px; /* Wider card for comparison UI */
+            padding: 2rem;
+            width: 100%;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .tool-header { text-align: center; margin-bottom: 1.5rem; }
+        .tool-header h1 { font-size: 2rem; color: var(--accent); font-weight: 700; }
+        .tool-header .tool-desc { font-size: 1rem; color: #475569; max-width: 650px; margin: 0 auto; line-height: 1.5; }
+        [data-theme="dark"] .tool-header .tool-desc { color: #94a3b8; }
+
+        /* --- Custom UI for Text Diff --- */
+        .diff-input-layout {
+            display: flex;
+            gap: 1rem;
+        }
+        .diff-input-layout textarea {
+            flex-grow: 1;
+            min-height: 250px;
+            font-family: monospace;
+            font-size: 0.95em;
+        }
+
+        .diff-output-layout {
+            display: flex;
+            margin-top: 1.5rem;
+            gap: 1rem;
+        }
+        .diff-output-area {
+            flex-grow: 1;
+            background: var(--bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            overflow: auto;
+            max-height: 400px; /* Limit height for readability */
+        }
+        .diff-line { display: block; white-space: pre-wrap; word-wrap: break-word; font-family: monospace; }
+        .diff-added { background-color: #d1fae5; color: #065f46; } /* Tailwind green-100/green-700 */
+        .diff-removed { background-color: #fee2e2; color: #991b1b; } /* Tailwind red-100/red-700 */
+        [data-theme="dark"] .diff-added { background-color: #102a2a; color: #6ee7b7; }
+        [data-theme="dark"] .diff-removed { background-color: #3f1010; color: #fca5a5; }
+        
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .diff-input-layout { flex-direction: column; }
+            .diff-output-layout { flex-direction: column; }
+        }
+    </style>
 </head>
 <body>
-  <main class="content tool-page">
-    <nav class="breadcrumb"><a href="../index.html">Home</a> / Text Diff</nav>
 
-    <section class="tool-card">
-      <div class="tool-header">
-        <h1>🔍 Text Difference Checker</h1>
-        <p class="small">Paste two blocks of text below to find and highlight the differences between them.</p>
-      </div>
-      <div style="display: flex; gap: 1rem;">
-        <textarea id="a" placeholder="Text A" rows="10"></textarea>
-        <textarea id="b" placeholder="Text B" rows="10"></textarea>
-      </div>
-      <div class="tool-controls">
-        <button class="btn" id="cmp">Compare Texts</button>
-      </div>
-      <pre id="out"></pre>
-    </section>
+    <header class="main-header">
+        <a href="../index.html" class="logo">ToolMancer</a>
+        <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="../index.html#category-image">Image Tools</a></li>
+                <li><a href="../index.html#category-text">Text Tools</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+            </ul>
+            <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
+            <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
+            <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
+        </nav>
+    </header>
 
-    <div class="how-to">
-      <h3>How to Use</h3>
-      <ol>
-        <li>Paste the original text into the "Text A" box.</li>
-        <li>Paste the modified text into the "Text B" box.</li>
-        <li>Click the "Compare Texts" button.</li>
-        <li>The result box will show the differences: `+` for added lines, `-` for removed lines.</li>
-      </ol>
+    <div class="mega-menu" id="allToolsMenu">
+        <!-- Mega menu content (full menu) -->
+        <div class="mega-menu-grid">
+            <div class="mega-menu-category">
+                <h3>Image Tools</h3>
+                <ul>
+                    <li><a href="image-to-pdf.html"><span class="tool-icon">📄</span> Image to PDF</a></li>
+                    <li><a href="image-compressor.html"><span class="tool-icon">🗜️</span> Image Compressor</a></li>
+                    <li><a href="image-resizer.html"><span class="tool-icon">📏</span> Image Resizer</a></li>
+                    <li><a href="convert-png-jpg.html"><span class="tool-icon">🖼️</span> PNG <> JPG</a></li>
+                    <li><a href="steganography.html"><span class="tool-icon">🕵️</span> Steganography</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Text & Writing</h3>
+                <ul>
+                    <li><a href="text-diff.html"><span class="tool-icon">🔍</span> Text Diff</a></li>
+                    <li><a href="text-encryptor.html"><span class="tool-icon">🔐</span> Text Encryptor</a></li>
+                    <li><a href="text-to-pdf.html"><span class="tool-icon">📄</span> Text to PDF</a></li>
+                    <li><a href="word-counter.html"><span class="tool-icon">✏️</span> Word Counter</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Converters</h3>
+                <ul>
+                    <li><a href="unit-converter.html"><span class="tool-icon">⚖️</span> Unit Converter</a></li>
+                    <li><a href="document-scanner.html"><span class="tool-icon">📑</span> Document Scanner</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Encoder/Decoder</h3>
+                <ul>
+                    <li><a href="url-encoder.html"><span class="tool-icon">🔗</span> URL Encoder</a></li>
+                    <li><a href="hash-generator.html"><span class="tool-icon">🛡️</span> Hash Generator</a></li>
+                    <li><a href="password-generator.html"><span class="tool-icon">🔑</span> Password Generator</a></li>
+                    <li><a href="qr-generator.html"><span class="tool-icon">📱</span> QR Generator</a></li>
+                </ul>
+            </div>
+             <div class="mega-menu-category">
+                <h3>AI Tools</h3>
+                <ul>
+                    <li><a href="image-to-prompt.html"><span class="tool-icon">🤖</span> Image to Prompt</a></li>
+                    <li><a href="json-formatter.html"><span class="tool-icon">🧩</span> JSON Formatter</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
-  </main>
-  <script>
-    document.getElementById('cmp').addEventListener('click', ()=>{
-      const A=document.getElementById('a').value.split('\n');
-      const B=document.getElementById('b').value.split('\n');
-      let out='';
-      const n=Math.max(A.length, B.length);
-      for(let i=0; i<n; i++){
-        if(A[i] === B[i]) {
-          out += '  ' + (A[i] || '') + '\n';
-        } else {
-          if (A[i] !== undefined) out += '- ' + (A[i] || '') + '\n';
-          if (B[i] !== undefined) out += '+ ' + (B[i] || '') + '\n';
-        }
-      }
-      document.getElementById('out').textContent = out.trim();
-    });
-  </script>
+
+    <main class="content tool-page">
+        <section class="tool-card">
+            <header class="tool-header">
+                <h1>🔍 Text Difference Checker</h1>
+                <p class="tool-desc">Paste two blocks of text to identify differences. Lines added are highlighted in green, and lines removed are highlighted in red.</p>
+            </header>
+
+            <div class="diff-input-layout">
+                <textarea id="textA" placeholder="Original Text (Text A)" class="tool-input"></textarea>
+                <textarea id="textB" placeholder="Modified Text (Text B)" class="tool-input"></textarea>
+            </div>
+            
+            <div class="tool-controls">
+                <button class="btn" id="compareBtn">Compare Texts</button>
+                <button class="btn" id="clearBtn">Clear</button>
+            </div>
+
+            <div class="diff-output-layout" id="outputLayout" style="display: none;">
+                <div class="diff-output-area" id="outputA"></div>
+                <div class="diff-output-area" id="outputB"></div>
+            </div>
+        </section>
+
+        <section class="how-to">
+            <h3>How to Use</h3>
+            <ol>
+                <li>Paste the original version of the text into the left box (Text A).</li>
+                <li>Paste the modified version of the text into the right box (Text B).</li>
+                <li>Click "Compare Texts" to see the differences.</li>
+                <li>Added lines will appear in Text B (green highlight), and removed lines will appear in Text A (red highlight).</li>
+            </ol>
+        </section>
+    </main>
+
+    <!-- PWA Install Button -->
+    <div class="pwa-install-container">
+        <button class="btn" id="installButton" style="display:none;">Install App</button>
+    </div>
+
+    <footer class="main-footer">
+        <ul class="footer-links">
+            <li><a href="../about.html">About Us</a></li>
+            <li><a href="../contact.html">Contact</a></li>
+            <li><a href="../blog.html">Blog</a></li>
+            <li><a href="../privacy.html">Privacy Policy</a></li>
+            <li><a href="../disclaimer.html">Disclaimer</a></li>
+        </ul>
+        <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Navigation and Theme Toggle Logic ---
+            const allToolsBtn = document.getElementById('allToolsBtn');
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const allToolsMenu = document.getElementById('allToolsMenu');
+            const searchBtn = document.getElementById('searchBtn');
+
+            const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
+            allToolsBtn.addEventListener('click', toggleMenu);
+            hamburgerBtn.addEventListener('click', () => {
+                allToolsMenu.classList.toggle('show');
+                document.body.classList.toggle('menu-open');
+            });
+            document.addEventListener('click', (event) => {
+                if (window.innerWidth > 900) {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
+                        allToolsMenu.classList.remove('show'); allToolsBtn.classList.remove('open');
+                    }
+                } else {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
+                        allToolsMenu.classList.remove('show');
+                        document.body.classList.remove('menu-open');
+                    }
+                }
+            });
+
+            // --- PWA Install Logic ---
+            let deferredPrompt;
+            const installButton = document.getElementById('installButton');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installButton.style.display = 'block';
+            });
+
+            installButton.addEventListener('click', () => {
+                installButton.style.display = 'none';
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        console.log('User response to install prompt:', choiceResult.outcome);
+                        deferredPrompt = null;
+                    });
+                }
+            });
+
+            window.addEventListener('appinstalled', () => {
+                installButton.style.display = 'none';
+            });
+
+            // --- Text Diff Tool Specific Logic ---
+            const textA = document.getElementById('textA');
+            const textB = document.getElementById('textB');
+            const compareBtn = document.getElementById('compareBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const outputLayout = document.getElementById('outputLayout');
+            const outputA = document.getElementById('outputA');
+            const outputB = document.getElementById('outputB');
+
+            // --- Comparison Logic (LCS algorithm) ---
+            function diffLines(a, b) {
+                const matrix = [];
+                for (let i = 0; i <= a.length; i++) {
+                    matrix[i] = [0];
+                }
+                for (let j = 0; j <= b.length; j++) {
+                    matrix[0][j] = 0;
+                }
+
+                for (let i = 1; i <= a.length; i++) {
+                    for (let j = 1; j <= b.length; j++) {
+                        if (a[i - 1] === b[j - 1]) {
+                            matrix[i][j] = matrix[i - 1][j - 1] + 1;
+                        } else {
+                            matrix[i][j] = Math.max(matrix[i - 1][j], matrix[i][j - 1]);
+                        }
+                    }
+                }
+
+                const resultA = [];
+                const resultB = [];
+                let i = a.length;
+                let j = b.length;
+
+                while (i > 0 || j > 0) {
+                    if (i > 0 && j > 0 && a[i - 1] === b[j - 1]) {
+                        resultA.unshift(a[i - 1]);
+                        resultB.unshift(b[j - 1]);
+                        i--;
+                        j--;
+                    } else if (j > 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
+                        resultA.unshift(''); // Added line in B
+                        resultB.unshift(b[j - 1]);
+                        j--;
+                    } else if (i > 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
+                        resultA.unshift(a[i - 1]);
+                        resultB.unshift(''); // Removed line from A
+                        i--;
+                    }
+                }
+                return { resultA, resultB };
+            }
+
+            // --- Render Output ---
+            function renderDiff() {
+                const linesA = textA.value.split('\n');
+                const linesB = textB.value.split('\n');
+
+                const { resultA, resultB } = diffLines(linesA, linesB);
+
+                outputA.innerHTML = '';
+                outputB.innerHTML = '';
+
+                for (let i = 0; i < resultA.length; i++) {
+                    if (resultA[i] === resultB[i]) {
+                        // Unchanged line
+                        outputA.innerHTML += `<span class="diff-line">${resultA[i]}</span>`;
+                        outputB.innerHTML += `<span class="diff-line">${resultB[i]}</span>`;
+                    } else {
+                        // Added or Removed line
+                        if (resultA[i] !== '') {
+                            outputA.innerHTML += `<span class="diff-line diff-removed">${resultA[i]}</span>`;
+                        } else {
+                            outputA.innerHTML += `<span class="diff-line"></span>`;
+                        }
+                        if (resultB[i] !== '') {
+                            outputB.innerHTML += `<span class="diff-line diff-added">${resultB[i]}</span>`;
+                        } else {
+                            outputB.innerHTML += `<span class="diff-line"></span>`;
+                        }
+                    }
+                }
+                outputLayout.style.display = 'flex';
+            }
+
+            // Event listeners
+            compareBtn.addEventListener('click', renderDiff);
+            clearBtn.addEventListener('click', () => {
+                textA.value = '';
+                textB.value = '';
+                outputA.innerHTML = '';
+                outputB.innerHTML = '';
+                outputLayout.style.display = 'none';
+            });
+        });
+    </script>
 </body>
 </html>
