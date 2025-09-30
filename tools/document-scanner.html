@@ -163,9 +163,10 @@
 
             <!-- New: Image Processing Controls (Filters) -->
             <div class="image-process-controls" id="imageProcessControls" style="display:none;">
+                <button class="btn" id="noFilterBtn">Original</button>
                 <button class="btn" id="bwBtn">Black & White</button>
                 <button class="btn" id="grayBtn">Greyscale</button>
-                <button class="btn" id="enhanceBtn">Enhance Contrast</button>
+                <button class="btn" id="sharpenBtn">Sharpen</button>
             </div>
             
             <button class="btn" id="makePdf" disabled style="margin-top: 1rem;">Generate PDF</button>
@@ -179,9 +180,9 @@
             <h3>How to Use</h3>
             <ol>
                 <li>Click "Start Camera" to capture documents using your device's camera.</li>
+                <li>While the camera is on, apply live filters like "Black & White" or "Sharpen" to improve image clarity.</li>
+                <li>For each page, click "Capture Page".</li>
                 <li>Alternatively, drag and drop existing document images onto the upload box.</li>
-                <li>For each page, click "Capture Page" or add an image file.</li>
-                <li>Use image processing options to clean up the document scan.</li>
                 <li>Click "Generate PDF" to create a single PDF containing all captured pages.</li>
             </ol>
         </section>
@@ -268,9 +269,10 @@
             const fileInput = document.getElementById('files');
             const dropZone = document.getElementById('dropZone');
             const imageProcessControls = document.getElementById('imageProcessControls');
+            const noFilterBtn = document.getElementById('noFilterBtn');
             const bwBtn = document.getElementById('bwBtn');
             const grayBtn = document.getElementById('grayBtn');
-            const enhanceBtn = document.getElementById('enhanceBtn');
+            const sharpenBtn = document.getElementById('sharpenBtn');
 
             let caps = []; // Array to store image data URLs or Blobs
 
@@ -295,6 +297,7 @@
                         camBtn.textContent = 'Stop Camera';
                         makePdfBtn.disabled = false; // Enable Generate PDF button when camera starts
                         dropZone.style.display = 'none'; // Hide dropzone while camera is active
+                        imageProcessControls.style.display = 'flex'; // Show filter options
                     } catch (e) {
                         alert('Camera unavailable or permission denied.');
                         console.error('Camera error:', e);
@@ -306,17 +309,24 @@
                     capBtn.style.display = 'none';
                     camBtn.textContent = 'Start Camera';
                     dropZone.style.display = 'flex'; // Show dropzone again
+                    imageProcessControls.style.display = 'none'; // Hide filter options when camera stops
                     if (caps.length === 0) { makePdfBtn.disabled = true; }
                 }
             });
 
             // Capture Frame from Camera
             capBtn.addEventListener('click', () => {
-                // Create canvas and draw current video frame
+                // Create canvas and draw current video frame with live filter applied
                 const c = document.createElement('canvas');
                 c.width = video.videoWidth;
                 c.height = video.videoHeight;
-                c.getContext('2d').drawImage(video, 0, 0);
+                const ctx = c.getContext('2d');
+
+                // Apply current CSS filter to canvas context before drawing
+                const currentFilter = video.style.filter;
+                ctx.filter = currentFilter;
+                ctx.drawImage(video, 0, 0);
+
                 const dataUrl = c.toDataURL('image/png');
                 addCapturedImage(dataUrl);
             });
@@ -339,60 +349,13 @@
                 img.src = dataUrl;
                 thumbsContainer.appendChild(img);
                 makePdfBtn.disabled = false;
-                imageProcessControls.style.display = 'flex'; // Show filter options after capturing first image
             }
 
-            // --- Image Processing Functions (Added functionality) ---
-            function applyFilter(filterType) {
-                // Get the last captured image data (dataURL)
-                if (caps.length === 0) return;
-                const lastImageIndex = caps.length - 1;
-                const img = new Image();
-                img.src = caps[lastImageIndex];
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-
-                    // Apply filter logic using canvas pixel data
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const data = imageData.data;
-
-                    for (let i = 0; i < data.length; i += 4) {
-                        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-
-                        if (filterType === 'bw') {
-                            const threshold = 128; // Simple Black & White (thresholding)
-                            const color = avg > threshold ? 255 : 0;
-                            data[i] = color;
-                            data[i + 1] = color;
-                            data[i + 2] = color;
-                        } else if (filterType === 'gray') {
-                            data[i] = avg; // Greyscale
-                            data[i + 1] = avg;
-                            data[i + 2] = avg;
-                        } else if (filterType === 'enhance') {
-                            // Simple contrast enhancement logic (increase contrast)
-                            const contrast = 1.2;
-                            data[i] = contrast * (data[i] - 128) + 128;
-                            data[i + 1] = contrast * (data[i + 1] - 128) + 128;
-                            data[i + 2] = contrast * (data[i + 2] - 128) + 128;
-                        }
-                    }
-
-                    ctx.putImageData(imageData, 0, 0);
-                    const newImageUrl = canvas.toDataURL('image/png');
-                    caps[lastImageIndex] = newImageUrl; // Update stored image data
-                    thumbsContainer.lastElementChild.src = newImageUrl; // Update thumbnail preview
-                };
-            }
-
-            // Add listeners to filter buttons
-            bwBtn.addEventListener('click', () => applyFilter('bw'));
-            grayBtn.addEventListener('click', () => applyFilter('gray'));
-            enhanceBtn.addEventListener('click', () => applyFilter('enhance'));
+            // --- Live Image Processing Functions (Apply CSS filters directly to video) ---
+            noFilterBtn.addEventListener('click', () => { video.style.filter = 'none'; });
+            bwBtn.addEventListener('click', () => { video.style.filter = 'grayscale(100%) brightness(1.1)'; });
+            grayBtn.addEventListener('click', () => { video.style.filter = 'grayscale(100%)'; });
+            sharpenBtn.addEventListener('click', () => { video.style.filter = 'brightness(1.2) contrast(1.2)'; });
 
             // Create PDF from captured images
             makePdfBtn.addEventListener('click', async () => {
