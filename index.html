@@ -237,53 +237,6 @@
             window.addEventListener('appinstalled', () => {
                 installButton.style.display = 'none';
             });
-
-            // --- URL Encoder/Decoder Tool Specific Logic ---
-            const txtInput = document.getElementById('txtInput');
-            const encodeBtn = document.getElementById('encodeBtn');
-            const decodeBtn = document.getElementById('decodeBtn');
-            const clearBtn = document.getElementById('clearBtn');
-            const outputText = document.getElementById('outputText');
-            const copyBtn = document.getElementById('copyBtn');
-
-            // --- Event Listeners ---
-            encodeBtn.addEventListener('click', () => {
-                const text = txtInput.value;
-                if (!text) return alert('Please enter text to encode.');
-                outputText.textContent = encodeURIComponent(text);
-                copyBtn.style.display = 'inline-block';
-            });
-
-            decodeBtn.addEventListener('click', () => {
-                const text = txtInput.value;
-                if (!text) return alert('Please enter text to decode.');
-                try {
-                    outputText.textContent = decodeURIComponent(text);
-                    copyBtn.style.display = 'inline-block';
-                } catch (e) {
-                    outputText.textContent = 'Error: Invalid URL encoding sequence.';
-                    copyBtn.style.display = 'none';
-                }
-            });
-
-            clearBtn.addEventListener('click', () => {
-                txtInput.value = '';
-                outputText.textContent = '';
-                copyBtn.style.display = 'none';
-            });
-
-            copyBtn.addEventListener('click', () => {
-                const textToCopy = outputText.textContent;
-                navigator.clipboard.writeText(textToCopy)
-                    .then(() => {
-                        copyBtn.textContent = 'Copied!';
-                        setTimeout(() => copyBtn.textContent = 'Copy', 1500);
-                    })
-                    .catch(err => {
-                        console.error('Failed to copy: ', err);
-                        alert('Failed to copy text.');
-                    });
-            });
         });
     </script>
 </body>
