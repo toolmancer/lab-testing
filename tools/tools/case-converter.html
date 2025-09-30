@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Converter | ToolMancer</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Tool-specific styles based on the common layout */
+        .tool-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 2rem;
+            flex-grow: 1;
+            width: 100%;
+        }
+        .tool-page .tool-card {
+            max-width: 800px;
+            padding: 2rem;
+            width: 100%;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .tool-header { text-align: center; margin-bottom: 1.5rem; }
+        .tool-header h1 { font-size: 2rem; color: var(--accent); font-weight: 700; }
+        .tool-header .tool-desc { font-size: 1rem; color: #475569; max-width: 650px; margin: 0 auto; line-height: 1.5; }
+        [data-theme="dark"] .tool-header .tool-desc { color: #94a3b8; }
+
+        /* --- Custom UI for Case Converter --- */
+        .case-converter-layout { display: flex; flex-direction: column; gap: 1rem; }
+        .case-converter-layout textarea { min-height: 150px; }
+        .case-output-container { margin-top: 1rem; }
+        .case-output-box {
+            position: relative;
+            background: var(--bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .case-output-label { font-size: 0.9em; font-weight: 600; color: #64748b; margin-bottom: 0.3rem; }
+        [data-theme="dark"] .case-output-label { color: #94a3b8; }
+        .case-output-text { word-wrap: break-word; font-size: 1em; color: var(--text); }
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <a href="../index.html" class="logo">ToolMancer</a>
+        <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="../index.html#category-image">Image Tools</a></li>
+                <li><a href="../index.html#category-text">Text Tools</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+            </ul>
+            <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
+            <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
+            <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
+        </nav>
+    </header>
+
+    <div class="mega-menu" id="allToolsMenu">
+        <!-- Mega menu content (full menu) -->
+        <div class="mega-menu-grid">
+            <div class="mega-menu-category">
+                <h3>Image Tools</h3>
+                <ul>
+                    <li><a href="image-to-pdf.html"><span class="tool-icon">📄</span> Image to PDF</a></li>
+                    <li><a href="image-compressor.html"><span class="tool-icon">🗜️</span> Image Compressor</a></li>
+                    <li><a href="image-resizer.html"><span class="tool-icon">📏</span> Image Resizer</a></li>
+                    <li><a href="convert-png-jpg.html"><span class="tool-icon">🖼️</span> PNG <> JPG</a></li>
+                    <li><a href="steganography.html"><span class="tool-icon">🕵️</span> Steganography</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Text & Writing</h3>
+                <ul>
+                    <li><a href="text-diff.html"><span class="tool-icon">🔍</span> Text Diff</a></li>
+                    <li><a href="text-encryptor.html"><span class="tool-icon">🔐</span> Text Encryptor</a></li>
+                    <li><a href="text-to-pdf.html"><span class="tool-icon">📄</span> Text to PDF</a></li>
+                    <li><a href="word-counter.html"><span class="tool-icon">✏️</span> Word Counter</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Converters</h3>
+                <ul>
+                    <li><a href="unit-converter.html"><span class="tool-icon">⚖️</span> Unit Converter</a></li>
+                    <li><a href="document-scanner.html"><span class="tool-icon">📑</span> Document Scanner</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Encoder/Decoder</h3>
+                <ul>
+                    <li><a href="url-encoder.html"><span class="tool-icon">🔗</span> URL Encoder</a></li>
+                    <li><a href="hash-generator.html"><span class="tool-icon">🛡️</span> Hash Generator</a></li>
+                    <li><a href="password-generator.html"><span class="tool-icon">🔑</span> Password Generator</a></li>
+                    <li><a href="qr-generator.html"><span class="tool-icon">📱</span> QR Generator</a></li>
+                </ul>
+            </div>
+             <div class="mega-menu-category">
+                <h3>AI Tools</h3>
+                <ul>
+                    <li><a href="image-to-prompt.html"><span class="tool-icon">🤖</span> Image to Prompt</a></li>
+                    <li><a href="json-formatter.html"><span class="tool-icon">🧩</span> JSON Formatter</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <main class="content tool-page">
+        <section class="tool-card">
+            <header class="tool-header">
+                <h1>Aa Case Converter</h1>
+                <p class="tool-desc">Convert text between different cases: UPPERCASE, lowercase, Title Case, and more.</p>
+            </header>
+
+            <div class="case-converter-layout">
+                <textarea id="textInput" placeholder="Enter text here..." class="tool-input"></textarea>
+
+                <div class="tool-controls">
+                    <button class="btn" id="clearBtn">Clear Text</button>
+                </div>
+
+                <div class="case-output-container">
+                    <div class="case-output-box">
+                        <span class="case-output-label">UPPERCASE</span>
+                        <div id="uppercaseOutput" class="case-output-text"></div>
+                        <button class="copy-button" data-copy-target="uppercaseOutput">Copy</button>
+                    </div>
+                    <div class="case-output-box">
+                        <span class="case-output-label">lowercase</span>
+                        <div id="lowercaseOutput" class="case-output-text"></div>
+                        <button class="copy-button" data-copy-target="lowercaseOutput">Copy</button>
+                    </div>
+                    <div class="case-output-box">
+                        <span class="case-output-label">Sentence Case</span>
+                        <div id="sentenceCaseOutput" class="case-output-text"></div>
+                        <button class="copy-button" data-copy-target="sentenceCaseOutput">Copy</button>
+                    </div>
+                    <div class="case-output-box">
+                        <span class="case-output-label">Title Case</span>
+                        <div id="titleCaseOutput" class="case-output-text"></div>
+                        <button class="copy-button" data-copy-target="titleCaseOutput">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-to">
+            <h3>How to Use</h3>
+            <ol>
+                <li>Paste your text into the input box above.</li>
+                <li>The results in different cases will be displayed immediately below.</li>
+                <li>Click the "Copy" button next to each result to save it to your clipboard.</li>
+            </ol>
+        </section>
+    </main>
+
+    <!-- PWA Install Button -->
+    <div class="pwa-install-container">
+        <button class="btn" id="installButton" style="display:none;">Install App</button>
+    </div>
+
+    <footer class="main-footer">
+        <ul class="footer-links">
+            <li><a href="../about.html">About Us</a></li>
+            <li><a href="../contact.html">Contact</a></li>
+            <li><a href="../blog.html">Blog</a></li>
+            <li><a href="../privacy.html">Privacy Policy</a></li>
+            <li><a href="../disclaimer.html">Disclaimer</a></li>
+        </ul>
+        <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Navigation and Theme Toggle Logic ---
+            const allToolsBtn = document.getElementById('allToolsBtn');
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const allToolsMenu = document.getElementById('allToolsMenu');
+            const searchBtn = document.getElementById('searchBtn');
+
+            const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
+            allToolsBtn.addEventListener('click', toggleMenu);
+            hamburgerBtn.addEventListener('click', () => {
+                allToolsMenu.classList.toggle('show');
+                document.body.classList.toggle('menu-open');
+            });
+            document.addEventListener('click', (event) => {
+                if (window.innerWidth > 900) {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
+                        allToolsMenu.classList.remove('show'); allToolsBtn.classList.remove('open');
+                    }
+                } else {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
+                        allToolsMenu.classList.remove('show');
+                        document.body.classList.remove('menu-open');
+                    }
+                }
+            });
+
+            // --- PWA Install Logic ---
+            let deferredPrompt;
+            const installButton = document.getElementById('installButton');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installButton.style.display = 'block';
+            });
+
+            installButton.addEventListener('click', () => {
+                installButton.style.display = 'none';
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        console.log('User response to install prompt:', choiceResult.outcome);
+                        deferredPrompt = null;
+                    });
+                }
+            });
+
+            window.addEventListener('appinstalled', () => {
+                installButton.style.display = 'none';
+            });
+
+            // --- Case Converter Tool Specific Logic ---
+            const textInput = document.getElementById('textInput');
+            const uppercaseOutput = document.getElementById('uppercaseOutput');
+            const lowercaseOutput = document.getElementById('lowercaseOutput');
+            const sentenceCaseOutput = document.getElementById('sentenceCaseOutput');
+            const titleCaseOutput = document.getElementById('titleCaseOutput');
+            const clearBtn = document.getElementById('clearBtn');
+
+            // --- Case Conversion Functions ---
+            function toUppercase(text) {
+                return text.toUpperCase();
+            }
+
+            function toLowercase(text) {
+                return text.toLowerCase();
+            }
+
+            function toSentenceCase(text) {
+                return text.toLowerCase().replace(/(^\s*\w|[.?!]\s*\w)/g, function(c) {
+                    return c.toUpperCase();
+                });
+            }
+
+            function toTitleCase(text) {
+                return text.toLowerCase().split(' ').map(function(word) {
+                    return word.charAt(0).toUpperCase() + word.slice(1);
+                }).join(' ');
+            }
+
+            // --- Update UI in Real-time ---
+            function updateConversions() {
+                const text = textInput.value;
+                uppercaseOutput.textContent = toUppercase(text);
+                lowercaseOutput.textContent = toLowercase(text);
+                sentenceCaseOutput.textContent = toSentenceCase(text);
+                titleCaseOutput.textContent = toTitleCase(text);
+            }
+
+            // --- Event Listeners ---
+            textInput.addEventListener('input', updateConversions);
+            clearBtn.addEventListener('click', () => {
+                textInput.value = '';
+                updateConversions();
+            });
+
+            // Copy to clipboard logic for all copy buttons
+            document.querySelectorAll('.copy-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.copyTarget;
+                    const textToCopy = document.getElementById(targetId).textContent;
+                    navigator.clipboard.writeText(textToCopy)
+                        .then(() => {
+                            button.textContent = 'Copied!';
+                            setTimeout(() => button.textContent = 'Copy', 1500);
+                        })
+                        .catch(err => {
+                            console.error('Failed to copy: ', err);
+                            alert('Failed to copy text.');
+                        });
+                });
+            });
+
+            updateConversions(); // Initial call to clear outputs on load
+        });
+    </script>
+</body>
+</html>
