@@ -184,24 +184,34 @@
         <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
     </footer>
 
-    <!-- PWA Service Worker Registration Script -->
+    <!-- Scripts -->
     <script src="theme.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Navigation and Theme Toggle Logic ---
             const allToolsBtn = document.getElementById('allToolsBtn');
             const hamburgerBtn = document.getElementById('hamburgerBtn');
             const allToolsMenu = document.getElementById('allToolsMenu');
             const searchBtn = document.getElementById('searchBtn');
-            const heroSearchInput = document.getElementById('heroSearchInput');
-            const allToolCards = Array.from(document.querySelectorAll('.tool-card-home'));
-            const tabButtons = document.querySelectorAll('.tab-btn');
 
-            // --- Elements to manage during search ---
-            const featureHighlights = document.getElementById('featureHighlights');
-            const popularTools = document.getElementById('popularTools');
-            const allToolsTitle = document.getElementById('allToolsTitle');
-            const filterTabs = document.getElementById('filterTabs');
-            const toolGrid = document.getElementById('toolGrid');
+            const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
+            allToolsBtn.addEventListener('click', toggleMenu);
+            hamburgerBtn.addEventListener('click', () => {
+                allToolsMenu.classList.toggle('show');
+                document.body.classList.toggle('menu-open');
+            });
+            document.addEventListener('click', (event) => {
+                if (window.innerWidth > 900) {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
+                        allToolsMenu.classList.remove('show'); allToolsBtn.classList.remove('open');
+                    }
+                } else {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
+                        allToolsMenu.classList.remove('show');
+                        document.body.classList.remove('menu-open');
+                    }
+                }
+            });
 
             // --- PWA Install Logic ---
             let deferredPrompt;
@@ -218,11 +228,7 @@
                 if (deferredPrompt) {
                     deferredPrompt.prompt();
                     deferredPrompt.userChoice.then((choiceResult) => {
-                        if (choiceResult.outcome === 'accepted') {
-                            console.log('User accepted the PWA installation prompt');
-                        } else {
-                            console.log('User dismissed the PWA installation prompt');
-                        }
+                        console.log('User response to install prompt:', choiceResult.outcome);
                         deferredPrompt = null;
                     });
                 }
@@ -232,109 +238,52 @@
                 installButton.style.display = 'none';
             });
 
-            // --- Service Worker Registration ---
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/service-worker.js')
-                        .then(registration => {
-                            console.log('Service Worker registered successfully:', registration);
-                        })
-                        .catch(error => {
-                            console.log('Service Worker registration failed:', error);
-                        });
-                });
-            }
+            // --- URL Encoder/Decoder Tool Specific Logic ---
+            const txtInput = document.getElementById('txtInput');
+            const encodeBtn = document.getElementById('encodeBtn');
+            const decodeBtn = document.getElementById('decodeBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const outputText = document.getElementById('outputText');
+            const copyBtn = document.getElementById('copyBtn');
 
-            // --- Mega Menu Logic ---
-            // Desktop logic (open/close mega menu)
-            allToolsBtn.addEventListener('click', (event) => {
-                if (window.innerWidth > 900) { // Check screen width
-                    event.stopPropagation();
-                    allToolsMenu.classList.toggle('show');
-                    allToolsBtn.classList.toggle('open');
+            // --- Event Listeners ---
+            encodeBtn.addEventListener('click', () => {
+                const text = txtInput.value;
+                if (!text) return alert('Please enter text to encode.');
+                outputText.textContent = encodeURIComponent(text);
+                copyBtn.style.display = 'inline-block';
+            });
+
+            decodeBtn.addEventListener('click', () => {
+                const text = txtInput.value;
+                if (!text) return alert('Please enter text to decode.');
+                try {
+                    outputText.textContent = decodeURIComponent(text);
+                    copyBtn.style.display = 'inline-block';
+                } catch (e) {
+                    outputText.textContent = 'Error: Invalid URL encoding sequence.';
+                    copyBtn.style.display = 'none';
                 }
             });
 
-            // Mobile logic (open/close hamburger menu / mega menu)
-            hamburgerBtn.addEventListener('click', (event) => {
-                event.stopPropagation();
-                allToolsMenu.classList.toggle('show');
-                document.body.classList.toggle('menu-open'); // To prevent main body scrolling
+            clearBtn.addEventListener('click', () => {
+                txtInput.value = '';
+                outputText.textContent = '';
+                copyBtn.style.display = 'none';
             });
 
-            // Close menu when clicking outside
-            document.addEventListener('click', (event) => {
-                // Check if we are on desktop
-                if (window.innerWidth > 900) {
-                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
-                        allToolsMenu.classList.remove('show');
-                        allToolsBtn.classList.remove('open');
-                    }
-                } else { // Mobile logic
-                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
-                        allToolsMenu.classList.remove('show');
-                        document.body.classList.remove('menu-open');
-                    }
-                }
+            copyBtn.addEventListener('click', () => {
+                const textToCopy = outputText.textContent;
+                navigator.clipboard.writeText(textToCopy)
+                    .then(() => {
+                        copyBtn.textContent = 'Copied!';
+                        setTimeout(() => copyBtn.textContent = 'Copy', 1500);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy: ', err);
+                        alert('Failed to copy text.');
+                    });
             });
-
-            // --- Search Logic (In-place) ---
-            searchBtn.addEventListener('click', () => { heroSearchInput.focus(); });
-
-            heroSearchInput.addEventListener('input', () => {
-                const query = heroSearchInput.value.toLowerCase().trim();
-                performInPlaceSearch(query);
-            });
-
-            function performInPlaceSearch(query) {
-                const lowerCaseQuery = query.toLowerCase().trim();
-
-                if (lowerCaseQuery.length === 0) {
-                    featureHighlights.style.display = 'flex';
-                    popularTools.style.display = 'block';
-                    allToolsTitle.style.display = 'block';
-                    filterTabs.style.display = 'flex';
-                    updateToolVisibility();
-                    return;
-                }
-
-                featureHighlights.style.display = 'none';
-                popularTools.style.display = 'none';
-                allToolsTitle.style.display = 'none';
-                filterTabs.style.display = 'none';
-
-                let resultsFound = false;
-                allToolCards.forEach(card => {
-                    const keywords = card.dataset.keywords.toLowerCase();
-                    const title = card.querySelector('.tool-title').textContent.toLowerCase();
-                    if (keywords.includes(lowerCaseQuery) || title.includes(lowerCaseQuery)) {
-                        card.style.display = 'block';
-                        resultsFound = true;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            }
-
-            // --- Filter Tabs Logic ---
-            function updateToolVisibility() {
-                const activeTab = document.querySelector('.tab-btn.active').dataset.filter;
-                allToolCards.forEach(card => {
-                    if (activeTab === 'all' || card.dataset.category === activeTab) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            }
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    updateToolVisibility();
-                });
-            });
-            updateToolVisibility(); // Initial call
         });
     </script>
 </body>
