@@ -6,78 +6,44 @@
   <title>ToolMancer – All-in-One Toolkit</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    body {
-      background: #f9fafd;
-      margin: 0;
-      padding: 0;
-    }
-
-    /* Sticky Top Bar */
+    body { background: #f9fafd; }
     .sticky-bar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: #fff;
-      padding: 0.7em 1em;
-      margin-bottom: 1.5em;
-      box-shadow: 0 2px 12px #0001;
-      width: 100%;
+      position: sticky; top: 0; z-index: 100;
+      background: var(--bg); padding-top: 1.7em;
+      margin-bottom: 2.4em; box-shadow: 0 2px 12px #0001;
     }
-
-    /* Categories Bar */
     .top-categories-bar {
-      display: flex;
-      align-items: center;
-      gap: 0.4em;
-      flex-wrap: nowrap;
-      justify-content: flex-start;
-      overflow-x: auto;
-      scrollbar-width: thin;
-      padding: 0.5em 0;
-      width: 100%;
+      display: flex; align-items: center; gap: 0.4em;
+      flex-wrap: nowrap; justify-content: flex-start;
+      overflow-x: auto; scrollbar-width: thin;
+      padding-bottom: 0.5em; padding-left: 0.5em;
     }
-
     .cat-tab {
-      background: #fff;
-      color: var(--accent);
-      border: none;
+      background: #fff; color: var(--accent); border: none;
       border-bottom: 3.5px solid transparent;
       border-radius: 10px 10px 0 0;
       padding: 0.7em 1.5em 0.6em 1.5em;
-      font-size: 1em;
-      font-weight: 600;
-      cursor: pointer;
+      font-size: 1em; font-weight: 600; cursor: pointer;
       margin-bottom: -3px;
       transition: background 0.14s, color 0.14s, border-bottom 0.18s;
-      outline: none;
-      position: relative;
+      outline: none; position: relative;
     }
-
-    .cat-tab.active,
-    .cat-tab:focus {
-      background: #e9f2ff;
-      color: #1740a5;
-      border-bottom: 3.5px solid #2563eb;
-      z-index: 2;
+    .cat-tab.active, .cat-tab:focus {
+      background: #e9f2ff; color: #1740a5;
+      border-bottom: 3.5px solid #2563eb; z-index: 2;
       box-shadow: 0 2px 8px #2563eb22;
     }
-
-    .cat-tab:hover:not(.active) {
-      background: #f6faff;
-    }
-
-    /* Tool Grid – full width */
+    .cat-tab:hover:not(.active) { background: #f6faff; }
     .tool-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-      gap: 2em;
+      gap: 2.1em;
       justify-content: center;
       margin: 0 auto;
-      width: 100%;
-      padding: 0 1.5em 3em;
+      max-width: 1300px;
+      margin-top: 2.1em;
+      padding-bottom: 3em;
     }
-
-    /* Tool Cards */
     .tool-card-home {
       background: #fff;
       border-radius: 16px;
@@ -94,21 +60,18 @@
       position: relative;
       border: 1.5px solid #e0e7ef;
     }
-
     .tool-card-home:hover {
       box-shadow: 0 9px 36px #2563eb18, 0 1.5px 8px #2563eb18;
       border-color: var(--accent);
       transform: translateY(-3px) scale(1.04);
       color: var(--accent);
     }
-
     .tool-logo {
       font-size: 2.3em;
       margin-bottom: 0.1em;
       margin-right: 0.07em;
       user-select: none;
     }
-
     .tool-title {
       font-size: 1.21em;
       font-weight: bold;
@@ -116,7 +79,6 @@
       letter-spacing: 0.1px;
       color: var(--accent);
     }
-
     .tool-desc {
       font-size: 1.06em;
       color: #40506b;
@@ -124,43 +86,20 @@
       margin-top: -0.4em;
       line-height: 1.43;
       min-height: 2.2em;
-      max-width: 100%;
+      max-width: 350px;
     }
-
-    /* Mobile */
     @media (max-width: 1000px) {
-      .tool-grid {
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      }
+      .tool-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
     }
-
     @media (max-width: 700px) {
-      .tool-grid {
-        grid-template-columns: repeat(auto-fit, minmax(99vw, 1fr));
-        gap: 1.1em;
-        padding: 0 0.5em 2em;
-      }
-      .cat-tab {
-        padding: 0.5em 1em 0.45em 1em;
-      }
-      .tool-card-home {
-        min-height: 110px;
-        padding: 1.1em 0.8em;
-      }
+      .tool-grid { grid-template-columns: repeat(auto-fit, minmax(99vw, 1fr)); gap: 1.1em;}
+      .sticky-bar { padding-top: 0.7em; margin-bottom: 1.2em; }
+      .top-categories-bar { font-size: .97em; padding-left: 0.1em;}
+      .cat-tab { padding: 0.5em 1em 0.45em 1em;}
+      .tool-card-home { min-height: 110px; padding: 1.1em 0.8em;}
     }
-
-    /* Home Card Section */
-    .home-card {
-      background: none;
-      box-shadow: none;
-      padding: 0;
-      margin: 0 auto;
-      width: 100%;
-    }
-    .home-card h1,
-    .home-card .subtitle {
-      text-align: center;
-    }
+    .home-card { background: none; box-shadow: none; padding: 0; margin: 0 auto; max-width: 1200px;}
+    .home-card h1, .home-card .subtitle { text-align: center; }
   </style>
 </head>
 <body>
@@ -176,6 +115,7 @@
           <button class="cat-tab" data-cat="convert">Converters</button>
           <button class="cat-tab" data-cat="encode">Encoder/Decoder</button>
           <button class="cat-tab" data-cat="ai">AI Tools</button>
+          <!-- More dropdown can be added here if needed -->
         </nav>
       </div>
       <div class="tool-grid">
@@ -270,8 +210,8 @@
   <script>
     // Tab filter logic
     function setActiveTab(cat) {
-      document.querySelectorAll('.cat-tab').forEach(b => {
-        if (b.dataset.cat === cat) b.classList.add('active');
+      document.querySelectorAll('.cat-tab').forEach(b=>{
+        if(b.dataset.cat === cat) b.classList.add('active');
         else b.classList.remove('active');
       });
       document.querySelectorAll('.tool-card-home').forEach(card => {
@@ -279,7 +219,7 @@
       });
     }
     document.querySelectorAll('.cat-tab').forEach(btn => {
-      btn.onclick = function () { setActiveTab(btn.dataset.cat); }
+      btn.onclick = function() { setActiveTab(btn.dataset.cat); }
     });
   </script>
 </body>
