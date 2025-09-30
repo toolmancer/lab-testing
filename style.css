@@ -48,13 +48,8 @@ body { font-family: "Inter", "Segoe UI", Arial, sans-serif; background: var(--bg
 [data-theme="dark"] .mega-menu-category ul a:hover { background-color: #475569; }
 .mega-menu-category ul a .tool-icon { font-size: 1.2rem; }
 
-/* ==== Search Overlay Removed ==== */
-/* Removed search-overlay related CSS */
-
 /* ==== Main Content & Homepage ==== */
 main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2rem; }
-
-/* Adjust Hero section padding for better "above the fold" visibility */
 .home-hero { text-align: center; padding-top: 1rem; padding-bottom: 1rem; }
 .home-hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.75rem; color: var(--text); }
 .home-hero .subtitle { font-size: 1.05rem; color: #475569; max-width: 650px; margin: 0 auto; }
@@ -109,6 +104,8 @@ main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2r
 .tab-btn:hover { background-color: #f1f5f9; }
 [data-theme="dark"] .tab-btn:hover { background-color: #475569; }
 .tab-btn.active { background-color: var(--accent); color: white; border-color: var(--accent); }
+
+/* Grid container for popular tools and all tools */
 .tool-grid-home { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
 .tool-card-home { background: var(--card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; text-decoration: none; color: var(--text); transition: all 0.2s ease; }
 .tool-card-home:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.1); border-color: var(--accent); }
@@ -161,13 +158,13 @@ main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2r
 .hamburger-btn { display: none; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text); }
 
 @media (max-width: 900px) {
-  /* Change 1: Hide desktop "All Tools" button on mobile */
+  /* Hide desktop "All Tools" button on mobile */
   .all-tools-btn { display: none; }
 
-  /* Change 2: Show Hamburger Menu on mobile */
+  /* Show Hamburger Menu on mobile */
   .hamburger-btn { display: block; }
 
-  /* Change 3: Mobile Mega Menu as Side Menu */
+  /* Mobile Mega Menu as Side Menu */
   .mega-menu {
     position: fixed;
     top: 0;
@@ -187,12 +184,14 @@ main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2r
   .mega-menu-grid { display: block; }
   .mega-menu-category { margin-bottom: 1rem; }
 
-  /* Other mobile-specific styles for main content */
-  .main-nav ul { display: none; }
-  .main-header { padding: 0 1rem; }
-  main { padding: 1rem; overflow-x: hidden; } /* Horizontal scroll fix */
-  .popular-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-  .tool-grid-home { grid-template-columns: repeat(2, 1fr); gap: 1rem; } /* Adjusted grid for 2 columns on mobile */
+  /* Horizontal scroll fix */
+  main { padding: 1rem; overflow-x: hidden; }
+
+  /* Mobile layout for tool grids (2 columns) */
+  .popular-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+  .tool-grid-home { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+
+  /* Mobile layout for feature highlights */
   .feature-highlights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1rem; margin-bottom: 2rem; }
   .highlight-item { max-width: unset; }
   .highlight-item p { display: none; }
