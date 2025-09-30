@@ -17,6 +17,7 @@
                 <li><a href="#category-text">Text Tools</a></li>
                 <li><a href="blog.html">Blog</a></li>
             </ul>
+            <!-- Search button now triggers search input focus and results on page -->
             <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
             <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
             <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
@@ -173,14 +174,7 @@
         <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
     </footer>
 
-    <div class="search-overlay" id="searchOverlay">
-        <button class="search-close-btn" id="searchCloseBtn" aria-label="Close Search">&times;</button>
-        <div class="search-box">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" id="searchInput" placeholder="Search for a tool..." autocomplete="off">
-        </div>
-        <div id="search-results"></div>
-    </div>
+    <!-- Search Overlay Removed -->
 
     <script src="theme.js"></script>
     <script>
@@ -189,39 +183,21 @@
             const hamburgerBtn = document.getElementById('hamburgerBtn');
             const allToolsMenu = document.getElementById('allToolsMenu');
             const searchBtn = document.getElementById('searchBtn');
-            const searchCloseBtn = document.getElementById('searchCloseBtn');
-            const searchOverlay = document.getElementById('searchOverlay');
-            const searchInput = document.getElementById('searchInput');
+            const heroSearchInput = document.getElementById('heroSearchInput');
             const allToolCards = Array.from(document.querySelectorAll('.tool-card-home'));
             const tabButtons = document.querySelectorAll('.tab-btn');
-            const heroSearchInput = document.getElementById('heroSearchInput');
+            const toolGrid = document.getElementById('toolGrid'); // Get the main tool grid container
 
             // --- Mega Menu Logic ---
-            // Desktop logic (open/close mega menu)
-            allToolsBtn.addEventListener('click', (event) => {
-                if (window.innerWidth > 900) { // Check screen width
-                    event.stopPropagation();
-                    allToolsMenu.classList.toggle('show');
-                    allToolsBtn.classList.toggle('open');
-                }
-            });
-
-            // Mobile logic (open/close hamburger menu / mega menu)
-            hamburgerBtn.addEventListener('click', (event) => {
-                event.stopPropagation();
-                allToolsMenu.classList.toggle('show');
-                document.body.classList.toggle('menu-open'); // To prevent main body scrolling
-            });
-
-            // Close menu when clicking outside (on desktop, to close mega menu)
+            const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
+            allToolsBtn.addEventListener('click', toggleMenu);
+            hamburgerBtn.addEventListener('click', toggleMenu);
             document.addEventListener('click', (event) => {
                 if (window.innerWidth > 900) {
                     if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
-                        allToolsMenu.classList.remove('show');
-                        allToolsBtn.classList.remove('open');
+                        allToolsMenu.classList.remove('show'); allToolsBtn.classList.remove('open');
                     }
                 } else {
-                    // Mobile close logic
                     if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
                         allToolsMenu.classList.remove('show');
                         document.body.classList.remove('menu-open');
@@ -230,33 +206,44 @@
             });
 
             // --- Search Logic ---
-            searchBtn.addEventListener('click', () => { searchOverlay.classList.add('show'); document.body.classList.add('search-open'); searchInput.focus(); });
-            const closeSearch = () => { searchOverlay.classList.remove('show'); document.body.classList.remove('search-open'); searchInput.value = ''; searchResults.innerHTML = ''; };
-            searchCloseBtn.addEventListener('click', closeSearch);
+            // Desktop search button (new behavior: focus hero input)
+            searchBtn.addEventListener('click', () => { heroSearchInput.focus(); });
 
+            // In-place search functionality
             heroSearchInput.addEventListener('input', () => {
                 const query = heroSearchInput.value.toLowerCase().trim();
-                if (query.length > 0) {
-                    searchOverlay.classList.add('show');
-                    document.body.classList.add('search-open');
-                    searchInput.value = query;
-                    performSearch(query);
-                }
-            });
-            heroSearchInput.addEventListener('focus', () => {
-                searchOverlay.classList.add('show');
-                document.body.classList.add('search-open');
-                searchInput.focus();
+                performInPlaceSearch(query);
             });
 
-            searchInput.addEventListener('input', () => performSearch(searchInput.value));
-
-            function performSearch(query) {
+            function performInPlaceSearch(query) {
                 const lowerCaseQuery = query.toLowerCase().trim();
-                searchResults.innerHTML = '';
-                if (lowerCaseQuery.length > 1) {
-                    const matchedTools = allToolCards.filter(card => card.dataset.keywords.toLowerCase().includes(lowerCaseQuery) || card.querySelector('.tool-title').textContent.toLowerCase().includes(lowerCaseQuery));
-                    matchedTools.forEach(card => { searchResults.appendChild(card.cloneNode(true)); });
+                // If query is empty, show all tools.
+                if (lowerCaseQuery.length === 0) {
+                    allToolCards.forEach(card => card.style.display = 'block');
+                    document.getElementById('toolGrid').style.display = 'grid'; // ensure grid is visible
+                    document.querySelector('.popular-tools').style.display = 'block'; // Show popular tools
+                    document.querySelector('.filter-tabs').style.display = 'flex'; // Show filter tabs
+                    return;
+                }
+
+                document.querySelector('.popular-tools').style.display = 'none'; // Hide popular tools during search
+                document.querySelector('.filter-tabs').style.display = 'none'; // Hide filter tabs during search
+
+                // Filter logic
+                let resultsFound = false;
+                allToolCards.forEach(card => {
+                    const keywords = card.dataset.keywords.toLowerCase();
+                    const title = card.querySelector('.tool-title').textContent.toLowerCase();
+                    if (keywords.includes(lowerCaseQuery) || title.includes(lowerCaseQuery)) {
+                        card.style.display = 'block';
+                        resultsFound = true;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                if (!resultsFound) {
+                    // Optional: show a "no results found" message
                 }
             }
 
