@@ -6,14 +6,16 @@
     <title>ToolMancer – All-in-One Online Toolkit</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
-    
-    <!-- PWA Manifest Link added here -->
+
+    <!-- PWA Manifest Link -->
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
     <header class="main-header">
         <a href="index.html" class="logo">ToolMancer</a>
+        <!-- Hamburger button moved to the left side in HTML structure -->
+        <button class="hamburger-btn" id="hamburgerBtn">☰</button>
         <nav class="main-nav">
             <ul>
                 <li><a href="#category-image">Image Tools</a></li>
@@ -23,13 +25,12 @@
             <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
             <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
             <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
-            <button class="hamburger-btn" id="hamburgerBtn">☰</button>
         </nav>
     </header>
 
     <div class="mega-menu" id="allToolsMenu">
-        <!-- Add a close button for mobile sidebar -->
-        <button class="close-menu-btn" id="closeMenuBtn">&times;</button>
+        <!-- Add a close button for mobile sidebar (optional, but good practice for clarity) -->
+        <!-- <button class="close-menu-btn" id="closeMenuBtn">&times;</button> -->
         <div class="mega-menu-grid">
             <div class="mega-menu-category">
                 <h3>Image Tools</h3>
@@ -167,6 +168,11 @@
         </div>
     </main>
 
+    <!-- PWA Install Button -->
+    <div class="pwa-install-container">
+        <button class="btn" id="installButton" style="display:none;">Install App</button>
+    </div>
+
     <footer class="main-footer">
         <ul class="footer-links">
             <li><a href="about.html">About Us</a></li>
@@ -178,12 +184,12 @@
         <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
     </footer>
 
+    <!-- PWA Service Worker Registration Script -->
     <script src="theme.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const allToolsBtn = document.getElementById('allToolsBtn');
             const hamburgerBtn = document.getElementById('hamburgerBtn');
-            const closeMenuBtn = document.getElementById('closeMenuBtn'); // New close button for mobile menu
             const allToolsMenu = document.getElementById('allToolsMenu');
             const searchBtn = document.getElementById('searchBtn');
             const heroSearchInput = document.getElementById('heroSearchInput');
@@ -196,6 +202,48 @@
             const allToolsTitle = document.getElementById('allToolsTitle');
             const filterTabs = document.getElementById('filterTabs');
             const toolGrid = document.getElementById('toolGrid');
+
+            // --- PWA Install Logic ---
+            let deferredPrompt;
+            const installButton = document.getElementById('installButton');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installButton.style.display = 'block';
+            });
+
+            installButton.addEventListener('click', () => {
+                installButton.style.display = 'none';
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the PWA installation prompt');
+                        } else {
+                            console.log('User dismissed the PWA installation prompt');
+                        }
+                        deferredPrompt = null;
+                    });
+                }
+            });
+
+            window.addEventListener('appinstalled', () => {
+                installButton.style.display = 'none';
+            });
+
+            // --- Service Worker Registration ---
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/service-worker.js')
+                        .then(registration => {
+                            console.log('Service Worker registered successfully:', registration);
+                        })
+                        .catch(error => {
+                            console.log('Service Worker registration failed:', error);
+                        });
+                });
+            }
 
             // --- Mega Menu Logic ---
             // Desktop logic (open/close mega menu)
@@ -214,20 +262,15 @@
                 document.body.classList.toggle('menu-open'); // To prevent main body scrolling
             });
 
-            // Mobile close button logic
-            closeMenuBtn.addEventListener('click', () => {
-                allToolsMenu.classList.remove('show');
-                document.body.classList.remove('menu-open');
-            });
-
-            // Close menu when clicking outside (on desktop, to close mega menu)
+            // Close menu when clicking outside
             document.addEventListener('click', (event) => {
+                // Check if we are on desktop
                 if (window.innerWidth > 900) {
                     if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
                         allToolsMenu.classList.remove('show');
                         allToolsBtn.classList.remove('open');
                     }
-                } else {
+                } else { // Mobile logic
                     if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
                         allToolsMenu.classList.remove('show');
                         document.body.classList.remove('menu-open');
@@ -291,7 +334,7 @@
                     updateToolVisibility();
                 });
             });
-            updateToolVisibility();
+            updateToolVisibility(); // Initial call
         });
     </script>
 </body>
