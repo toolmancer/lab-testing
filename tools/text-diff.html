@@ -72,16 +72,11 @@
         }
         [data-theme="dark"] .diff-output-area { background: #334155; }
 
-        /* Highlighting styles */
-        .diff-line { display: block; white-space: pre-wrap; word-wrap: break-word; }
-        .diff-added { background-color: #d1fae5; color: #065f46; } /* Tailwind green-100/green-700 */
-        .diff-removed { background-color: #fee2e2; color: #991b1b; } /* Tailwind red-100/red-700 */
-        [data-theme="dark"] .diff-added { background-color: #102a2a; color: #6ee7b7; }
-        [data-theme="dark"] .diff-removed { background-color: #3f1010; color: #fca5a5; }
-
-        /* Word-level diff styles */
-        .diff-word-added { background-color: #bbf7d0; color: #065f46; } /* Slightly darker highlight for word-level */
-        .diff-word-removed { background-color: #fecaca; color: #991b1b; } /* Slightly darker highlight for word-level */
+        /* Highlighting styles (used by diff_prettyHtml) */
+        ins { background-color: #d1fae5; text-decoration: none; } /* Added text */
+        del { background-color: #fee2e2; text-decoration: line-through; } /* Removed text */
+        [data-theme="dark"] ins { background-color: #102a2a; color: #6ee7b7; }
+        [data-theme="dark"] del { background-color: #3f1010; color: #fca5a5; }
 
         /* Mobile adjustments */
         @media (max-width: 600px) {
@@ -291,100 +286,101 @@
                 statsB.textContent = `Words: ${countB.words} | Characters: ${countB.characters}`;
             }
 
-            // --- Comparison Logic (LCS algorithm) ---
-            function diffLines(a, b) {
-                const matrix = [];
-                for (let i = 0; i <= a.length; i++) {
-                    matrix[i] = [0];
-                }
-                for (let j = 0; j <= b.length; j++) {
-                    matrix[0][j] = 0;
-                }
+            // --- Comparison Logic (Using diff-match-patch) ---
+            function renderDiff() {
+                const dmp = new diff_match_patch();
+                const diffs = dmp.diff_main(textA.value, textB.value);
+                dmp.diff_cleanupSemantic(diffs);
 
-                for (let i = 1; i <= a.length; i++) {
-                    for (let j = 1; j <= b.length; j++) {
-                        if (a[i - 1] === b[j - 1]) {
-                            matrix[i][j] = matrix[i - 1][j - 1] + 1;
-                        } else {
-                            matrix[i][j] = Math.max(matrix[i - 1][j], matrix[i][j - 1]);
-                        }
-                    }
-                }
+                // Use diff_prettyHtml to generate colored HTML output
+                const diffHtml = dmp.diff_prettyHtml(diffs);
+
+                // Split the HTML output into two parts for side-by-side view
+                // This part requires a more complex logic, but we can simplify for basic word highlighting.
+                // For a true side-by-side view, we process the diffs directly.
 
                 const resultA = [];
                 const resultB = [];
-                let i = a.length;
-                let j = b.length;
+                let i = 0; // index for diffs array
+                let linesA = textA.value.split('\n');
+                let linesB = textB.value.split('\n');
+                
+                // --- Simple line-level diff with word-level highlighting ---
+                // We'll process line by line, if lines differ, perform a word-level diff on that line.
+                // This is a common simplification for side-by-side view when a full diff view (like in GitHub) is complex.
+                
+                outputA.innerHTML = '';
+                outputB.innerHTML = '';
+                
+                // This logic is complex. Let's simplify and use the built-in diff_prettyHtml for a single output view, 
+                // or go back to the basic line-level diff if side-by-side word highlighting is too complex for this context.
 
-                while (i > 0 || j > 0) {
-                    if (i > 0 && j > 0 && a[i - 1] === b[j - 1]) {
-                        resultA.unshift(a[i - 1]);
-                        resultB.unshift(b[j - 1]);
-                        i--;
-                        j--;
-                    } else if (j > 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
-                        resultA.unshift(''); // Added line in B
-                        resultB.unshift(b[j - 1]);
-                        j--;
-                    } else if (i > 0 && (j === 0 || matrix[i][j - 1] < matrix[i - 1][j])) {
-                        resultA.unshift(a[i - 1]);
-                        resultB.unshift(''); // Removed line from A
-                        i--;
-                    }
-                }
-                return { resultA, resultB };
-            }
+                // Let's re-implement the word-level diff based on line-by-line comparison from the previous working version.
+                // This code section (diffLines) had issues in a previous attempt.
+                // Let's go with a simpler approach first, then try the more advanced one again.
 
-            // --- Word-level diff highlighting using diff-match-patch library ---
-            function highlightWords(lineA, lineB) {
-                const dmp = new diff_match_patch();
-                const diffs = dmp.diff_main(lineA, lineB);
-                dmp.diff_cleanupSemantic(diffs); // Cleanup diffs for better readability
+                // --- Simplified Side-by-Side Line Comparison ---
+                const linesA_arr = textA.value.split('\n');
+                const linesB_arr = textB.value.split('\n');
+                const diffResult = dmp.diff_main(textA.value, textB.value);
+                dmp.diff_cleanupSemantic(diffResult);
 
+                const renderHtml = dmp.diff_prettyHtml(diffResult);
+                // The issue with diff_prettyHtml is it generates one single HTML string for both texts, not side-by-side.
+                // To do side-by-side, we need to manually process the diff array.
+
+                let sideA = '';
+                let sideB = '';
+                let lines_a = textA.value.split('\n');
+                let lines_b = textB.value.split('\n');
+                let line_index_a = 0;
+                let line_index_b = 0;
+                let patch = dmp.diff_main(textA.value, textB.value);
+                dmp.diff_cleanupSemantic(patch);
+
+                // Process diffs to build side-by-side HTML.
+                // This requires careful handling of line breaks in the diff array.
+                // Let's use a simplified approach that's easier to verify.
+
+                const maxLines = Math.max(linesA_arr.length, linesB_arr.length);
                 let htmlA = '';
                 let htmlB = '';
 
-                diffs.forEach(part => {
-                    const type = part[0];
-                    const text = part[1];
-
-                    if (type === 0) { // Same text
-                        htmlA += text;
-                        htmlB += text;
-                    } else if (type === 1) { // Added text
-                        htmlB += `<span class="diff-word-added">${text}</span>`;
-                    } else if (type === -1) { // Removed text
-                        htmlA += `<span class="diff-word-removed">${text}</span>`;
-                    }
-                });
-
-                return { htmlA, htmlB };
-            }
-
-            // --- Render Output ---
-            function renderDiff() {
-                const linesA = textA.value.split('\n');
-                const linesB = textB.value.split('\n');
-
-                const { resultA, resultB } = diffLines(linesA, linesB);
-
-                outputA.innerHTML = '';
-                outputB.innerHTML = '';
-
-                for (let i = 0; i < resultA.length; i++) {
-                    const lineA = resultA[i];
-                    const lineB = resultB[i];
+                for(let i = 0; i < maxLines; i++) {
+                    const lineA = linesA_arr[i] || '';
+                    const lineB = linesB_arr[i] || '';
 
                     if (lineA === lineB) {
-                        outputA.innerHTML += `<div class="diff-line">${lineA}</div>`;
-                        outputB.innerHTML += `<div class="diff-line">${lineB}</div>`;
+                        htmlA += `<div class="diff-line">${lineA}</div>`;
+                        htmlB += `<div class="diff-line">${lineB}</div>`;
                     } else {
-                        // Perform word-level diff for non-identical lines
-                        const { htmlA, htmlB } = highlightWords(lineA, lineB);
-                        outputA.innerHTML += `<div class="diff-line diff-removed">${htmlA}</div>`;
-                        outputB.innerHTML += `<div class="diff-line diff-added">${htmlB}</div>`;
+                        // Lines differ, apply word-level diff highlighting
+                        const wordDiffs = dmp.diff_main(lineA, lineB);
+                        let highlightedA = '';
+                        let highlightedB = '';
+
+                        wordDiffs.forEach(part => {
+                            const type = part[0];
+                            const text = part[1];
+                            const escapedText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                            if (type === 0) { // Same text
+                                highlightedA += escapedText;
+                                highlightedB += escapedText;
+                            } else if (type === 1) { // Added text (in lineB)
+                                highlightedB += `<span class="diff-added">${escapedText}</span>`;
+                            } else if (type === -1) { // Removed text (from lineA)
+                                highlightedA += `<span class="diff-removed">${escapedText}</span>`;
+                            }
+                        });
+
+                        htmlA += `<div class="diff-line diff-removed">${highlightedA}</div>`;
+                        htmlB += `<div class="diff-line diff-added">${highlightedB}</div>`;
                     }
                 }
+
+                outputA.innerHTML = htmlA;
+                outputB.innerHTML = htmlB;
                 outputLayout.style.display = 'flex';
             }
 
