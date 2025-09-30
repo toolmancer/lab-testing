@@ -6,82 +6,183 @@
   <title>Image to PDF Converter | ToolMancer</title>
   <link rel="stylesheet" href="../style.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <!-- Include external CSS for drag/sort functionality if needed -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.css"/>
   <style>
     /* Add specific styles here or update style.css for tool layouts */
-    .tool-page { display: block; } /* Override default tool-page centering for complex layout */
-    .pdf-tool-flex { display: flex; flex-wrap: wrap; gap: 2.2rem; justify-content: center; align-items: flex-start; margin-top: 1.3rem;}
-    .pdf-images, .pdf-options { background: var(--card); border-radius: 18px; box-shadow: 0 3px 24px var(--card-shadow, rgba(0,0,0,0.05)); border: 1px solid var(--border-color); }
-    [data-theme="dark"] .pdf-images, [data-theme="dark"] .pdf-options { box-shadow: 0 3px 24px rgba(0,0,0,0.1); }
-    .pdf-images { padding: 1.3rem 1.1rem; min-width: 340px; max-width: 420px; flex: 2 1 380px; text-align: center; position: relative; }
-    .pdf-options { padding: 1.4rem 1.1rem 1.1rem 1.1rem; min-width: 220px; max-width: 350px; flex: 1 1 220px; display: flex; flex-direction: column; gap: 1.2em;}
-
-    /* === UI Refinements based on feedback === */
-    /* Adjust padding and size for a cleaner look for the drop zone */
-    .upload-drop-zone {
-      border: 2.5px dashed var(--accent);
+    .tool-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 2rem;
+      flex-grow: 1;
+      width: 100%;
+    }
+    .tool-page .tool-card {
+      max-width: 1050px;
+      padding: 2rem;
+      width: 100%;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+      background: var(--card);
       border-radius: 12px;
-      background: var(--bg);
+      border: 1px solid var(--border-color);
+    }
+    .tool-header { text-align: center; margin-bottom: 1.5rem; }
+    .tool-header h1 { font-size: 2rem; color: var(--accent); font-weight: 700; }
+    .tool-header .tool-desc { font-size: 1rem; color: #475569; max-width: 650px; margin: 0 auto; line-height: 1.5; }
+    [data-theme="dark"] .tool-header .tool-desc { color: #94a3b8; }
+
+    /* --- PDF Layout Specifics --- */
+    .pdf-tool-flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.2rem;
+      justify-content: center;
+      align-items: flex-start;
+      margin-top: 1rem;
+    }
+    .pdf-images, .pdf-options {
+      background: var(--bg); /* Use page background for a flatter look */
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+    [data-theme="dark"] .pdf-images, [data-theme="dark"] .pdf-options { background: #2a374a; }
+
+    .pdf-images {
+      padding: 1rem;
+      min-width: 340px;
+      max-width: 420px;
+      flex: 2 1 380px;
+      position: relative;
+    }
+    .pdf-options {
+      padding: 1.4rem;
+      min-width: 220px;
+      max-width: 350px;
+      flex: 1 1 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2em;
+    }
+    /* --- Upload Drop Zone --- */
+    .upload-drop-zone {
+      border: 2px dashed var(--accent);
+      border-radius: 8px;
+      background: var(--card);
       text-align: center;
       transition: border-color 0.2s, background 0.2s;
-      padding: 1.5rem 1rem; /* Reduced padding from 2.7em */
-      margin-bottom: 1rem; /* Reduced margin from 1.2em */
+      padding: 1.5rem 1rem;
+      margin-bottom: 1rem;
       cursor: pointer;
-      position: relative;
-      font-size: 1.13em;
+      font-size: 1.05em;
       color: var(--text);
-      min-height: 140px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 1.5px 8px #0000;
     }
-    .upload-drop-zone:hover, .upload-drop-zone.active { border-color: var(--accent); background: #e0ebff; }
-    [data-theme="dark"] .upload-drop-zone:hover, [data-theme="dark"] .upload-drop-zone.active { background: #334155; }
-    .upload-drop-zone .add-icon { font-size: 2em; /* Reduced icon size */ color: var(--accent); margin-bottom: 0.35em; pointer-events: none; }
-    .upload-drop-zone .drop-hint { font-size:0.97em;color:var(--text);margin-top:0.5em;}
-    /* === END UI Refinements === */
+    .upload-drop-zone:hover, .upload-drop-zone.active {
+      border-color: #1e40af;
+      background: #e0ebff;
+    }
+    [data-theme="dark"] .upload-drop-zone { background: #334155; }
+    [data-theme="dark"] .upload-drop-zone:hover, [data-theme="dark"] .upload-drop-zone.active { background: #475569; border-color: #60a5fa; }
+    .upload-drop-zone .add-icon { font-size: 2.5em; color: var(--accent); margin-bottom: 0.35em; pointer-events: none; }
+    .upload-drop-zone input[type="file"] { display: none; }
+    .upload-drop-zone .drop-hint { font-size:0.9em;color:#888;margin-top:0.5em;}
+    /* --- Image preview list --- */
+    .img-list { display: flex; flex-direction: column; align-items: stretch; gap: 1em; margin-top: 1em; }
+    .img-item {
+        display: flex;
+        align-items: center;
+        gap: 1em;
+        background: var(--card);
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        border: 1px solid var(--border-color);
+        padding: 0.6em;
+        width: 100%;
+        position: relative;
+        cursor: move;
+    }
+    [data-theme="dark"] .img-item { background: #334155; }
+    .img-thumb { border-radius: 6px; width: 50px; height: 50px; object-fit: cover; border: 1px solid #e2e8f0; }
+    .img-filename { font-size: 0.9em; color: var(--text); flex-grow: 1; overflow-x: auto; white-space: nowrap; }
+    .img-remove-btn {
+        background: none;
+        color: #ef4444;
+        border: none;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .img-remove-btn:hover { color: #c81e1e; }
+    .img-list.empty { color: #888; font-size: 1em; margin-top: 2em; text-align: center; }
 
-    .img-list { display: flex; flex-direction: column; align-items: center; gap: 1.1em; margin-top: 1em; margin-bottom: 0.9em;}
-    .img-item { display: flex; flex-direction: row; align-items: center; gap: 1em; background: var(--bg); border-radius: 12px; box-shadow: 0 1px 6px #0001; padding: 0.6em 0.7em; width: 95%; max-width: 390px; position: relative;}
-    [data-theme="dark"] .img-item { background: #475569; }
-    .img-thumb { border-radius: 10px; box-shadow: 0 1px 6px #0002; border: 1.5px solid var(--border-color); width: 60px; background: #fafaff; display: block;}
-    .img-handle { cursor: grab; font-size: 1.5em; color: #aaa; margin-right: 0.2em;}
-    .img-filename { font-size: 0.97em; color: var(--text); max-width: 135px; overflow-x: auto;}
-    .img-remove-btn { background: #ef4444; color: #fff; border: none; border-radius: 6px; padding: 0.2em 0.68em; font-size: 1.15em; margin-left: 0.8em; cursor: pointer;}
-    .img-remove-btn:hover { background: #c81e1e;}
-    .img-list.empty { color: #888; font-size: 1.1em; margin-top: 2em;}
+    /* --- PDF Options Panel Styles --- */
+    .pdf-opt-label { font-size: 0.95em; color: #475569; margin-bottom: 0.5em; font-weight: 500; }
+    [data-theme="dark"] .pdf-opt-label { color: #94a3b8; }
+    .pdf-opt-group { display: flex; gap: 0.5rem; }
+    .pdf-opt-btn, .pdf-main-btn {
+        padding: 0.7rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--border-color);
+        transition: all 0.2s ease;
+        background: var(--card);
+        color: var(--text);
+        flex: 1;
+    }
+    .pdf-opt-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .pdf-main-btn { background: var(--accent); color: white; border: none; margin-top: 1rem; width: 100%; font-size: 1.1rem; }
+    .pdf-opt-dropdown { width: 100%; padding: 0.7rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card); color: var(--text); }
+    .pdf-checkbox { width: 18px; height: 18px; margin-right: 0.5rem; }
+
+    /* --- Results Section --- */
+    .result-box {
+        background: var(--card);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        text-align: center;
+    }
+
+    /* --- How To Section --- */
+    .how-to {
+      max-width: 800px;
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+    .how-to h3 { color: var(--text); margin-bottom: 1rem; }
+    .how-to ol { list-style-position: inside; padding-left: 0; }
+    .how-to li { margin-bottom: 0.5rem; color: #475569; }
+    [data-theme="dark"] .how-to li { color: #94a3b8; }
+
+    /* Mobile adjustments */
     @media (max-width: 900px) {
       .pdf-tool-flex { flex-direction: column; gap: 1.2rem; align-items: stretch;}
-      .pdf-images, .pdf-options { max-width: 99vw; margin: 0 auto;}
-      .img-item { width: 100%; }
+      .pdf-images, .pdf-options { max-width: 100%; min-width: unset; }
+      .pdf-tool-flex { padding: 0 1rem; } /* Add padding to flex container for better spacing on mobile */
+      .upload-drop-zone { min-height: 100px; }
     }
     @media (max-width: 600px) {
       .pdf-images, .pdf-options { min-width: unset; }
       .img-thumb { width: 38px; }
-      .img-filename { font-size: 0.92em; max-width: 70px;}
+      .img-filename { font-size: 0.9em; max-width: 150px;}
     }
-    /* PDF Options Buttons */
-    .pdf-opt-label { font-size: 0.95em; color: #475569; margin-bottom: 0.5em; font-weight: 500; }
-    [data-theme="dark"] .pdf-opt-label { color: #94a3b8; }
-    .pdf-opt-group { display: flex; gap: 0.5rem; }
-    .pdf-opt-btn, .pdf-main-btn { padding: 0.7rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); transition: background 0.2s; background: var(--card); color: var(--text); }
-    .pdf-opt-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
-    .pdf-main-btn { background: var(--accent); color: white; border: none; margin-top: 1rem; width: 100%; font-size: 1.1rem; }
-    .pdf-opt-dropdown { width: 100%; padding: 0.7rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg); color: var(--text); }
-    .pdf-checkbox { width: 18px; height: 18px; }
-
-    /* Centering Fix */
-    main { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - var(--header-height) - 100px); }
-    .tool-page { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 1280px; padding: 2rem; }
-    .tool-card { width: 100%; }
   </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.css"/>
 </head>
 <body>
 
   <header class="main-header">
     <a href="../index.html" class="logo">ToolMancer</a>
+    <button class="hamburger-btn" id="hamburgerBtn">☰</button>
     <nav class="main-nav">
       <ul>
         <li><a href="../index.html#category-image">Image Tools</a></li>
@@ -91,11 +192,12 @@
       <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
       <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
       <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
-      <button class="hamburger-btn" id="hamburgerBtn">☰</button>
     </nav>
   </header>
 
   <div class="mega-menu" id="allToolsMenu">
+    <!-- Close button for mobile menu (optional) -->
+    <!-- <button class="close-menu-btn" id="closeMenuBtn">&times;</button> -->
     <div class="mega-menu-grid">
       <div class="mega-menu-category">
         <h3>Image Tools</h3>
@@ -142,21 +244,11 @@
     </div>
   </div>
 
-  <div class="search-overlay" id="searchOverlay">
-    <button class="search-close-btn" id="searchCloseBtn" aria-label="Close Search">&times;</button>
-    <div class="search-box">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input type="text" id="searchInput" placeholder="Search for a tool..." autocomplete="off">
-    </div>
-    <div id="search-results"></div>
-  </div>
-
   <main class="content tool-page">
     <section class="tool-card">
       <header class="tool-header">
         <h1>🖼️ Image to PDF Converter</h1>
         <div class="tool-desc">Convert multiple images (JPG, PNG, etc.) into a single PDF — privacy-friendly, works in your browser. Drag, reorder, and customize PDF output!</div>
-        <span class="tool-help" title="Upload images, reorder, set options, and convert to PDF. Nothing leaves your device!">i</span>
       </header>
       <div class="pdf-tool-flex">
         <!-- Image area -->
@@ -220,12 +312,12 @@
         <li>Download or open your PDF.</li>
       </ol>
     </section>
-    <section class="use-case">
-      <h3>Example</h3>
-      <p><b>Input:</b> 3 PNG images (receipts)<br>
-         <b>Output:</b> 1 PDF file containing all three pages</p>
-    </section>
   </main>
+
+  <!-- PWA Install Button -->
+  <div class="pwa-install-container">
+    <button class="btn" id="installButton" style="display:none;">Install App</button>
+  </div>
 
   <footer class="main-footer">
     <ul class="footer-links">
@@ -238,34 +330,68 @@
     <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
   </footer>
 
+  <!-- Scripts -->
   <script src="../theme.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- Navigation and Theme Toggle Logic (Copied from index.html) ---
+        // --- Navigation and Theme Toggle Logic ---
         const allToolsBtn = document.getElementById('allToolsBtn');
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const allToolsMenu = document.getElementById('allToolsMenu');
         const searchBtn = document.getElementById('searchBtn');
-        const searchCloseBtn = document.getElementById('searchCloseBtn');
-        const searchOverlay = document.getElementById('searchOverlay');
-        const searchInput = document.getElementById('searchInput');
+        // const closeMenuBtn = document.getElementById('closeMenuBtn'); // If added to HTML
 
         const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
         allToolsBtn.addEventListener('click', toggleMenu);
-        hamburgerBtn.addEventListener('click', toggleMenu);
+        hamburgerBtn.addEventListener('click', () => {
+            allToolsMenu.classList.toggle('show');
+            document.body.classList.toggle('menu-open');
+        });
         document.addEventListener('click', (event) => {
-            if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
-                allToolsMenu.classList.remove('show'); allToolsBtn.classList.remove('open');
+            if (window.innerWidth > 900) {
+                if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
+                    allToolsMenu.classList.remove('show'); allToolsBtn.classList.remove('open');
+                }
+            } else {
+                if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
+                    allToolsMenu.classList.remove('show');
+                    document.body.classList.remove('menu-open');
+                }
             }
         });
 
-        searchBtn.addEventListener('click', () => { searchOverlay.classList.add('show'); document.body.classList.add('search-open'); searchInput.focus(); });
-        const closeSearch = () => { searchOverlay.classList.remove('show'); document.body.classList.remove('search-open'); searchInput.value = ''; };
-        searchCloseBtn.addEventListener('click', closeSearch);
+        // --- PWA Install Logic ---
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
 
-        // --- PDF Tool Specific Logic ---
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', () => {
+            installButton.style.display = 'none';
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the PWA installation prompt');
+                    } else {
+                        console.log('User dismissed the PWA installation prompt');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installButton.style.display = 'none';
+        });
+
+        // --- Tool Specific Logic ---
         const dropZone = document.getElementById('dropZone');
         const imgInput = document.getElementById('imgInput');
         const imgList = document.getElementById('imgList');
