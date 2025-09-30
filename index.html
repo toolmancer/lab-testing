@@ -17,7 +17,6 @@
                 <li><a href="#category-text">Text Tools</a></li>
                 <li><a href="blog.html">Blog</a></li>
             </ul>
-            <!-- Search button now triggers search input focus and results on page -->
             <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
             <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
             <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
@@ -81,7 +80,12 @@
             </div>
         </section>
 
-        <section class="feature-highlights">
+        <!-- New: Dedicated Search Results Container -->
+        <div class="search-results-container" id="searchResultsContainer" style="display: none;">
+            <!-- Search results will appear here -->
+        </div>
+
+        <section class="feature-highlights" id="featureHighlights">
             <div class="highlight-item">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                 <span>Privacy First</span>
@@ -99,7 +103,7 @@
             </div>
         </section>
 
-        <section class="popular-tools">
+        <section class="popular-tools" id="popularTools">
             <h2 class="section-title">Popular Tools</h2>
             <div class="tool-grid-home popular-grid">
                 <a href="tools/image-to-pdf.html" class="tool-card-home" data-category="image" data-keywords="image pdf jpg png convert">
@@ -133,8 +137,8 @@
             </div>
         </section>
 
-        <h2 class="section-title">All Tools by Category</h2>
-        <div class="filter-tabs">
+        <h2 class="section-title" id="allToolsTitle">All Tools by Category</h2>
+        <div class="filter-tabs" id="filterTabs">
             <button class="tab-btn active" data-filter="all">All</button>
             <button class="tab-btn" data-filter="image">Image</button>
             <button class="tab-btn" data-filter="text">Text</button>
@@ -174,8 +178,6 @@
         <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
     </footer>
 
-    <!-- Search Overlay Removed -->
-
     <script src="theme.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -186,7 +188,13 @@
             const heroSearchInput = document.getElementById('heroSearchInput');
             const allToolCards = Array.from(document.querySelectorAll('.tool-card-home'));
             const tabButtons = document.querySelectorAll('.tab-btn');
-            const toolGrid = document.getElementById('toolGrid'); // Get the main tool grid container
+
+            // --- Elements to manage during search ---
+            const featureHighlights = document.getElementById('featureHighlights');
+            const popularTools = document.getElementById('popularTools');
+            const allToolsTitle = document.getElementById('allToolsTitle');
+            const filterTabs = document.getElementById('filterTabs');
+            const toolGrid = document.getElementById('toolGrid');
 
             // --- Mega Menu Logic ---
             const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
@@ -205,11 +213,9 @@
                 }
             });
 
-            // --- Search Logic ---
-            // Desktop search button (new behavior: focus hero input)
+            // --- Search Logic (In-place) ---
             searchBtn.addEventListener('click', () => { heroSearchInput.focus(); });
 
-            // In-place search functionality
             heroSearchInput.addEventListener('input', () => {
                 const query = heroSearchInput.value.toLowerCase().trim();
                 performInPlaceSearch(query);
@@ -217,19 +223,23 @@
 
             function performInPlaceSearch(query) {
                 const lowerCaseQuery = query.toLowerCase().trim();
-                // If query is empty, show all tools.
+
                 if (lowerCaseQuery.length === 0) {
-                    allToolCards.forEach(card => card.style.display = 'block');
-                    document.getElementById('toolGrid').style.display = 'grid'; // ensure grid is visible
-                    document.querySelector('.popular-tools').style.display = 'block'; // Show popular tools
-                    document.querySelector('.filter-tabs').style.display = 'flex'; // Show filter tabs
+                    // Show regular content when search is empty
+                    featureHighlights.style.display = 'flex';
+                    popularTools.style.display = 'block';
+                    allToolsTitle.style.display = 'block';
+                    filterTabs.style.display = 'flex';
+                    updateToolVisibility(); // Restore category filtering
                     return;
                 }
 
-                document.querySelector('.popular-tools').style.display = 'none'; // Hide popular tools during search
-                document.querySelector('.filter-tabs').style.display = 'none'; // Hide filter tabs during search
+                // Hide sections during search
+                featureHighlights.style.display = 'none';
+                popularTools.style.display = 'none';
+                allToolsTitle.style.display = 'none';
+                filterTabs.style.display = 'none';
 
-                // Filter logic
                 let resultsFound = false;
                 allToolCards.forEach(card => {
                     const keywords = card.dataset.keywords.toLowerCase();
@@ -242,9 +252,8 @@
                     }
                 });
 
-                if (!resultsFound) {
-                    // Optional: show a "no results found" message
-                }
+                // Optional: show a "no results found" message
+                // if (!resultsFound) { /* Add no results message here */ }
             }
 
             // --- Filter Tabs Logic ---
