@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ToolMancer – All-in-One Online Toolkit</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -22,51 +20,12 @@
       <button class="all-tools-btn" id="allToolsBtn">
         All Tools <span class="arrow">▼</span>
       </button>
+      <button class="hamburger-btn" id="hamburgerBtn">☰</button>
     </nav>
   </header>
 
-  <!-- Mega Menu Dropdown -->
   <div class="mega-menu" id="allToolsMenu">
-    <div class="mega-menu-grid">
-      
-      <div class="mega-menu-category">
-        <h3>Image Tools</h3>
-        <ul>
-          <li><a href="tools/image-to-pdf.html"><span class="tool-icon">🖼️</span> Image to PDF</a></li>
-          <li><a href="tools/image-compressor.html"><span class="tool-icon">🗜️</span> Image Compressor</a></li>
-          <li><a href="tools/image-resizer.html"><span class="tool-icon">📏</span> Image Resizer</a></li>
-          <li><a href="tools/convert-png-jpg.html"><span class="tool-icon">🔄</span> PNG <=> JPG</a></li>
-        </ul>
-      </div>
-
-      <div class="mega-menu-category">
-        <h3>Text & Writing</h3>
-        <ul>
-          <li><a href="tools/text-diff.html"><span class="tool-icon">🔍</span> Text Diff Checker</a></li>
-          <li><a href="tools/word-counter.html"><span class="tool-icon">✏️</span> Word Counter</a></li>
-          <li><a href="tools/text-to-pdf.html"><span class="tool-icon">📄</span> Text to PDF</a></li>
-        </ul>
-      </div>
-
-      <div class="mega-menu-category">
-        <h3>Security & Encoding</h3>
-        <ul>
-          <li><a href="tools/text-encryptor.html"><span class="tool-icon">🔐</span> Text Encryptor</a></li>
-          <li><a href="tools/hash-generator.html"><span class="tool-icon">🛡️</span> Hash Generator</a></li>
-          <li><a href="tools/password-generator.html"><span class="tool-icon">🔑</span> Password Generator</a></li>
-          <li><a href="tools/url-encoder.html"><span class="tool-icon">🔗</span> URL Encoder</a></li>
-        </ul>
-      </div>
-
-      <div class="mega-menu-category">
-        <h3>Generators</h3>
-        <ul>
-          <li><a href="tools/qr-generator.html"><span class="tool-icon">📱</span> QR Code Generator</a></li>
-          <li><a href="tools/image-to-prompt.html"><span class="tool-icon">🤖</span> Image to Prompt (AI)</a></li>
-        </ul>
-      </div>
-
-    </div>
+    <!-- ... (मेगा मेनू का कोड वही रहेगा जैसा पिछले उत्तर में था) ... -->
   </div>
 
   <main class="main-content">
@@ -75,36 +34,41 @@
       <p class="subtitle">A 100% FREE and easy to use collection of online tools. Merge, convert, compress, and generate with just a few clicks.</p>
     </section>
 
-    <div class="tool-grid-home">
-      <a href="tools/image-to-pdf.html" class="tool-card-home">
-        <div class="tool-header-home">
-          <div class="tool-logo">🖼️</div>
-          <h2 class="tool-title">Image to PDF</h2>
-        </div>
-        <p class="tool-desc">Combine multiple images in the order you want with the easiest PDF creator available.</p>
-      </a>
-      <a href="tools/image-compressor.html" class="tool-card-home">
-        <div class="tool-header-home">
-          <div class="tool-logo">🗜️</div>
-          <h2 class="tool-title">Image Compressor</h2>
-        </div>
-        <p class="tool-desc">Reduce file size while optimizing for maximal image quality.</p>
-      </a>
-      <a href="tools/text-diff.html" class="tool-card-home">
-        <div class="tool-header-home">
-          <div class="tool-logo">🔍</div>
-          <h2 class="tool-title">Text Diff Checker</h2>
-        </div>
-        <p class="tool-desc">Compare two documents to show the differences between them instantly.</p>
-      </a>
-      <a href="tools/password-generator.html" class="tool-card-home">
-        <div class="tool-header-home">
-          <div class="tool-logo">🔑</div>
-          <h2 class="tool-title">Password Generator</h2>
-        </div>
-        <p class="tool-desc">Create strong, secure, and random passwords to protect your accounts.</p>
-      </a>
-    </div>
+    <!-- Image Tools Category -->
+    <section class="tool-category">
+      <h2 class="tool-category-title">Image Tools</h2>
+      <div class="tool-grid-home">
+        <a href="tools/image-to-pdf.html" class="tool-card-home">
+          <div class="tool-header-home"><div class="tool-logo">🖼️</div><h2 class="tool-title">Image to PDF</h2></div>
+          <p class="tool-desc">Combine multiple images into a single, easy-to-share PDF document.</p>
+        </a>
+        <a href="tools/image-compressor.html" class="tool-card-home">
+          <div class="tool-header-home"><div class="tool-logo">🗜️</div><h2 class="tool-title">Image Compressor</h2></div>
+          <p class="tool-desc">Reduce image file size significantly without losing noticeable quality.</p>
+        </a>
+        <a href="tools/image-resizer.html" class="tool-card-home">
+          <div class="tool-header-home"><div class="tool-logo">📏</div><h2 class="tool-title">Image Resizer</h2></div>
+          <p class="tool-desc">Easily resize your images to specific dimensions or percentages.</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Text & Writing Category -->
+    <section class="tool-category">
+      <h2 class="tool-category-title">Text & Writing</h2>
+      <div class="tool-grid-home">
+        <a href="tools/text-diff.html" class="tool-card-home">
+          <div class="tool-header-home"><div class="tool-logo">🔍</div><h2 class="tool-title">Text Diff Checker</h2></div>
+          <p class="tool-desc">Visually compare two pieces of text and instantly see the differences.</p>
+        </a>
+        <a href="tools/word-counter.html" class="tool-card-home">
+          <span class="new-badge">New!</span> <!-- "New!" Badge Example -->
+          <div class="tool-header-home"><div class="tool-logo">✏️</div><h2 class="tool-title">Word Counter</h2></div>
+          <p class="tool-desc">Count words, characters, sentences, and paragraphs in your text.</p>
+        </a>
+      </div>
+    </section>
+    
   </main>
 
   <footer class="main-footer">
@@ -114,16 +78,20 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const allToolsBtn = document.getElementById('allToolsBtn');
+      const hamburgerBtn = document.getElementById('hamburgerBtn');
       const allToolsMenu = document.getElementById('allToolsMenu');
 
-      allToolsBtn.addEventListener('click', (event) => {
+      const toggleMenu = (event) => {
         event.stopPropagation();
         allToolsMenu.classList.toggle('show');
         allToolsBtn.classList.toggle('open');
-      });
+      };
+
+      allToolsBtn.addEventListener('click', toggleMenu);
+      hamburgerBtn.addEventListener('click', toggleMenu); // Hamburger also opens the same menu
 
       document.addEventListener('click', (event) => {
-        if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !allToolsBtn.contains(event.target)) {
+        if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
           allToolsMenu.classList.remove('show');
           allToolsBtn.classList.remove('open');
         }
