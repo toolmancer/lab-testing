@@ -14,7 +14,6 @@
   --accent: #38bdf8;
 }
 
-/* ==== Layout ==== */
 body {
   font-family: "Segoe UI", "Inter", Arial, sans-serif;
   background: var(--bg);
@@ -88,7 +87,70 @@ body {
 }
 .theme-btn:hover { background: #0f172a; }
 
-/* ==== Tool Page Layout ==== */
+.content.home {
+  flex: 1;
+  padding: 2.7rem 0;
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-card {
+  background: var(--card);
+  border-radius: 20px;
+  box-shadow: 0 8px 36px 0 #0001, 0 1.5px 6px #0001;
+  padding: 2.7rem 2.2rem;
+  margin-bottom: 2.5em;
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-card h1 {
+  font-size: 2.4rem;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+.home-card h1 span { color: var(--accent); }
+.home-card .subtitle {
+  font-size: 1.09rem;
+  color: #4e576b;
+  margin-bottom: 2.3em;
+}
+
+.tool-grid {
+  width: 100%;
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+  margin-top: 0.2em;
+}
+
+.card {
+  background: var(--card);
+  padding: 1.2rem;
+  border-radius: 8px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  transition: transform 0.17s, box-shadow 0.17s, background 0.17s;
+  border: 1.5px solid #e0e7ef;
+}
+.card:hover {
+  transform: translateY(-3px) scale(1.04);
+  background: #f0f7ff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.16);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 .content.tool-page {
   flex: 1;
   padding: 2.5rem 0.5rem;
@@ -106,8 +168,9 @@ body {
   margin-bottom: 2.1em;
   width: 100%;
   max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
 }
-
 .tool-header {
   display: flex;
   align-items: flex-start;
@@ -139,7 +202,38 @@ body {
   box-shadow: 0 1.5px 4px #0002;
 }
 
-/* ==== Input/Drop Zone ==== */
+.actions {
+  display: flex;
+  gap: 1.2em;
+  margin-bottom: 2.1em;
+}
+.actions button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.85em 1.8em;
+  font-size: 1.12em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.16s, box-shadow 0.16s;
+  box-shadow: 0 2px 8px #2563eb2b;
+}
+.actions button[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.actions .loader {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid var(--accent);
+  border-radius: 50%;
+  width: 18px; height: 18px;
+  animation: spinner 0.7s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+@keyframes spinner {to{transform: rotate(360deg);} }
+
 .input-group {
   margin-bottom: 1.6em;
 }
@@ -182,44 +276,6 @@ body {
   vertical-align: middle;
 }
 
-/* ==== Button & Loader ==== */
-.actions {
-  display: flex;
-  gap: 1.2em;
-  margin-bottom: 2.1em;
-}
-.actions button {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.85em 1.8em;
-  font-size: 1.12em;
-  font-weight: 600;
-  cursor: pointer;
-  letter-spacing: 0.02em;
-  transition: background 0.16s, box-shadow 0.16s;
-  box-shadow: 0 2px 8px #2563eb2b;
-  display: flex;
-  align-items: center;
-  gap: 0.7em;
-}
-.actions button[disabled] {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-.actions .loader {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid var(--accent);
-  border-radius: 50%;
-  width: 18px; height: 18px;
-  animation: spinner 0.7s linear infinite;
-  display: inline-block;
-  vertical-align: middle;
-}
-@keyframes spinner {to{transform: rotate(360deg);} }
-
-/* ==== Result Box ==== */
 .result-box {
   background: #f7fafc;
   border: 1.5px solid #dbeafe;
@@ -245,7 +301,6 @@ body {
   color: #fff;
 }
 
-/* ==== Info Cards ==== */
 .how-to, .use-case {
   background: #f1f5f9;
   border: 1px solid #dde6ef;
@@ -267,64 +322,70 @@ body {
 }
 
 /* ==== Responsive ==== */
-@media (max-width: 950px) {
-  .tool-card { padding: 1.5rem 0.7rem; }
-  .content { padding: 1.3rem 0.3rem; }
-}
-@media (max-width: 700px) {
-  .sidebar { width: 60px; padding: 0.6rem 0.2rem; }
-  .sidebar .logo { font-size: 1.02rem; margin-bottom: 1em;}
-  .sidebar nav ul li a { font-size: 0.95em; padding: 0.6em 0.3em;}
-  .theme-btn { font-size: 1em; padding: 0.5em 0.8em;}
-  .tool-card { padding: 0.8rem 0.2rem; }
-  .thumb { width: 50px; height: 50px;}
-  .how-to, .use-case { padding: 0.7em 0.6em;}
-  .tool-header h1 { font-size: 1.2rem;}
-}
-@media (max-width: 600px) {
-  .tool-card { padding: 0.7rem 0.1rem;}
-  .thumb { width: 45px; height: 45px;}
-  .how-to, .use-case { padding: 0.5em 0.2em;}
-}
-
-/* ==== Hamburger for Mobile ==== */
-@media (max-width: 880px) {
+@media (max-width: 900px) {
   .sidebar {
     position: fixed;
-    left: -100%;
+    left: -100vw;
     top: 0;
-    height: 100%;
-    min-height: 100vh;
     width: 220px;
-    z-index: 1000;
-    transition: left 0.3s;
-    border-bottom: none;
-    border-right: 1px solid #233152;
-    padding-top: 1rem;
+    min-height: 100vh;
+    height: 100vh;
+    z-index: 1002;
+    transition: left 0.33s cubic-bezier(.4,2,.5,1);
+    box-shadow: 2px 0 16px #0002;
+    border-right: 1px solid #ddd;
     background: var(--card);
-    flex-direction: column;
-    align-items: flex-start;
   }
   .sidebar.show {
     left: 0;
   }
-  .content {
-    padding: 1rem;
-  }
   .menu-btn {
     display: block;
   }
-  .sidebar-header {
-    width: 100%;
-    margin-bottom: 1rem;
+  .content,
+  .content.home {
+    margin-left: 0 !important;
+    padding: 1.1rem 0.2rem !important;
   }
-  .theme-btn {
-    margin-top: 0;
-    margin-left: 1rem;
+  .home-card {
+    max-width: 99vw;
+    margin: 0.4em auto;
+    border-radius: 10px;
+    padding: 1rem 0.2rem;
+  }
+  .tool-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.7rem !important;
+  }
+  .tool-card {
+    max-width: 99vw;
+    border-radius: 10px;
+    padding: 1rem 0.2rem;
+  }
+  .how-to, .use-case {
+    max-width: 99vw;
+    border-radius: 8px;
+    padding: 0.7em 0.3em;
   }
 }
-@media (max-width: 500px) {
-  .sidebar { width: 90vw; }
+
+/* Overlay for mobile sidebar */
+@media (max-width: 900px) {
+  .sidebar.show ~ .content:before,
+  .sidebar.show ~ main:before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1001;
+    background: rgba(0,0,0,0.13);
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .sidebar { width: 85vw; }
+  .home-card, .tool-card { padding: 0.8rem 0.25rem; }
+  .card { padding: 0.8rem; }
 }
 
 /* ==== Dark Mode ==== */
