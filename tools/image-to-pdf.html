@@ -2,353 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Image to PDF Converter | ToolMancer</title>
-  <link rel="stylesheet" href="../style.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToolMancer – All-in-One Toolkit</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    /* --- Sidebar Tweaks --- */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 220px;
-      height: 100vh;
-      background: var(--card);
-      padding: 1.2rem 1rem 1rem 1rem;
+    .top-categories-bar {
       display: flex;
-      flex-direction: column;
-      border-right: 1px solid #233152;
-      z-index: 1000;
-    }
-    .sidebar .logo { margin-bottom: 1.1rem; }
-    .sidebar nav ul { margin-top: 0; }
-    /* --- Main Layout Tweaks --- */
-    .tool-card { max-width: 1050px; }
-    .pdf-tool-flex { display: flex; flex-wrap: wrap; gap: 2.2rem; justify-content: center; align-items: flex-start; margin-top: 1.3rem;}
-    .pdf-images, .pdf-options { background: #fff; border-radius: 18px; box-shadow: 0 3px 24px #0001; }
-    .pdf-images { padding: 1.3rem 1.1rem; min-width: 340px; max-width: 420px; flex: 2 1 380px; text-align: center; position: relative; }
-    .pdf-options { padding: 1.4rem 1.1rem 1.1rem 1.1rem; min-width: 220px; max-width: 350px; flex: 1 1 220px; display: flex; flex-direction: column; gap: 1.2em;}
-    /* --- Upload Drop Zone --- */
-    .upload-drop-zone {
-      border: 2.5px dashed #b3c1e1;
-      border-radius: 12px;
-      background: #f7faff;
-      text-align: center;
-      transition: border-color 0.2s, background 0.2s;
-      padding: 2.7em 1em;
-      margin-bottom: 1.2em;
-      cursor: pointer;
-      position: relative;
-      font-size: 1.13em;
-      color: #234;
-      min-height: 140px;
-      display: flex;
-      flex-direction: column;
       align-items: center;
+      gap: 0.4em;
+      flex-wrap: wrap;
       justify-content: center;
-      box-shadow: 0 1.5px 8px #0000;
+      margin-bottom: 2.2em;
+      padding-top: 1.4em;
     }
-    .upload-drop-zone:hover, .upload-drop-zone.active {
-      border-color: var(--accent);
-      background: #e0ebff;
-    }
-    .upload-drop-zone .add-icon {
-      font-size: 3em;
+    .cat-tab {
+      background: #fff;
       color: var(--accent);
-      margin-bottom: 0.35em;
-      pointer-events: none;
+      border: 1.5px solid var(--accent);
+      border-radius: 10px;
+      padding: 0.5em 1.3em;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.14s, color 0.14s;
+      margin-bottom: 0.2em;
     }
-    .upload-drop-zone input[type="file"] { display: none; }
-    .upload-drop-zone .drop-hint { font-size:0.97em;color:#888;margin-top:0.5em;}
-    /* --- Image preview list --- */
-    .img-list { display: flex; flex-direction: column; align-items: center; gap: 1.1em; margin-top: 1em; margin-bottom: 0.9em;}
-    .img-item { display: flex; flex-direction: row; align-items: center; gap: 1em; background: #f8fafd; border-radius: 12px; box-shadow: 0 1px 6px #0001; padding: 0.6em 0.7em; width: 95%; max-width: 390px; position: relative;}
-    .img-thumb { border-radius: 10px; box-shadow: 0 1px 6px #0002; border: 1.5px solid #e6e6e9; width: 60px; background: #fafaff; display: block;}
-    .img-handle { cursor: grab; font-size: 1.5em; color: #aaa; margin-right: 0.2em;}
-    .img-filename { font-size: 0.97em; color: #222; max-width: 135px; overflow-x: auto;}
-    .img-remove-btn { background: #ef4444; color: #fff; border: none; border-radius: 6px; padding: 0.2em 0.68em; font-size: 1.15em; margin-left: 0.8em; cursor: pointer;}
-    .img-remove-btn:hover { background: #c81e1e;}
-    .img-list.empty { color: #888; font-size: 1.1em; margin-top: 2em;}
-    @media (max-width: 900px) {
-      .pdf-tool-flex { flex-direction: column; gap: 1.2rem; align-items: stretch;}
-      .pdf-images, .pdf-options { max-width: 99vw; margin: 0 auto;}
-      .img-item { width: 100%; }
+    .cat-tab.active, .cat-tab:focus {
+      background: var(--accent);
+      color: #fff;
+      outline: none;
+      box-shadow: 0 2px 8px #2563eb22;
+    }
+    .cat-dropdown {
+      background: #fff;
+      color: var(--accent);
+      border: 1.5px solid var(--accent);
+      border-radius: 10px;
+      padding: 0.48em 0.9em;
+      font-size: 1em;
+      font-weight: 600;
+      margin-left: 0.7em;
+      cursor: pointer;
     }
     @media (max-width: 600px) {
-      .pdf-images, .pdf-options { min-width: unset; }
-      .img-thumb { width: 38px; }
-      .img-filename { font-size: 0.92em; max-width: 70px;}
+      .top-categories-bar {
+        flex-wrap: wrap;
+        gap: 0.2em;
+        padding-top: 0.7em;
+      }
+      .cat-tab, .cat-dropdown {
+        font-size: .97em;
+        padding: 0.38em 0.8em;
+      }
     }
   </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.css"/>
 </head>
 <body>
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">ToolMancer</div>
-      <button id="menuBtn" class="menu-btn" aria-label="Menu">☰</button>
-    </div>
-    <nav>
-      <ul>
-        <li><a href="../index.html">🏠 Home</a></li>
-        <li><a href="image-to-pdf.html" class="active">Image → PDF</a></li>
-        <li><a href="document-scanner.html">Document Scanner</a></li>
-        <li><a href="html-viewer.html">HTML Viewer</a></li>
-        <li><a href="qr-generator.html">QR Generator</a></li>
-        <li><a href="json-formatter.html">JSON Formatter</a></li>
-        <li><a href="text-diff.html">Text Diff</a></li>
-        <li><a href="url-encoder.html">URL Encoder/Decoder</a></li>
-        <li><a href="unit-converter.html">Unit Converter</a></li>
-        <li><a href="word-counter.html">Word Counter</a></li>
-        <li><a href="../about.html">About</a></li>
-        <li><a href="../contact.html">Contact</a></li>
-      </ul>
-    </nav>
-    <button id="theme-toggle" class="theme-btn">🌙</button>
-  </aside>
-  <main class="content tool-page" style="margin-left:220px;">
-    <a href="../index.html" class="fab-home" title="Home">🏠</a>
-    <nav class="breadcrumb">
-      <a href="../index.html">Home</a> / Image to PDF
-    </nav>
-    <section class="tool-card">
-      <a href="../index.html" class="back-home-btn">← Home</a>
-      <header class="tool-header">
-        <h1>🖼️ Image to PDF Converter</h1>
-        <div class="tool-desc">
-          Convert multiple images (JPG, PNG, etc.) into a single PDF — privacy-friendly, works in your browser. Drag, reorder, and customize PDF output!
-        </div>
-        <span class="tool-help" title="Upload images, reorder, set options, and convert to PDF. Nothing leaves your device!">i</span>
-      </header>
-      <div class="pdf-tool-flex">
-        <!-- Image area -->
-        <div class="pdf-images" id="pdfImages">
-          <div class="upload-drop-zone" id="dropZone">
-            <span class="add-icon">+</span>
-            <span style="font-weight:500;">Add images or drag & drop</span>
-            <input type="file" id="imgInput" accept="image/*" multiple>
-            <div class="drop-hint">Supported: JPG, PNG, WebP...</div>
-          </div>
-          <div class="img-list" id="imgList"></div>
-          <div id="noImgMsg" class="img-list empty">No images selected</div>
-        </div>
-        <!-- PDF options panel -->
-        <form class="pdf-options" id="pdfOptions" onsubmit="return false;">
-          <div>
-            <div class="pdf-opt-label">Page orientation</div>
-            <div class="pdf-opt-group">
-              <button type="button" class="pdf-opt-btn active" data-orient="portrait" id="orientPortrait">Portrait</button>
-              <button type="button" class="pdf-opt-btn" data-orient="landscape" id="orientLandscape">Landscape</button>
-            </div>
-          </div>
-          <div>
-            <div class="pdf-opt-label">Page size</div>
-            <select class="pdf-opt-dropdown" id="pageSize">
-              <option value="a4">A4 (297x210 mm)</option>
-              <option value="letter">Letter (279x216 mm)</option>
-              <option value="legal">Legal (356x216 mm)</option>
-            </select>
-          </div>
-          <div>
-            <div class="pdf-opt-label">Margin</div>
-            <div class="pdf-opt-group">
-              <button type="button" class="pdf-opt-btn active" data-margin="none" id="marginNone">No margin</button>
-              <button type="button" class="pdf-opt-btn" data-margin="small" id="marginSmall">Small</button>
-              <button type="button" class="pdf-opt-btn" data-margin="big" id="marginBig">Big</button>
-            </div>
-          </div>
-          <div>
-            <input type="checkbox" class="pdf-checkbox" id="mergeAll" checked/>
-            <label for="mergeAll" style="font-size:1.05em;">Merge all images in one PDF file</label>
-          </div>
-          <button class="pdf-main-btn" id="convertBtn" disabled>
-            Convert to PDF <span style="font-size:1.2em;">➔</span>
-          </button>
-        </form>
+  <main class="content home">
+    <section class="home-card">
+      <h1>Welcome to <span>ToolMancer</span></h1>
+      <p class="subtitle">All-in-One Online Toolkit — browser-first, privacy friendly.</p>
+      <div class="top-categories-bar">
+        <button class="cat-tab active" data-cat="all">All</button>
+        <button class="cat-tab" data-cat="image">Image Tools</button>
+        <button class="cat-tab" data-cat="text">Text Tools</button>
+        <button class="cat-tab" data-cat="convert">Converters</button>
+        <button class="cat-tab" data-cat="encode">Encoder/Decoder</button>
+        <button class="cat-tab" data-cat="ai">AI Tools</button>
+        <!-- Dropdown for extra categories (if needed) -->
+        <select class="cat-dropdown" id="catDropdown">
+          <option value="">More...</option>
+          <option value="hash">Hash Generator</option>
+          <option value="password">Password Generator</option>
+          <!-- Add more overflow categories here -->
+        </select>
       </div>
-      <section class="result-box" id="resultBox" style="display:none">
-        <h3>Result:</h3>
-        <a id="downloadBtn" class="btn" download="output.pdf">⬇️ Download PDF</a>
-        <button id="openBtn" class="btn">🔗 Open in New Tab</button>
-        <button id="copyLinkBtn" class="btn">📋 Copy Link</button>
-      </section>
-    </section>
-    <section class="how-to">
-      <h3>How to Use</h3>
-      <ol>
-        <li>Click anywhere in the box or drag & drop images.</li>
-        <li>Reorder if needed, set options.</li>
-        <li>Click <b>Convert to PDF</b>.</li>
-        <li>Download or open your PDF.</li>
-      </ol>
-    </section>
-    <section class="use-case">
-      <h3>Example</h3>
-      <p><b>Input:</b> 3 PNG images (receipts)<br>
-         <b>Output:</b> 1 PDF file containing all three pages</p>
+      <div class="tool-grid">
+        <!-- Cards: Add data-cat for filtering -->
+        <a href="tools/image-to-pdf.html" class="card" data-cat="image">📷 Image → PDF</a>
+        <a href="tools/image-compressor.html" class="card" data-cat="image">🗜️ Image Compressor</a>
+        <a href="tools/image-resizer.html" class="card" data-cat="image">📏 Image Resizer</a>
+        <a href="tools/convert-png-jpg.html" class="card" data-cat="image">🖼️ Convert PNG↔JPG</a>
+        <a href="tools/steganography.html" class="card" data-cat="image">🕵️ Steganography</a>
+        <a href="tools/text-diff.html" class="card" data-cat="text">🔍 Text Diff</a>
+        <a href="tools/text-encryptor.html" class="card" data-cat="text">🔐 Text Encryptor</a>
+        <a href="tools/text-to-pdf.html" class="card" data-cat="text">📄 Text → PDF</a>
+        <a href="tools/word-counter.html" class="card" data-cat="text">✏️ Word Counter</a>
+        <a href="tools/unit-converter.html" class="card" data-cat="convert">⚖️ Unit Converter</a>
+        <a href="tools/document-scanner.html" class="card" data-cat="convert">📑 Document Scanner</a>
+        <a href="tools/url-encoder.html" class="card" data-cat="encode">🔗 URL Encoder/Decoder</a>
+        <a href="tools/hash-generator.html" class="card" data-cat="hash">🛡️ Hash Generator</a>
+        <a href="tools/password-generator.html" class="card" data-cat="password">🔑 Password Generator</a>
+        <a href="tools/qr-generator.html" class="card" data-cat="encode">📱 QR Generator</a>
+        <a href="tools/image-to-prompt.html" class="card" data-cat="ai">🤖 Image to Prompt</a>
+        <a href="tools/json-formatter.html" class="card" data-cat="ai">🧩 JSON Formatter</a>
+      </div>
     </section>
   </main>
-  <script src="../theme.js"></script>
-  <script src="../script.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
   <script>
-    // --- Sidebar fixed (already in CSS above) ---
-    // --- Upload box logic ---
-    const dropZone = document.getElementById('dropZone');
-    const imgInput = document.getElementById('imgInput');
-    const imgList = document.getElementById('imgList');
-    const noImgMsg = document.getElementById('noImgMsg');
-    const convertBtn = document.getElementById('convertBtn');
-    const resultBox = document.getElementById('resultBox');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const openBtn = document.getElementById('openBtn');
-    const copyLinkBtn = document.getElementById('copyLinkBtn');
-    let pdfBlobUrl = '';
-    let images = [];
-
-    // Full box click
-    dropZone.addEventListener('click', (e) => {
-      if (e.target === imgInput) return;
-      imgInput.click();
-    });
-    // Drag & drop
-    dropZone.addEventListener('dragover', e => {
-      e.preventDefault();
-      dropZone.classList.add('active');
-    });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
-    dropZone.addEventListener('drop', e => {
-      e.preventDefault();
-      dropZone.classList.remove('active');
-      handleFiles(e.dataTransfer.files);
-    });
-    imgInput.addEventListener('change', e => handleFiles(e.target.files));
-
-    function handleFiles(files) {
-      let filesArr = Array.from(files);
-      filesArr.forEach(f => {
-        if (f.type.startsWith("image/")) images.push({file: f, name: f.name, url: URL.createObjectURL(f)});
-      });
-      renderImages();
-    }
-    function renderImages() {
-      imgList.innerHTML = '';
-      if (!images.length) {
-        noImgMsg.style.display = '';
-        convertBtn.disabled = true;
-        return;
-      }
-      noImgMsg.style.display = 'none';
-      images.forEach((img, i) => {
-        let div = document.createElement('div');
-        div.className = 'img-item';
-        div.setAttribute('data-index', i);
-        let handle = document.createElement('span');
-        handle.className = 'img-handle';
-        handle.innerHTML = '☰';
-        let thumb = document.createElement('img');
-        thumb.className = 'img-thumb';
-        thumb.src = img.url;
-        thumb.title = img.name;
-        let fname = document.createElement('div');
-        fname.className = 'img-filename';
-        fname.textContent = img.name.length > 24 ? img.name.slice(0, 20)+'...' : img.name;
-        let removeBtn = document.createElement('button');
-        removeBtn.className = 'img-remove-btn';
-        removeBtn.textContent = '✕';
-        removeBtn.title = 'Remove';
-        removeBtn.onclick = () => {
-          URL.revokeObjectURL(img.url);
-          images.splice(i, 1);
-          renderImages();
-        };
-        div.appendChild(handle);
-        div.appendChild(thumb);
-        div.appendChild(fname);
-        div.appendChild(removeBtn);
-        imgList.appendChild(div);
-      });
-      convertBtn.disabled = false;
-      makeListSortable();
-    }
-    function makeListSortable() {
-      Sortable.create(imgList, {
-        handle: '.img-handle',
-        animation: 170,
-        onEnd: function (evt) {
-          if (evt.oldIndex !== evt.newIndex) {
-            const moved = images.splice(evt.oldIndex, 1)[0];
-            images.splice(evt.newIndex, 0, moved);
-            renderImages();
-          }
-        }
-      });
-    }
-    // --- PDF Options ---
-    let orientation = "portrait";
-    let pageSize = "a4";
-    let margin = "none";
-    document.querySelectorAll(".pdf-opt-btn[data-orient]").forEach(btn => {
+    // Top tab filter
+    document.querySelectorAll('.cat-tab').forEach(btn => {
       btn.onclick = function() {
-        document.querySelectorAll(".pdf-opt-btn[data-orient]").forEach(b=>b.classList.remove('active'));
-        this.classList.add('active');
-        orientation = this.dataset.orient;
+        document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        let cat = btn.dataset.cat;
+        document.querySelectorAll('.tool-grid .card').forEach(card => {
+          card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+        });
+        document.getElementById('catDropdown').selectedIndex = 0;
       }
     });
-    document.getElementById('pageSize').onchange = function() {
-      pageSize = this.value;
-    };
-    document.querySelectorAll(".pdf-opt-btn[data-margin]").forEach(btn => {
-      btn.onclick = function() {
-        document.querySelectorAll(".pdf-opt-btn[data-margin]").forEach(b=>b.classList.remove('active'));
-        this.classList.add('active');
-        margin = this.dataset.margin;
-      }
-    });
-    // --- Convert to PDF ---
-    convertBtn.onclick = async function(e) {
-      e.preventDefault();
-      if (!images.length) return;
-      const { jsPDF } = window.jspdf;
-      let pdf = new jsPDF({ orientation, unit: "mm", format: pageSize });
-      let marginPx = margin === "none" ? 0 : (margin === "small" ? 10 : 24);
-      for (let i = 0; i < images.length; i++) {
-        if (i > 0 && document.getElementById('mergeAll').checked) pdf.addPage();
-        let imgData = await fileToDataUrl(images[i].file);
-        let [pw, ph] = [pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight()];
-        let img = new Image();
-        img.src = imgData;
-        await new Promise(res=>img.onload=res);
-        let scale = Math.min((pw - 2*marginPx) / img.width, (ph - 2*marginPx) / img.height);
-        let iw = img.width * scale, ih = img.height * scale;
-        let ix = (pw-iw)/2, iy = (ph-ih)/2;
-        pdf.addImage(img, 'PNG', ix, iy, iw, ih);
-        if (!document.getElementById('mergeAll').checked && i < images.length-1) pdf.save(images[i].name.replace(/\.[^/.]+$/, "")+'.pdf');
-      }
-      if (document.getElementById('mergeAll').checked) {
-        let blob = pdf.output('blob');
-        if (pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl);
-        pdfBlobUrl = URL.createObjectURL(blob);
-        downloadBtn.href = pdfBlobUrl;
-        openBtn.onclick = () => window.open(pdfBlobUrl, '_blank');
-        copyLinkBtn.onclick = () => {
-          navigator.clipboard.writeText(pdfBlobUrl);
-          copyLinkBtn.textContent = "✅ Copied!";
-          setTimeout(()=>copyLinkBtn.textContent="📋 Copy Link", 1200);
-        };
-        resultBox.style.display = 'block';
-        downloadBtn.click();
-      }
-    };
-    function fileToDataUrl(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = e => resolve(e.target.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+    // Dropdown filter
+    document.getElementById('catDropdown').onchange = function() {
+      let cat = this.value;
+      document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tool-grid .card').forEach(card => {
+        card.style.display = (cat === '' || card.dataset.cat === cat) ? '' : 'none';
       });
-    }
+    };
   </script>
 </body>
 </html>
