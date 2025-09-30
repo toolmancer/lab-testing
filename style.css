@@ -6,12 +6,14 @@
   --text: #111;
   --card: #fff;
   --accent: #2563eb;
+  --border-color: #e0e7ef;
 }
 [data-theme="dark"] {
   --bg: #0f172a;
   --text: #e2e8f0;
   --card: #1e293b;
   --accent: #38bdf8;
+  --border-color: #334155;
 }
 
 body {
@@ -29,7 +31,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-right: 1px solid #233152;
+  border-right: 1px solid var(--border-color);
   min-height: 100vh;
   z-index: 1000;
   transition: left 0.3s;
@@ -128,6 +130,20 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
   margin-top: 0.2em;
 }
+
+.tool-group-title {
+  grid-column: 1 / -1;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-size: 1.4rem;
+  color: var(--accent);
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 0.4em;
+}
+.tool-group-title:first-child {
+  margin-top: 0;
+}
+
 .card {
   background: var(--card);
   padding: 1.2rem;
@@ -139,7 +155,7 @@ body {
   font-size: 1.1rem;
   box-shadow: 0 2px 5px rgba(0,0,0,0.08);
   transition: transform 0.17s, box-shadow 0.17s, background 0.17s;
-  border: 1.5px solid #e0e7ef;
+  border: 1.5px solid var(--border-color);
 }
 .card:hover {
   transform: translateY(-3px) scale(1.04);
@@ -148,6 +164,18 @@ body {
   color: var(--accent);
   border-color: var(--accent);
 }
+
+.tool-logo svg {
+  width: 1em;
+  height: 1em;
+  stroke-width: 1.5;
+  color: var(--accent);
+}
+
+.tool-card-home:hover .tool-logo svg {
+  color: var(--accent);
+}
+
 
 /* Tool Page Card */
 .content.tool-page {
@@ -261,9 +289,14 @@ body {
   font-size: 1.12em;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.16s, box-shadow 0.16s;
+  transition: background 0.16s, box-shadow 0.16s, transform 0.16s;
   box-shadow: 0 2px 8px #2563eb2b;
 }
+.actions button:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px #2563eb3a;
+}
+
 .actions button[disabled] {
   opacity: 0.55;
   cursor: not-allowed;
@@ -282,6 +315,27 @@ body {
 .input-group {
   margin-bottom: 1.6em;
 }
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+input[type='text'], input[type='email'], input[type='number'], input[type='password'], textarea {
+  background-color: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border-color);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type='text']:focus, input[type='email']:focus, input[type='number']:focus, input[type='password']:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
 .drop-group {
   border: 2.5px dashed #b3c1e1;
   border-radius: 12px;
@@ -316,7 +370,7 @@ body {
   object-fit: cover;
   margin: 0.35em;
   border-radius: 10px;
-  border: 1.5px solid #dde6ef;
+  border: 1.5px solid var(--border-color);
   box-shadow: 0 1px 3px #0001;
   vertical-align: middle;
 }
@@ -348,7 +402,7 @@ body {
 
 .how-to, .use-case {
   background: #f1f5f9;
-  border: 1px solid #dde6ef;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 1.1em 1.1em;
   margin-bottom: 1.6em;
@@ -378,7 +432,7 @@ body {
     z-index: 1002;
     transition: left 0.33s cubic-bezier(.4,2,.5,1);
     box-shadow: 2px 0 16px #0002;
-    border-right: 1px solid #ddd;
+    border-right: 1px solid var(--border-color);
     background: var(--card);
   }
   .sidebar.show {
@@ -431,18 +485,4 @@ body {
   .sidebar { width: 85vw; }
   .home-card, .tool-card { padding: 0.8rem 0.25rem; }
   .card { padding: 0.8rem; }
-}
-
-/* ==== Dark Mode ==== */
-:root {
-  --bg: #f9f9f9;
-  --text: #111;
-  --card: #fff;
-  --accent: #2563eb;
-}
-[data-theme="dark"] {
-  --bg: #101b2b;
-  --text: #e2e8f0;
-  --card: #17243b;
-  --accent: #38bdf8;
 }
