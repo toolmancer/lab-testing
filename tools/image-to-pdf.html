@@ -1,242 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Image to PDF Converter | ToolMancer</title>
   <link rel="stylesheet" href="../style.css"/>
   <style>
-    /* --- Sidebar Tweaks --- */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 220px;
-      height: 100vh;
-      background: var(--card);
-      padding: 1.2rem 1rem 1rem 1rem;
-      display: flex;
-      flex-direction: column;
-      border-right: 1px solid #233152;
-      z-index: 1000;
-    }
-    .sidebar .logo { margin-bottom: 1.1rem; }
-    .sidebar nav ul { margin-top: 0; }
-    /* --- Main Layout Tweaks --- */
-    .tool-card { max-width: 1050px; }
-    .pdf-tool-flex { display: flex; flex-wrap: wrap; gap: 2.2rem; justify-content: center; align-items: flex-start; margin-top: 1.3rem;}
-    .pdf-images, .pdf-options { background: #fff; border-radius: 18px; box-shadow: 0 3px 24px #0001; }
-    .pdf-images { padding: 1.3rem 1.1rem; min-width: 340px; max-width: 420px; flex: 2 1 380px; text-align: center; position: relative; }
-    .pdf-options { padding: 1.4rem 1.1rem 1.1rem 1.1rem; min-width: 220px; max-width: 350px; flex: 1 1 220px; display: flex; flex-direction: column; gap: 1.2em;}
-    /* --- Upload Drop Zone --- */
-    .upload-drop-zone {
-      border: 2.5px dashed #b3c1e1;
-      border-radius: 12px;
-      background: #f7faff;
-      text-align: center;
-      transition: border-color 0.2s, background 0.2s;
-      padding: 2.7em 1em;
-      margin-bottom: 1.2em;
-      cursor: pointer;
-      position: relative;
-      font-size: 1.13em;
-      color: #234;
-      min-height: 140px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 1.5px 8px #0000;
-    }
-    .upload-drop-zone:hover, .upload-drop-zone.active {
-      border-color: var(--accent);
-      background: #e0ebff;
-    }
-    .upload-drop-zone .add-icon {
-      font-size: 3em;
-      color: var(--accent);
-      margin-bottom: 0.35em;
-      pointer-events: none;
-    }
-    .upload-drop-zone input[type="file"] { display: none; }
-    .upload-drop-zone .drop-hint { font-size:0.97em;color:#888;margin-top:0.5em;}
-    /* --- Image preview list --- */
-    .img-list { display: flex; flex-direction: column; align-items: center; gap: 1.1em; margin-top: 1em; margin-bottom: 0.9em;}
+    body { background: #f7f7fb; }
+    .pdf-tool-flex { display: flex; flex-wrap: wrap; gap: 2.5rem; justify-content: center; align-items: flex-start; margin-top: 2.7rem; }
+    .pdf-images { flex: 1 1 320px; min-width: 280px; max-width: 420px; background: #fff; border-radius: 18px; box-shadow: 0 3px 24px #0001; padding: 1.7rem 1.2rem; text-align: center; position: relative; min-height: 280px;}
+    .pdf-images .add-btn { position: absolute; right: 1.5rem; top: 1.2rem; background: #ef4444; color: #fff; border: none; border-radius: 50%; width: 45px; height: 45px; font-size: 2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 7px #0002; cursor: pointer; transition: background 0.15s;}
+    .pdf-images .add-btn:hover { background: #c81e1e;}
+    .img-list { display: flex; flex-direction: column; align-items: center; gap: 1.2em; margin-top: 2.2em; margin-bottom: 1.2em;}
     .img-item { display: flex; flex-direction: row; align-items: center; gap: 1em; background: #f8fafd; border-radius: 12px; box-shadow: 0 1px 6px #0001; padding: 0.6em 0.7em; width: 95%; max-width: 390px; position: relative;}
-    .img-thumb { border-radius: 10px; box-shadow: 0 1px 6px #0002; border: 1.5px solid #e6e6e9; width: 60px; background: #fafaff; display: block;}
+    .img-thumb { border-radius: 10px; box-shadow: 0 1px 6px #0002; border: 1.5px solid #e6e6e9; width: 55px; background: #fafaff; display: block;}
     .img-handle { cursor: grab; font-size: 1.5em; color: #aaa; margin-right: 0.2em;}
     .img-filename { font-size: 0.97em; color: #222; max-width: 135px; overflow-x: auto;}
     .img-remove-btn { background: #ef4444; color: #fff; border: none; border-radius: 6px; padding: 0.2em 0.68em; font-size: 1.15em; margin-left: 0.8em; cursor: pointer;}
     .img-remove-btn:hover { background: #c81e1e;}
     .img-list.empty { color: #888; font-size: 1.1em; margin-top: 2em;}
+    /* PDF options panel */
+    .pdf-options { flex: 1 1 290px; min-width: 240px; max-width: 350px; background: #fff; border-radius: 18px; box-shadow: 0 3px 24px #0001; padding: 2rem 1.3rem 1.5rem 1.3rem; display: flex; flex-direction: column; gap: 1.4em;}
+    .pdf-opt-label { font-weight: bold; font-size: 1.07em; margin-bottom: 0.35em; color: #333;}
+    .pdf-opt-group { display: flex; gap: 1em; margin-bottom: 0.4em;}
+    .pdf-opt-btn { background: #fff; border: 2px solid #e6e6ee; color: #222; border-radius: 10px; padding: 0.8em 1.6em; font-size: 1.06em; font-weight: 500; cursor: pointer; transition: border 0.16s, color 0.15s, background 0.15s;}
+    .pdf-opt-btn.active, .pdf-opt-btn:focus { border-color: #ef4444; color: #ef4444; background: #fff5f5;}
+    .pdf-opt-btn:not(.active):hover { background: #fafbfc;}
+    .pdf-opt-dropdown { width: 100%; padding: 0.75em 1em; border-radius: 8px; border: 2px solid #e6e6ee; font-size: 1.05em;}
+    .pdf-checkbox { accent-color: #ef4444; width: 1.2em; height: 1.2em; margin-right: 0.65em; vertical-align: middle;}
+    .pdf-main-btn { margin-top: 1.7em; padding: 1.15em 0; width: 100%; font-size: 1.3em; border-radius: 13px; background: #ef4444; color: #fff; border: none; font-weight: bold; box-shadow: 0 5px 24px #ef44441a; cursor: pointer; transition: background 0.13s, box-shadow 0.15s; display: flex; align-items: center; justify-content: center; gap: 0.7em;}
+    .pdf-main-btn:active, .pdf-main-btn:hover { background: #c81e1e;}
     @media (max-width: 900px) {
-      .pdf-tool-flex { flex-direction: column; gap: 1.2rem; align-items: stretch;}
-      .pdf-images, .pdf-options { max-width: 99vw; margin: 0 auto;}
+      .pdf-tool-flex { flex-direction: column; gap: 1.3rem; align-items: stretch; margin-top: 1.1rem;}
+      .pdf-images, .pdf-options { max-width: 96vw; margin: 0 auto;}
+      .pdf-options { padding: 1.2rem 0.5rem 1.1rem 0.5rem;}
       .img-item { width: 100%; }
     }
     @media (max-width: 600px) {
       .pdf-images, .pdf-options { min-width: unset; }
-      .img-thumb { width: 38px; }
+      .img-thumb { width: 40px; }
       .img-filename { font-size: 0.92em; max-width: 70px;}
+      .pdf-opt-btn { padding: 0.7em 0.7em; font-size: 0.99em;}
+      .pdf-main-btn { font-size: 1.07em; border-radius: 8px; padding: 0.85em 0;}
     }
   </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.css"/>
 </head>
 <body>
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">ToolMancer</div>
-      <button id="menuBtn" class="menu-btn" aria-label="Menu">☰</button>
-    </div>
-    <nav>
-      <ul>
-        <li><a href="../index.html">🏠 Home</a></li>
-        <li><a href="image-to-pdf.html" class="active">Image → PDF</a></li>
-        <li><a href="document-scanner.html">Document Scanner</a></li>
-        <li><a href="html-viewer.html">HTML Viewer</a></li>
-        <li><a href="qr-generator.html">QR Generator</a></li>
-        <li><a href="json-formatter.html">JSON Formatter</a></li>
-        <li><a href="text-diff.html">Text Diff</a></li>
-        <li><a href="url-encoder.html">URL Encoder/Decoder</a></li>
-        <li><a href="unit-converter.html">Unit Converter</a></li>
-        <li><a href="word-counter.html">Word Counter</a></li>
-        <li><a href="../about.html">About</a></li>
-        <li><a href="../contact.html">Contact</a></li>
-      </ul>
-    </nav>
-    <button id="theme-toggle" class="theme-btn">🌙</button>
-  </aside>
-  <main class="content tool-page" style="margin-left:220px;">
-    <a href="../index.html" class="fab-home" title="Home">🏠</a>
-    <nav class="breadcrumb">
-      <a href="../index.html">Home</a> / Image to PDF
-    </nav>
-    <section class="tool-card">
-      <a href="../index.html" class="back-home-btn">← Home</a>
-      <header class="tool-header">
-        <h1>🖼️ Image to PDF Converter</h1>
-        <div class="tool-desc">
-          Convert multiple images (JPG, PNG, etc.) into a single PDF — privacy-friendly, works in your browser. Drag, reorder, and customize PDF output!
-        </div>
-        <span class="tool-help" title="Upload images, reorder, set options, and convert to PDF. Nothing leaves your device!">i</span>
-      </header>
-      <div class="pdf-tool-flex">
-        <!-- Image area -->
-        <div class="pdf-images" id="pdfImages">
-          <div class="upload-drop-zone" id="dropZone">
-            <span class="add-icon">+</span>
-            <span style="font-weight:500;">Add images or drag & drop</span>
-            <input type="file" id="imgInput" accept="image/*" multiple>
-            <div class="drop-hint">Supported: JPG, PNG, WebP...</div>
-          </div>
-          <div class="img-list" id="imgList"></div>
-          <div id="noImgMsg" class="img-list empty">No images selected</div>
-        </div>
-        <!-- PDF options panel -->
-        <form class="pdf-options" id="pdfOptions" onsubmit="return false;">
-          <div>
-            <div class="pdf-opt-label">Page orientation</div>
-            <div class="pdf-opt-group">
-              <button type="button" class="pdf-opt-btn active" data-orient="portrait" id="orientPortrait">Portrait</button>
-              <button type="button" class="pdf-opt-btn" data-orient="landscape" id="orientLandscape">Landscape</button>
-            </div>
-          </div>
-          <div>
-            <div class="pdf-opt-label">Page size</div>
-            <select class="pdf-opt-dropdown" id="pageSize">
-              <option value="a4">A4 (297x210 mm)</option>
-              <option value="letter">Letter (279x216 mm)</option>
-              <option value="legal">Legal (356x216 mm)</option>
-            </select>
-          </div>
-          <div>
-            <div class="pdf-opt-label">Margin</div>
-            <div class="pdf-opt-group">
-              <button type="button" class="pdf-opt-btn active" data-margin="none" id="marginNone">No margin</button>
-              <button type="button" class="pdf-opt-btn" data-margin="small" id="marginSmall">Small</button>
-              <button type="button" class="pdf-opt-btn" data-margin="big" id="marginBig">Big</button>
-            </div>
-          </div>
-          <div>
-            <input type="checkbox" class="pdf-checkbox" id="mergeAll" checked/>
-            <label for="mergeAll" style="font-size:1.05em;">Merge all images in one PDF file</label>
-          </div>
-          <button class="pdf-main-btn" id="convertBtn" disabled>
-            Convert to PDF <span style="font-size:1.2em;">➔</span>
-          </button>
-        </form>
+  <main>
+    <div class="pdf-tool-flex">
+      <div class="pdf-images" id="pdfImages">
+        <button class="add-btn" id="addImgBtn" title="Add Image">+</button>
+        <input type="file" id="imgInput" accept="image/*" multiple style="display:none"/>
+        <div class="img-list" id="imgList"></div>
+        <div id="noImgMsg" class="img-list empty">No images selected</div>
       </div>
-      <section class="result-box" id="resultBox" style="display:none">
-        <h3>Result:</h3>
-        <a id="downloadBtn" class="btn" download="output.pdf">⬇️ Download PDF</a>
-        <button id="openBtn" class="btn">🔗 Open in New Tab</button>
-        <button id="copyLinkBtn" class="btn">📋 Copy Link</button>
-      </section>
-    </section>
-    <section class="how-to">
-      <h3>How to Use</h3>
-      <ol>
-        <li>Click anywhere in the box or drag & drop images.</li>
-        <li>Reorder if needed, set options.</li>
-        <li>Click <b>Convert to PDF</b>.</li>
-        <li>Download or open your PDF.</li>
-      </ol>
-    </section>
-    <section class="use-case">
-      <h3>Example</h3>
-      <p><b>Input:</b> 3 PNG images (receipts)<br>
-         <b>Output:</b> 1 PDF file containing all three pages</p>
-    </section>
+      <form class="pdf-options" id="pdfOptions" onsubmit="return false;">
+        <div>
+          <div class="pdf-opt-label">Page orientation</div>
+          <div class="pdf-opt-group">
+            <button type="button" class="pdf-opt-btn active" data-orient="portrait" id="orientPortrait">Portrait</button>
+            <button type="button" class="pdf-opt-btn" data-orient="landscape" id="orientLandscape">Landscape</button>
+          </div>
+        </div>
+        <div>
+          <div class="pdf-opt-label">Page size</div>
+          <select class="pdf-opt-dropdown" id="pageSize">
+            <option value="a4">A4 (297x210 mm)</option>
+            <option value="letter">Letter (279x216 mm)</option>
+            <option value="legal">Legal (356x216 mm)</option>
+          </select>
+        </div>
+        <div>
+          <div class="pdf-opt-label">Margin</div>
+          <div class="pdf-opt-group">
+            <button type="button" class="pdf-opt-btn active" data-margin="none" id="marginNone">No margin</button>
+            <button type="button" class="pdf-opt-btn" data-margin="small" id="marginSmall">Small</button>
+            <button type="button" class="pdf-opt-btn" data-margin="big" id="marginBig">Big</button>
+          </div>
+        </div>
+        <div>
+          <input type="checkbox" class="pdf-checkbox" id="mergeAll" checked/>
+          <label for="mergeAll" style="font-size:1.05em;">Merge all images in one PDF file</label>
+        </div>
+        <button class="pdf-main-btn" id="convertBtn" disabled>
+          Convert to PDF <span style="font-size:1.2em;">➔</span>
+        </button>
+      </form>
+    </div>
+    <a id="pdfDownloadLink" style="display:none"></a>
   </main>
-  <script src="../theme.js"></script>
-  <script src="../script.js"></script>
+  <!-- jsPDF & SortableJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
   <script>
-    // --- Sidebar fixed (already in CSS above) ---
-    // --- Upload box logic ---
-    const dropZone = document.getElementById('dropZone');
+    // --- Image upload/preview & drag reorder ---
+    const addImgBtn = document.getElementById('addImgBtn');
     const imgInput = document.getElementById('imgInput');
     const imgList = document.getElementById('imgList');
     const noImgMsg = document.getElementById('noImgMsg');
-    const convertBtn = document.getElementById('convertBtn');
-    const resultBox = document.getElementById('resultBox');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const openBtn = document.getElementById('openBtn');
-    const copyLinkBtn = document.getElementById('copyLinkBtn');
-    let pdfBlobUrl = '';
-    let images = [];
-
-    // Full box click
-    dropZone.addEventListener('click', (e) => {
-      if (e.target === imgInput) return;
-      imgInput.click();
-    });
-    // Drag & drop
-    dropZone.addEventListener('dragover', e => {
-      e.preventDefault();
-      dropZone.classList.add('active');
-    });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
-    dropZone.addEventListener('drop', e => {
-      e.preventDefault();
-      dropZone.classList.remove('active');
-      handleFiles(e.dataTransfer.files);
-    });
-    imgInput.addEventListener('change', e => handleFiles(e.target.files));
-
-    function handleFiles(files) {
-      let filesArr = Array.from(files);
-      filesArr.forEach(f => {
+    let images = []; // [{file, name, url}]
+    addImgBtn.onclick = () => imgInput.click();
+    imgInput.onchange = e => {
+      let files = Array.from(e.target.files);
+      files.forEach(f => {
         if (f.type.startsWith("image/")) images.push({file: f, name: f.name, url: URL.createObjectURL(f)});
       });
       renderImages();
-    }
+    };
     function renderImages() {
       imgList.innerHTML = '';
       if (!images.length) {
         noImgMsg.style.display = '';
-        convertBtn.disabled = true;
+        document.getElementById('convertBtn').disabled = true;
         return;
       }
       noImgMsg.style.display = 'none';
@@ -269,7 +144,7 @@
         div.appendChild(removeBtn);
         imgList.appendChild(div);
       });
-      convertBtn.disabled = false;
+      document.getElementById('convertBtn').disabled = false;
       makeListSortable();
     }
     function makeListSortable() {
@@ -277,6 +152,7 @@
         handle: '.img-handle',
         animation: 170,
         onEnd: function (evt) {
+          // Reorder images array
           if (evt.oldIndex !== evt.newIndex) {
             const moved = images.splice(evt.oldIndex, 1)[0];
             images.splice(evt.newIndex, 0, moved);
@@ -307,7 +183,7 @@
       }
     });
     // --- Convert to PDF ---
-    convertBtn.onclick = async function(e) {
+    document.getElementById('convertBtn').onclick = async function(e) {
       e.preventDefault();
       if (!images.length) return;
       const { jsPDF } = window.jspdf;
@@ -320,6 +196,7 @@
         let img = new Image();
         img.src = imgData;
         await new Promise(res=>img.onload=res);
+        // Fit image inside page with margin
         let scale = Math.min((pw - 2*marginPx) / img.width, (ph - 2*marginPx) / img.height);
         let iw = img.width * scale, ih = img.height * scale;
         let ix = (pw-iw)/2, iy = (ph-ih)/2;
@@ -327,18 +204,7 @@
         if (!document.getElementById('mergeAll').checked && i < images.length-1) pdf.save(images[i].name.replace(/\.[^/.]+$/, "")+'.pdf');
       }
       if (document.getElementById('mergeAll').checked) {
-        let blob = pdf.output('blob');
-        if (pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl);
-        pdfBlobUrl = URL.createObjectURL(blob);
-        downloadBtn.href = pdfBlobUrl;
-        openBtn.onclick = () => window.open(pdfBlobUrl, '_blank');
-        copyLinkBtn.onclick = () => {
-          navigator.clipboard.writeText(pdfBlobUrl);
-          copyLinkBtn.textContent = "✅ Copied!";
-          setTimeout(()=>copyLinkBtn.textContent="📋 Copy Link", 1200);
-        };
-        resultBox.style.display = 'block';
-        downloadBtn.click();
+        pdf.save("images.pdf");
       }
     };
     function fileToDataUrl(file) {
