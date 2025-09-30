@@ -66,7 +66,7 @@
         .upload-drop-zone .drop-hint { font-size:0.9em;color:#888;margin-top:0.5em;}
         
         /* New: Image processing controls */
-        .image-process-controls { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem; }
+        .image-process-controls { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
         .image-process-controls button { font-size: 0.9em; padding: 0.5rem 1rem; }
     </style>
 </head>
@@ -164,9 +164,8 @@
             <!-- New: Image Processing Controls (Filters) -->
             <div class="image-process-controls" id="imageProcessControls" style="display:none;">
                 <button class="btn" id="noFilterBtn">Original</button>
-                <button class="btn" id="bwBtn">Black & White</button>
+                <button class="btn" id="bwBtn">Document Clear</button>
                 <button class="btn" id="grayBtn">Greyscale</button>
-                <button class="btn" id="sharpenBtn">Sharpen</button>
             </div>
             
             <button class="btn" id="makePdf" disabled style="margin-top: 1rem;">Generate PDF</button>
@@ -181,8 +180,7 @@
             <ol>
                 <li>Click "Start Camera" to capture documents using your device's camera.</li>
                 <li>While the camera is on, apply live filters like "Black & White" or "Sharpen" to improve image clarity.</li>
-                <li>For each page, click "Capture Page".</li>
-                <li>Alternatively, drag and drop existing document images onto the upload box.</li>
+                <li>For each page, click "Capture Page" or add an image file.</li>
                 <li>Click "Generate PDF" to create a single PDF containing all captured pages.</li>
             </ol>
         </section>
@@ -272,7 +270,6 @@
             const noFilterBtn = document.getElementById('noFilterBtn');
             const bwBtn = document.getElementById('bwBtn');
             const grayBtn = document.getElementById('grayBtn');
-            const sharpenBtn = document.getElementById('sharpenBtn');
 
             let caps = []; // Array to store image data URLs or Blobs
 
@@ -349,13 +346,14 @@
                 img.src = dataUrl;
                 thumbsContainer.appendChild(img);
                 makePdfBtn.disabled = false;
+                imageProcessControls.style.display = 'flex'; // Show filter options after capturing first image
             }
 
             // --- Live Image Processing Functions (Apply CSS filters directly to video) ---
             noFilterBtn.addEventListener('click', () => { video.style.filter = 'none'; });
-            bwBtn.addEventListener('click', () => { video.style.filter = 'grayscale(100%) brightness(1.1)'; });
+            // New "Document Clear" filter: Greyscale + high contrast + sharpen
+            bwBtn.addEventListener('click', () => { video.style.filter = 'grayscale(100%) brightness(1.3) contrast(1.5)'; });
             grayBtn.addEventListener('click', () => { video.style.filter = 'grayscale(100%)'; });
-            sharpenBtn.addEventListener('click', () => { video.style.filter = 'brightness(1.2) contrast(1.2)'; });
 
             // Create PDF from captured images
             makePdfBtn.addEventListener('click', async () => {
