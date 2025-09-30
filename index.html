@@ -6,179 +6,211 @@
   <title>ToolMancer – All-in-One Toolkit</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    body { background: #f7fafd; }
-    .topbar-nav {
-      width: 100%;
-      background: #fff;
-      box-shadow: 0 2px 16px #0001;
-      display: flex;
-      align-items: center;
-      padding: 0 2em;
-      min-height: 68px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+    body { background: #f9fafd; }
+    .sticky-bar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--bg); padding-top: 1.7em;
+      margin-bottom: 2.4em; box-shadow: 0 2px 12px #0001;
     }
-    .topbar-nav .logo {
-      font-size: 2.1em;
-      font-weight: 800;
-      color: #2563eb;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-      margin-right: 2em; /* gap between logo and menu */
+    .top-categories-bar {
+      display: flex; align-items: center; gap: 0.4em;
+      flex-wrap: nowrap; justify-content: flex-start;
+      overflow-x: auto; scrollbar-width: thin;
+      padding-bottom: 0.5em; padding-left: 0.5em;
     }
-    .topbar-nav .menu-main {
-      display: flex;
-      gap: 2em;
-      align-items: center;
-      flex: 1; /* stretch menu to take available space */
+    .cat-tab {
+      background: #fff; color: var(--accent); border: none;
+      border-bottom: 3.5px solid transparent;
+      border-radius: 10px 10px 0 0;
+      padding: 0.7em 1.5em 0.6em 1.5em;
+      font-size: 1em; font-weight: 600; cursor: pointer;
+      margin-bottom: -3px;
+      transition: background 0.14s, color 0.14s, border-bottom 0.18s;
+      outline: none; position: relative;
     }
-    .topbar-nav .menu-main a,
-    .topbar-nav .menu-main .dropdown {
-      color: #222;
-      font-size: 1.07em;
-      padding: 0.2em 0.15em;
-      font-weight: 600;
-      text-decoration: none;
-      transition: color 0.13s;
+    .cat-tab.active, .cat-tab:focus {
+      background: #e9f2ff; color: #1740a5;
+      border-bottom: 3.5px solid #2563eb; z-index: 2;
+      box-shadow: 0 2px 8px #2563eb22;
     }
-    .topbar-nav .menu-main a:hover { color: #2563eb; text-decoration: underline;}
-    .topbar-nav .menu-main .dropdown { position: relative; }
-    .topbar-nav .menu-main .dropdown-menu {
-      display: none;
-      position: absolute; left: 0; top: 2.3em;
-      min-width: 180px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 8px 28px #2563eb21;
-      padding: 0.7em 0.2em;
-      z-index: 30;
-    }
-    .topbar-nav .menu-main .dropdown.open .dropdown-menu { display: block; }
-    .topbar-nav .menu-main .dropdown-menu a {
-      display: block; color: #2563eb;
-      padding: 0.5em 1.2em; border-radius: 7px; text-decoration: none; font-weight: 500; font-size: .98em;
-    }
-    .topbar-nav .menu-main .dropdown-menu a:hover { background: #f0f6ff; color: #1740a5;}
-    .topbar-nav .menu-auth {
-      display: flex;
-      gap: 0.7em;
-      align-items: center;
-      margin-left: auto; /* push login/signup to right */
-    }
-    .topbar-nav .login-btn { color: #2563eb; background: none; border: none; font-weight: 600; font-size: 1em; cursor: pointer;}
-    .topbar-nav .signup-btn { background: #ef4444; color: #fff; font-weight: bold; border: none; border-radius: 8px; padding: 0.53em 1.4em; margin-left: 0.35em; cursor: pointer; font-size: 1em; box-shadow: 0 2px 8px #ef444420; transition: background 0.14s;}
-    .topbar-nav .signup-btn:hover { background: #c81e1e; }
-    .hero-area { display: flex; flex-direction: column; align-items: center; gap: 0.7em; margin: 3.5em auto 1.8em auto; max-width: 900px; text-align: center;}
-    .hero-area h1 { font-size: 2.5em; font-weight: 900; color: #1e293b; margin-bottom: 0.1em; letter-spacing: 0.3px; line-height: 1.14;}
-    .hero-area .subtitle { font-size: 1.22em; color: #444d5c; margin-bottom: 0.8em; line-height: 1.32; max-width: 680px; font-weight: 500;}
-    .category-pills { display: flex; flex-wrap: wrap; gap: 0.7em; justify-content: center; margin: 1.4em 0 0.6em 0;}
-    .cat-pill { padding: 0.52em 1.3em; background: #fff; border: 2.2px solid #e0e7ef; border-radius: 999px; color: #222; font-size: 1.09em; font-weight: 600; cursor: pointer; transition: background 0.13s, color 0.13s, border 0.15s; box-shadow: 0 1.5px 7px #0000; outline: none;}
-    .cat-pill.active, .cat-pill:focus { background: #2563eb; color: #fff; border-color: #2563eb; box-shadow: 0 2px 8px #2563eb12;}
-    .cat-pill:hover:not(.active) { background: #f6faff;}
+    .cat-tab:hover:not(.active) { background: #f6faff; }
     .tool-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 2.2em;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 2.1em;
       justify-content: center;
-      max-width: 1340px;
-      margin: 0 auto 2.5em auto;
-      padding: 0 1em;
+      margin: 0 auto;
+      max-width: 1300px;
+      margin-top: 2.1em;
+      padding-bottom: 3em;
     }
     .tool-card-home {
       background: #fff;
-      border-radius: 17px;
+      border-radius: 16px;
       box-shadow: 0 4px 22px #0001, 0 1.5px 8px #0001;
-      padding: 2.1em 1.7em 2em 1.7em;
-      display: flex; flex-direction: column; align-items: flex-start;
-      min-height: 180px;
-      transition: box-shadow 0.15s, transform 0.13s, border-color 0.13s;
+      padding: 1.6em 1.4em 1.4em 1.4em;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.1em;
+      min-height: 184px;
+      transition: box-shadow 0.15s, transform 0.13s;
       text-decoration: none;
       color: #183153;
-      border: 2px solid #e0e7ef;
+      position: relative;
+      border: 1.5px solid #e0e7ef;
     }
     .tool-card-home:hover {
       box-shadow: 0 9px 36px #2563eb18, 0 1.5px 8px #2563eb18;
-      border-color: #2563eb;
-      transform: translateY(-4px) scale(1.035);
-      color: #2563eb;
+      border-color: var(--accent);
+      transform: translateY(-3px) scale(1.04);
+      color: var(--accent);
     }
-    .tool-logo { font-size: 2.5em; margin-bottom: 0.25em; margin-right: 0.07em; user-select: none;}
-    .tool-title { font-size: 1.21em; font-weight: bold; margin-bottom: 0.06em; letter-spacing: 0.1px; color: #1e293b;}
-    .tool-card-home:hover .tool-title { color: #2563eb;}
-    .tool-desc { font-size: 1.09em; color: #40506b; margin-bottom: 0.1em; margin-top: -0.3em; line-height: 1.44; min-height: 2.2em; max-width: 370px;}
-    @media (max-width: 1200px) { .tool-grid { grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }}
-    @media (max-width: 900px) {
+    .tool-logo {
+      font-size: 2.3em;
+      margin-bottom: 0.1em;
+      margin-right: 0.07em;
+      user-select: none;
+    }
+    .tool-title {
+      font-size: 1.21em;
+      font-weight: bold;
+      margin-bottom: 0.05em;
+      letter-spacing: 0.1px;
+      color: var(--accent);
+    }
+    .tool-desc {
+      font-size: 1.06em;
+      color: #40506b;
+      margin-bottom: 0.1em;
+      margin-top: -0.4em;
+      line-height: 1.43;
+      min-height: 2.2em;
+      max-width: 350px;
+    }
+    @media (max-width: 1000px) {
       .tool-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-      .hero-area { margin-top: 2.1em; }
-      .tool-card-home { padding: 1.4em 1em 1.2em 1em;}
     }
     @media (max-width: 700px) {
-      .tool-grid { grid-template-columns: 1fr; gap: 1.06em;}
-      .topbar-nav { flex-direction: column; padding: 0 0.5em; min-height: 53px;}
-      .hero-area {margin-top:1.2em;}
-      .tool-card-home { min-height: 99px;}
+      .tool-grid { grid-template-columns: repeat(auto-fit, minmax(99vw, 1fr)); gap: 1.1em;}
+      .sticky-bar { padding-top: 0.7em; margin-bottom: 1.2em; }
+      .top-categories-bar { font-size: .97em; padding-left: 0.1em;}
+      .cat-tab { padding: 0.5em 1em 0.45em 1em;}
+      .tool-card-home { min-height: 110px; padding: 1.1em 0.8em;}
     }
+    .home-card { background: none; box-shadow: none; padding: 0; margin: 0 auto; max-width: 1200px;}
+    .home-card h1, .home-card .subtitle { text-align: center; }
   </style>
 </head>
 <body>
-  <header class="topbar-nav">
-    <div class="logo">🧰 ToolMancer</div>
-    <nav class="menu-main">
-      <a href="#">Home</a>
-      <a href="#">Docs</a>
-      <div class="dropdown" id="allToolsDropdown">
-        <a href="#" onclick="event.preventDefault();this.parentElement.classList.toggle('open')">All Tools ▼</a>
-        <div class="dropdown-menu">
-          <a href="#">Image Tools</a>
-          <a href="#">Text Tools</a>
-          <a href="#">Converters</a>
-          <a href="#">Encoder/Decoder</a>
-          <a href="#">AI Tools</a>
-        </div>
+  <main class="content home">
+    <section class="home-card">
+      <h1>Welcome to <span>ToolMancer</span></h1>
+      <p class="subtitle">All-in-One Online Toolkit — browser-first, privacy friendly.</p>
+      <div class="sticky-bar">
+        <nav class="top-categories-bar" id="catBar">
+          <button class="cat-tab active" data-cat="all">All</button>
+          <button class="cat-tab" data-cat="image">Image Tools</button>
+          <button class="cat-tab" data-cat="text">Text Tools</button>
+          <button class="cat-tab" data-cat="convert">Converters</button>
+          <button class="cat-tab" data-cat="encode">Encoder/Decoder</button>
+          <button class="cat-tab" data-cat="ai">AI Tools</button>
+          <!-- More dropdown can be added here if needed -->
+        </nav>
       </div>
-    </nav>
-    <div class="menu-auth">
-      <button class="login-btn">Login</button>
-      <button class="signup-btn">Sign up</button>
-    </div>
-  </header>
-  <main>
-    <section class="hero-area">
-      <h1>Every tool you need to work with files in one place</h1>
-      <div class="subtitle">
-        Convert, compress, optimize, encode, and work with images, text, PDFs, and more—100% FREE, fast, and private. Everything runs in your browser!
-      </div>
-      <div class="category-pills">
-        <button class="cat-pill active" data-cat="all">All</button>
-        <button class="cat-pill" data-cat="image">Image Tools</button>
-        <button class="cat-pill" data-cat="text">Text Tools</button>
-        <button class="cat-pill" data-cat="convert">Converters</button>
-        <button class="cat-pill" data-cat="encode">Encoder/Decoder</button>
-        <button class="cat-pill" data-cat="ai">AI Tools</button>
+      <div class="tool-grid">
+        <a href="tools/image-to-pdf.html" class="tool-card-home" data-cat="image">
+          <span class="tool-logo">📷</span>
+          <span class="tool-title">Image to PDF</span>
+          <span class="tool-desc">Convert images (JPG, PNG, WebP, etc.) into a single PDF instantly in your browser.</span>
+        </a>
+        <a href="tools/image-compressor.html" class="tool-card-home" data-cat="image">
+          <span class="tool-logo">🗜️</span>
+          <span class="tool-title">Image Compressor</span>
+          <span class="tool-desc">Reduce image file size without losing quality. Privacy-friendly and fast.</span>
+        </a>
+        <a href="tools/image-resizer.html" class="tool-card-home" data-cat="image">
+          <span class="tool-logo">📏</span>
+          <span class="tool-title">Image Resizer</span>
+          <span class="tool-desc">Resize your images to custom dimensions or presets. No upload needed.</span>
+        </a>
+        <a href="tools/convert-png-jpg.html" class="tool-card-home" data-cat="image">
+          <span class="tool-logo">🖼️</span>
+          <span class="tool-title">PNG ↔ JPG Converter</span>
+          <span class="tool-desc">Convert PNG images to JPG and vice versa in one click, offline-ready.</span>
+        </a>
+        <a href="tools/steganography.html" class="tool-card-home" data-cat="image">
+          <span class="tool-logo">🕵️</span>
+          <span class="tool-title">Steganography</span>
+          <span class="tool-desc">Hide secret text inside images or extract hidden messages easily.</span>
+        </a>
+        <a href="tools/text-diff.html" class="tool-card-home" data-cat="text">
+          <span class="tool-logo">🔍</span>
+          <span class="tool-title">Text Diff</span>
+          <span class="tool-desc">Visually compare two texts and highlight every difference.</span>
+        </a>
+        <a href="tools/text-encryptor.html" class="tool-card-home" data-cat="text">
+          <span class="tool-logo">🔐</span>
+          <span class="tool-title">Text Encryptor</span>
+          <span class="tool-desc">Encrypt or decrypt text with a password. AES-256 secure.</span>
+        </a>
+        <a href="tools/text-to-pdf.html" class="tool-card-home" data-cat="text">
+          <span class="tool-logo">📄</span>
+          <span class="tool-title">Text → PDF</span>
+          <span class="tool-desc">Turn plain text into a styled PDF document in seconds.</span>
+        </a>
+        <a href="tools/word-counter.html" class="tool-card-home" data-cat="text">
+          <span class="tool-logo">✏️</span>
+          <span class="tool-title">Word Counter</span>
+          <span class="tool-desc">Count words, characters, sentences, and paragraphs instantly.</span>
+        </a>
+        <a href="tools/unit-converter.html" class="tool-card-home" data-cat="convert">
+          <span class="tool-logo">⚖️</span>
+          <span class="tool-title">Unit Converter</span>
+          <span class="tool-desc">Convert between units (length, weight, area, etc.) with live results.</span>
+        </a>
+        <a href="tools/document-scanner.html" class="tool-card-home" data-cat="convert">
+          <span class="tool-logo">📑</span>
+          <span class="tool-title">Document Scanner</span>
+          <span class="tool-desc">Scan, crop, and enhance documents with your camera or images.</span>
+        </a>
+        <a href="tools/url-encoder.html" class="tool-card-home" data-cat="encode">
+          <span class="tool-logo">🔗</span>
+          <span class="tool-title">URL Encoder/Decoder</span>
+          <span class="tool-desc">Encode or decode URLs and query strings with one click.</span>
+        </a>
+        <a href="tools/hash-generator.html" class="tool-card-home" data-cat="encode">
+          <span class="tool-logo">🛡️</span>
+          <span class="tool-title">Hash Generator</span>
+          <span class="tool-desc">Generate secure hashes (MD5, SHA-256, etc.) for any text or file.</span>
+        </a>
+        <a href="tools/password-generator.html" class="tool-card-home" data-cat="encode">
+          <span class="tool-logo">🔑</span>
+          <span class="tool-title">Password Generator</span>
+          <span class="tool-desc">Create strong, random passwords with custom options.</span>
+        </a>
+        <a href="tools/qr-generator.html" class="tool-card-home" data-cat="encode">
+          <span class="tool-logo">📱</span>
+          <span class="tool-title">QR Generator</span>
+          <span class="tool-desc">Make QR codes for links, text, WiFi, and more—downloadable as PNG/SVG.</span>
+        </a>
+        <a href="tools/image-to-prompt.html" class="tool-card-home" data-cat="ai">
+          <span class="tool-logo">🤖</span>
+          <span class="tool-title">Image to Prompt</span>
+          <span class="tool-desc">AI describes any image and generates a prompt for you.</span>
+        </a>
+        <a href="tools/json-formatter.html" class="tool-card-home" data-cat="ai">
+          <span class="tool-logo">🧩</span>
+          <span class="tool-title">JSON Formatter</span>
+          <span class="tool-desc">Beautify, validate, and inspect any JSON instantly.</span>
+        </a>
       </div>
     </section>
-    <div class="tool-grid">
-      <!-- ...your tool cards... -->
-    </div>
   </main>
   <script>
-    // Dropdown menu open/close
-    document.querySelectorAll('.dropdown > a').forEach(a=>{
-      a.addEventListener('click', function(e){
-        e.preventDefault();
-        document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('open'));
-        this.parentElement.classList.toggle('open');
-      });
-    });
-    document.addEventListener('click', function(e){
-      if(!e.target.closest('.dropdown')) document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('open'));
-    });
-    // Category filter logic
-    function setActiveCat(cat) {
-      document.querySelectorAll('.cat-pill').forEach(b=>{
+    // Tab filter logic
+    function setActiveTab(cat) {
+      document.querySelectorAll('.cat-tab').forEach(b=>{
         if(b.dataset.cat === cat) b.classList.add('active');
         else b.classList.remove('active');
       });
@@ -186,8 +218,8 @@
         card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
       });
     }
-    document.querySelectorAll('.cat-pill').forEach(btn => {
-      btn.onclick = function() { setActiveCat(btn.dataset.cat); }
+    document.querySelectorAll('.cat-tab').forEach(btn => {
+      btn.onclick = function() { setActiveTab(btn.dataset.cat); }
     });
   </script>
 </body>
