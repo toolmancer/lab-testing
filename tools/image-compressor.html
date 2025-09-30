@@ -1,1 +1,55 @@
-<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Image Compressor</title><link rel='stylesheet' href='../style.css'></head><body><main class='main'><div class='content container'><h2>Image Compressor</h2><p class='small'>Select an image and choose quality (0.1 - 1.0).</p><input id='file' type='file' accept='image/*' style='margin-top:8px'><div style='margin-top:10px'>Quality: <input id='q' type='range' min='0.1' max='1' step='0.1' value='0.8'></div><div style='margin-top:10px'><button class='btn' id='go'>Compress</button></div><div id='out' style='margin-top:12px'></div></div></main><script>document.getElementById('go').addEventListener('click', async ()=>{const f=document.getElementById('file').files[0]; if(!f){alert('Select image');return;} const q=parseFloat(document.getElementById('q').value); const data=await new Promise((res,rej)=>{const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(f);}); const img=new Image(); img.src=data; await new Promise(r=>img.onload=r); const c=document.createElement('canvas'); c.width=img.width; c.height=img.height; c.getContext('2d').drawImage(img,0,0); const out=c.toDataURL('image/jpeg', q); const a=document.createElement('a'); a.href=out; a.download='compressed.jpg'; a.textContent='Download compressed image'; document.getElementById('out').innerHTML = '<p class=\"small\">Preview:</p>'; const p=document.createElement('img'); p.src=out; p.style.maxWidth='240px'; document.getElementById('out').appendChild(p); document.getElementById('out').appendChild(document.createElement('br')); document.getElementById('out').appendChild(a); });</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Compressor | ToolMancer</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <main class="content tool-page">
+    <nav class="breadcrumb"><a href="../index.html">Home</a> / Image Compressor</nav>
+
+    <section class="tool-card">
+      <div class="tool-header">
+        <h1>🗜️ Image Compressor</h1>
+        <p class="small">Reduce the file size of your images by adjusting the quality.</p>
+      </div>
+      <input id="file" type="file" accept="image/*">
+      <div style="margin-top:10px; font-weight: 500;">Quality: <input id="q" type="range" min="0.1" max="1" step="0.1" value="0.8"></div>
+      <div class="tool-controls">
+        <button class="btn" id="go">Compress Image</button>
+      </div>
+      <div id="out" style="margin-top:12px; text-align: center;"></div>
+    </section>
+
+    <div class="how-to">
+      <h3>How to Use</h3>
+      <ol>
+        <li>Select an image file (e.g., JPG, PNG).</li>
+        <li>Use the slider to set the desired compression quality (0.1 is lowest, 1.0 is highest).</li>
+        <li>Click "Compress Image" to process.</li>
+        <li>A preview and a download link for the compressed image will appear.</li>
+      </ol>
+    </div>
+  </main>
+  <script>
+    document.getElementById('go').addEventListener('click', async ()=>{
+        const f=document.getElementById('file').files[0]; if(!f){alert('Select an image first.');return;}
+        const q=parseFloat(document.getElementById('q').value);
+        const data=await new Promise(res=> { const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f); });
+        const img=new Image(); img.src=data; await new Promise(r=>img.onload=r);
+        const c=document.createElement('canvas'); c.width=img.width; c.height=img.height;
+        c.getContext('2d').drawImage(img,0,0);
+        const outData=c.toDataURL('image/jpeg', q);
+        const outDiv=document.getElementById('out');
+        outDiv.innerHTML = '<p class="small">Preview:</p>';
+        const p=document.createElement('img'); p.src=outData; p.style.maxWidth='240px'; p.style.borderRadius='8px';
+        const a=document.createElement('a'); a.href=outData; a.download='compressed.jpg'; a.textContent='Download Compressed Image'; a.classList.add('btn');
+        outDiv.appendChild(p);
+        outDiv.appendChild(document.createElement('br'));
+        outDiv.appendChild(a);
+    });
+  </script>
+</body>
+</html>
