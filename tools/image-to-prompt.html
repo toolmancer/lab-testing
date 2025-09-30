@@ -1,182 +1,365 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Image to Prompt | ToolMancer</title>
-  <link rel="stylesheet" href="../style.css"/>
-  <style>
-    .img2prompt-card {
-      max-width: 420px;
-      margin: 2em auto;
-      padding: 2em 1em;
-      background: var(--card);
-      border-radius: 18px;
-      box-shadow: 0 8px 36px #0001, 0 2px 8px #0001;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.3em;
-    }
-    .img2prompt-card h2 {
-      color: var(--accent);
-      margin-bottom: 0.7em;
-      font-size: 1.6em;
-      font-weight: bold;
-    }
-    .img2prompt-upload {
-      padding: 1em 0;
-      text-align: center;
-    }
-    .img2prompt-upload input[type="file"] {
-      display: none;
-    }
-    .img2prompt-upload label {
-      background: var(--accent);
-      color: #fff;
-      padding: 0.7em 1.3em;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 1.07em;
-      transition: background 0.16s;
-    }
-    .img2prompt-upload label:hover {
-      background: #1740a5;
-    }
-    .img2prompt-preview {
-      margin-top: 1em;
-      margin-bottom: 1em;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.6em;
-    }
-    .img2prompt-thumb {
-      max-width: 230px;
-      max-height: 160px;
-      border-radius: 10px;
-      border: 1.5px solid #dde6ef;
-      box-shadow: 0 2px 8px #0003;
-    }
-    .img2prompt-prompt {
-      background: #f7fafc;
-      color: #233;
-      padding: 1em 1em;
-      border-radius: 10px;
-      margin-top: 1.2em;
-      font-size: 1.1em;
-      min-height: 2.7em;
-      width: 100%;
-      box-shadow: 0 1.5px 6px #0001;
-      word-break: break-word;
-    }
-    .img2prompt-loader {
-      margin: 1.2em 0 0.4em 0;
-      font-size: 1.11em;
-      color: var(--accent);
-      text-align: center;
-    }
-    @media (max-width:600px) {
-      .img2prompt-card {padding:1em 0.2em;}
-      .img2prompt-thumb {max-width:99vw;}
-      .img2prompt-prompt {padding:0.7em 0.4em;}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Prompt | ToolMancer</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Tool-specific styles based on the common layout */
+        .tool-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 2rem;
+            flex-grow: 1;
+            width: 100%;
+        }
+        .tool-page .tool-card {
+            max-width: 700px;
+            padding: 2rem;
+            width: 100%;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .tool-header { text-align: center; margin-bottom: 1.5rem; }
+        .tool-header h1 { font-size: 2rem; color: var(--accent); font-weight: 700; }
+        .tool-header .tool-desc { font-size: 1rem; color: #475569; max-width: 650px; margin: 0 auto; line-height: 1.5; }
+        [data-theme="dark"] .tool-header .tool-desc { color: #94a3b8; }
+
+        /* --- Custom UI for Image to Prompt --- */
+        .upload-drop-zone {
+            border: 2px dashed var(--accent);
+            border-radius: 8px;
+            background: var(--bg);
+            text-align: center;
+            transition: border-color 0.2s, background 0.2s;
+            padding: 2rem 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            font-size: 1.05em;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .upload-drop-zone:hover, .upload-drop-zone.active {
+            border-color: #1e40af;
+            background: #e0ebff;
+        }
+        [data-theme="dark"] .upload-drop-zone { background: #334155; }
+        [data-theme="dark"] .upload-drop-zone:hover, [data-theme="dark"] .upload-drop-zone.active { background: #475569; border-color: #60a5fa; }
+        .upload-drop-zone .add-icon { font-size: 2.5em; color: var(--accent); margin-bottom: 0.35em; pointer-events: none; }
+        .upload-drop-zone input[type="file"] { display: none; }
+        .upload-drop-zone .drop-hint { font-size:0.9em;color:#888;margin-top:0.5em;}
+
+        .image-preview-area { margin-top: 1.5rem; text-align: center; }
+        .image-preview { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border-color); }
+        .prompt-result-container { margin-top: 1.5rem; }
+        .prompt-result-box {
+            position: relative;
+            background: var(--bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        .prompt-text { word-wrap: break-word; font-size: 1em; color: var(--text); }
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <main class="content tool-page">
-    <section class="img2prompt-card">
-      <h2>🖼️ Image to Prompt</h2>
-      <div class="img2prompt-upload">
-        <label for="imgInput">Upload Image</label>
-        <input type="file" id="imgInput" accept="image/*">
-      </div>
-      <div class="img2prompt-preview" id="imgPreview" style="display:none;">
-        <img id="thumb" class="img2prompt-thumb" src="" alt="Preview"/>
-        <span id="imgName" style="font-size:0.97em;color:#444;"></span>
-      </div>
-      <button id="genPromptBtn" style="background:var(--accent);color:#fff;border:none;padding:0.75em 1.7em;border-radius:8px;font-size:1.1em;font-weight:600;cursor:pointer;display:none;">Generate Prompt</button>
-      <div class="img2prompt-loader" id="loader" style="display:none;">Generating prompt...</div>
-      <div class="img2prompt-prompt" id="promptBox" style="display:none;"></div>
-    </section>
-  </main>
-  <script>
-    // HuggingFace BLIP API (no key needed, but limited, use your own key for higher usage)
-    // Docs: https://huggingface.co/spaces/Salesforce/BLIP
-    const HF_API_URL = "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base";
-    // For production: get your own HF Inference API key and add headers: { Authorization: `Bearer <YOUR_KEY>` }
 
-    const imgInput = document.getElementById('imgInput');
-    const imgPreview = document.getElementById('imgPreview');
-    const thumb = document.getElementById('thumb');
-    const imgName = document.getElementById('imgName');
-    const genPromptBtn = document.getElementById('genPromptBtn');
-    const loader = document.getElementById('loader');
-    const promptBox = document.getElementById('promptBox');
+    <header class="main-header">
+        <a href="../index.html" class="logo">ToolMancer</a>
+        <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="../index.html#category-image">Image Tools</a></li>
+                <li><a href="../index.html#category-text">Text Tools</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+            </ul>
+            <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
+            <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
+            <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
+        </nav>
+    </header>
 
-    let currentImageBlob = null;
+    <div class="mega-menu" id="allToolsMenu">
+        <!-- Mega menu content (full menu) -->
+        <div class="mega-menu-grid">
+            <div class="mega-menu-category">
+                <h3>Image Tools</h3>
+                <ul>
+                    <li><a href="image-to-pdf.html"><span class="tool-icon">📄</span> Image to PDF</a></li>
+                    <li><a href="image-compressor.html"><span class="tool-icon">🗜️</span> Image Compressor</a></li>
+                    <li><a href="image-resizer.html"><span class="tool-icon">📏</span> Image Resizer</a></li>
+                    <li><a href="convert-png-jpg.html"><span class="tool-icon">🖼️</span> PNG <> JPG</a></li>
+                    <li><a href="steganography.html"><span class="tool-icon">🕵️</span> Steganography</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Text & Writing</h3>
+                <ul>
+                    <li><a href="text-diff.html"><span class="tool-icon">🔍</span> Text Diff</a></li>
+                    <li><a href="text-encryptor.html"><span class="tool-icon">🔐</span> Text Encryptor</a></li>
+                    <li><a href="text-to-pdf.html"><span class="tool-icon">📄</span> Text to PDF</a></li>
+                    <li><a href="word-counter.html"><span class="tool-icon">✏️</span> Word Counter</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Converters</h3>
+                <ul>
+                    <li><a href="unit-converter.html"><span class="tool-icon">⚖️</span> Unit Converter</a></li>
+                    <li><a href="document-scanner.html"><span class="tool-icon">📑</span> Document Scanner</a></li>
+                </ul>
+            </div>
+            <div class="mega-menu-category">
+                <h3>Encoder/Decoder</h3>
+                <ul>
+                    <li><a href="url-encoder.html"><span class="tool-icon">🔗</span> URL Encoder</a></li>
+                    <li><a href="hash-generator.html"><span class="tool-icon">🛡️</span> Hash Generator</a></li>
+                    <li><a href="password-generator.html"><span class="tool-icon">🔑</span> Password Generator</a></li>
+                    <li><a href="qr-generator.html"><span class="tool-icon">📱</span> QR Generator</a></li>
+                </ul>
+            </div>
+             <div class="mega-menu-category">
+                <h3>AI Tools</h3>
+                <ul>
+                    <li><a href="image-to-prompt.html"><span class="tool-icon">🤖</span> Image to Prompt</a></li>
+                    <li><a href="json-formatter.html"><span class="tool-icon">🧩</span> JSON Formatter</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-    imgInput.onchange = function(e){
-      if (!e.target.files.length) return;
-      const file = e.target.files[0];
-      currentImageBlob = file;
-      thumb.src = URL.createObjectURL(file);
-      thumb.onload = () => URL.revokeObjectURL(thumb.src);
-      imgName.textContent = file.name;
-      imgPreview.style.display = 'flex';
-      promptBox.style.display = 'none';
-      genPromptBtn.style.display = '';
-    };
+    <main class="content tool-page">
+        <section class="tool-card">
+            <header class="tool-header">
+                <h1>🤖 AI Image to Prompt</h1>
+                <p class="tool-desc">Upload an image and let AI describe it in detail, generating a prompt for text-to-image AI models.</p>
+            </header>
 
-    genPromptBtn.onclick = async function(){
-      if (!currentImageBlob) return;
-      promptBox.style.display = 'none';
-      loader.style.display = '';
-      loader.textContent = "Generating prompt...";
-      genPromptBtn.disabled = true;
+            <div class="upload-drop-zone" id="dropZone">
+                <span class="add-icon">+</span>
+                <span style="font-weight:500;">Add image or drag & drop</span>
+                <input type="file" id="imgInput" accept="image/png,image/jpeg">
+                <div class="drop-hint">Supported formats: JPG, PNG</div>
+            </div>
 
-      // Convert image to base64
-      const imageData = await fileToDataURL(currentImageBlob);
-      // Remove prefix: data:image/xxx;base64,
-      const base64Data = imageData.split(',')[1];
+            <div class="image-preview-area" id="imagePreviewArea" style="display: none;">
+                <img id="imagePreview" class="image-preview" src="" alt="Image Preview">
+                <button class="btn" id="generatePromptBtn" style="margin-top: 1rem;">Generate Prompt</button>
+            </div>
 
-      // Call HF Inference API
-      try {
-        const res = await fetch(HF_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ "inputs": base64Data })
+            <div class="prompt-result-container" id="promptResultContainer" style="display: none;">
+                <h3>Generated Prompt:</h3>
+                <div class="prompt-result-box">
+                    <pre id="promptText" class="prompt-text"></pre>
+                    <button class="copy-button" id="copyBtn">Copy</button>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="how-to">
+            <h3>How to Use</h3>
+            <ol>
+                <li>Click on the box or drag and drop your image file (JPG or PNG).</li>
+                <li>Wait for the image preview to load.</li>
+                <li>Click "Generate Prompt" to send the image to the AI model.</li>
+                <li>Copy the generated text prompt for use in other AI image generators.</li>
+            </ol>
+        </section>
+    </main>
+
+    <!-- PWA Install Button -->
+    <div class="pwa-install-container">
+        <button class="btn" id="installButton" style="display:none;">Install App</button>
+    </div>
+
+    <footer class="main-footer">
+        <ul class="footer-links">
+            <li><a href="../about.html">About Us</a></li>
+            <li><a href="../contact.html">Contact</a></li>
+            <li><a href="../blog.html">Blog</a></li>
+            <li><a href="../privacy.html">Privacy Policy</a></li>
+            <li><a href="../disclaimer.html">Disclaimer</a></li>
+        </ul>
+        <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Navigation and Theme Toggle Logic ---
+            const allToolsBtn = document.getElementById('allToolsBtn');
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const allToolsMenu = document.getElementById('allToolsMenu');
+            const searchBtn = document.getElementById('searchBtn');
+
+            const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
+            allToolsBtn.addEventListener('click', toggleMenu);
+            hamburgerBtn.addEventListener('click', () => {
+                allToolsMenu.classList.toggle('show');
+                document.body.classList.toggle('menu-open');
+            });
+            document.addEventListener('click', (event) => {
+                if (window.innerWidth > 900) {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
+                        allToolsMenu.classList.remove('show'); allToolsBtn.classList.remove('open');
+                    }
+                } else {
+                    if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
+                        allToolsMenu.classList.remove('show');
+                        document.body.classList.remove('menu-open');
+                    }
+                }
+            });
+
+            // --- PWA Install Logic ---
+            let deferredPrompt;
+            const installButton = document.getElementById('installButton');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installButton.style.display = 'block';
+            });
+
+            installButton.addEventListener('click', () => {
+                installButton.style.display = 'none';
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        console.log('User response to install prompt:', choiceResult.outcome);
+                        deferredPrompt = null;
+                    });
+                }
+            });
+
+            window.addEventListener('appinstalled', () => {
+                installButton.style.display = 'none';
+            });
+
+            // --- Image to Prompt Tool Specific Logic ---
+            const dropZone = document.getElementById('dropZone');
+            const imgInput = document.getElementById('imgInput');
+            const imagePreviewArea = document.getElementById('imagePreviewArea');
+            const imagePreview = document.getElementById('imagePreview');
+            const generatePromptBtn = document.getElementById('generatePromptBtn');
+            const promptResultContainer = document.getElementById('promptResultContainer');
+            const promptText = document.getElementById('promptText');
+            const copyBtn = document.getElementById('copyBtn');
+
+            let currentFile = null;
+            const HF_API_URL = "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-base";
+
+            // Handle file selection (click or drag/drop)
+            dropZone.addEventListener('click', () => imgInput.click());
+            dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('active'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
+            dropZone.addEventListener('drop', e => {
+                e.preventDefault();
+                dropZone.classList.remove('active');
+                handleFiles(e.dataTransfer.files);
+            });
+            imgInput.addEventListener('change', e => handleFiles(e.target.files));
+
+            function handleFiles(files) {
+                if (files.length === 0) return;
+                const file = files[0];
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file.');
+                    return;
+                }
+                currentFile = file;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    imagePreview.src = reader.result;
+                    imagePreviewArea.style.display = 'block';
+                    dropZone.style.display = 'none';
+                    promptResultContainer.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // Generate prompt logic
+            generatePromptBtn.addEventListener('click', async () => {
+                if (!currentFile) return;
+
+                generatePromptBtn.disabled = true;
+                generatePromptBtn.textContent = 'Generating...';
+                promptText.textContent = 'AI is processing your image...';
+                promptResultContainer.style.display = 'block';
+
+                try {
+                    // Convert file to base64
+                    const reader = new FileReader();
+                    const base64Data = await new Promise(resolve => {
+                        reader.onload = () => resolve(reader.result.split(',')[1]);
+                        reader.readAsDataURL(currentFile);
+                    });
+
+                    // Call Hugging Face API
+                    const response = await fetch(HF_API_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ "inputs": base64Data })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    let prompt = "Failed to generate prompt.";
+                    if (Array.isArray(result) && result[0] && result[0].generated_text) {
+                        prompt = result[0].generated_text;
+                    } else if (typeof result.generated_text === "string") {
+                        prompt = result.generated_text;
+                    }
+
+                    promptText.textContent = prompt;
+
+                } catch (error) {
+                    promptText.textContent = `Error: ${error.message}`;
+                    console.error('AI generation error:', error);
+                } finally {
+                    generatePromptBtn.disabled = false;
+                    generatePromptBtn.textContent = 'Generate Prompt';
+                }
+            });
+
+            // Copy to clipboard functionality
+            copyBtn.addEventListener('click', () => {
+                const textToCopy = promptText.textContent;
+                navigator.clipboard.writeText(textToCopy)
+                    .then(() => {
+                        copyBtn.textContent = 'Copied!';
+                        setTimeout(() => copyBtn.textContent = 'Copy', 1500);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy: ', err);
+                        alert('Failed to copy text.');
+                    });
+            });
         });
-        if (!res.ok) throw new Error("Failed to call API");
-        const data = await res.json();
-        let prompt = "";
-        if (Array.isArray(data) && data[0]?.generated_text) {
-          prompt = data[0].generated_text;
-        } else if (typeof data?.generated_text === "string") {
-          prompt = data.generated_text;
-        } else {
-          prompt = "Failed to generate prompt. Try a different image.";
-        }
-        loader.style.display = 'none';
-        promptBox.textContent = prompt;
-        promptBox.style.display = '';
-      } catch (err) {
-        loader.style.display = 'none';
-        promptBox.textContent = "Error: " + err.message;
-        promptBox.style.display = '';
-      }
-      genPromptBtn.disabled = false;
-    };
-
-    function fileToDataURL(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = e => resolve(e.target.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-  </script>
+    </script>
 </body>
 </html>
