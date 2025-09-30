@@ -72,6 +72,7 @@
         }
         .image-preview { max-width: 100%; height: auto; border-radius: 6px; }
         .result-container { margin-top: 1rem; display: flex; flex-direction: column; align-items: center; }
+        .result-container .btn { margin: 0.5rem; }
 
         /* How To Section styles (inherited from style.css) */
         .how-to { max-width: 700px; margin-top: 2rem; }
@@ -166,7 +167,10 @@
 
             <div id="resultContainer" class="result-container" style="display: none;">
                 <h3>Result:</h3>
-                <a class="btn" id="downloadLink" href="#" download="converted.png" style="margin-top: 1rem;">Download Converted Image</a>
+                <div style="margin-top: 1rem;">
+                    <a class="btn" id="downloadLink" href="#" download="converted.png">⬇️ Download Image</a>
+                    <button class="btn" id="shareBtn" style="margin-left: 0.5rem;">Share Image</button>
+                </div>
             </div>
         </section>
 
@@ -177,6 +181,7 @@
                 <li>The appropriate conversion button (Convert to PNG or Convert to JPG) will enable automatically.</li>
                 <li>Click the conversion button to process the image in your browser.</li>
                 <li>A download link for the converted image will appear below.</li>
+                <li>(New) Click "Share Image" to share directly to your favorite apps.</li>
             </ol>
         </section>
     </main>
@@ -206,6 +211,7 @@
             const hamburgerBtn = document.getElementById('hamburgerBtn');
             const allToolsMenu = document.getElementById('allToolsMenu');
             const searchBtn = document.getElementById('searchBtn');
+
             const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
             allToolsBtn.addEventListener('click', toggleMenu);
             hamburgerBtn.addEventListener('click', () => {
@@ -258,8 +264,10 @@
             const toJpgBtn = document.getElementById('tojpg');
             const toPngBtn = document.getElementById('topng');
             const downloadLink = document.getElementById('downloadLink');
+            const shareBtn = document.getElementById('shareBtn'); // New share button element
             const resultContainer = document.getElementById('resultContainer');
             let currentFile = null;
+            let currentBlob = null; // Store converted blob for sharing
 
             // Handle file selection (click or drag/drop)
             dropZone.addEventListener('click', () => imgInput.click());
@@ -308,36 +316,53 @@
             // Conversion logic (to JPG)
             toJpgBtn.addEventListener('click', async () => {
                 if (!currentFile) return;
-                const data = await convertImage(currentFile, 'image/jpeg', 'converted.jpg');
-                showResult(data, 'converted.jpg');
+                const resultBlob = await convertImage(currentFile, 'image/jpeg', 'converted.jpg');
+                showResult(resultBlob, 'image/jpeg', 'converted.jpg');
             });
 
             // Conversion logic (to PNG)
             toPngBtn.addEventListener('click', async () => {
                 if (!currentFile) return;
-                const data = await convertImage(currentFile, 'image/png', 'converted.png');
-                showResult(data, 'converted.png');
+                const resultBlob = await convertImage(currentFile, 'image/png', 'converted.png');
+                showResult(resultBlob, 'image/png', 'converted.png');
             });
 
-            async function convertImage(file, outputMimeType, filename) {
-                const img = new Image();
-                const dataUrl = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(file); });
-                img.src = dataUrl;
-                await new Promise(r => img.onload = r);
-                const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                canvas.getContext('2d').drawImage(img, 0, 0);
-                return canvas.toDataURL(outputMimeType);
+            async function convertImage(file, outputMimeType) {
+                return new Promise(async resolve => {
+                    const img = new Image();
+                    const dataUrl = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(file); });
+                    img.src = dataUrl;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        canvas.getContext('2d').drawImage(img, 0, 0);
+                        canvas.toBlob(resolve, outputMimeType, 0.9); // 0.9 quality for JPG conversion
+                    };
+                });
             }
 
-            function showResult(dataUrl, filename) {
+            function showResult(blob, fileType, filename) {
+                const dataUrl = URL.createObjectURL(blob);
                 downloadLink.href = dataUrl;
                 downloadLink.download = filename;
                 resultContainer.style.display = 'block';
-                // Update preview image with converted image data if needed, or just download link
-                // imagePreview.src = dataUrl; // uncomment this line to update preview immediately after conversion
+                currentBlob = blob; // Store for sharing
             }
+
+            // --- Web Share API Logic ---
+            shareBtn.addEventListener('click', () => {
+                if (currentBlob && navigator.share) {
+                    const file = new File([currentBlob], downloadLink.download, { type: currentBlob.type });
+                    navigator.share({
+                        files: [file],
+                        title: 'Converted Image',
+                        text: 'Sharing my converted image from ToolMancer!'
+                    }).catch(error => console.error('Error sharing:', error));
+                } else {
+                    alert('Sharing failed. Please download the file or try a different browser.');
+                }
+            });
         });
     </script>
 </body>
