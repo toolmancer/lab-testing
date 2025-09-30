@@ -178,7 +178,7 @@ main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2r
   /* Hide desktop navigation list on mobile */
   .main-nav ul { display: none; }
 
-  /* Mobile Mega Menu as Side Menu (Right side opening) */
+  /* Mobile Mega Menu as Side Menu */
   .mega-menu {
     position: fixed;
     top: 0;
