@@ -48,22 +48,13 @@ body { font-family: "Inter", "Segoe UI", Arial, sans-serif; background: var(--bg
 [data-theme="dark"] .mega-menu-category ul a:hover { background-color: #475569; }
 .mega-menu-category ul a .tool-icon { font-size: 1.2rem; }
 
-/* ==== Search Overlay ==== */
-.search-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: flex; flex-direction: column; align-items: center; padding: 4rem 1rem; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
-.search-overlay.show { opacity: 1; visibility: visible; }
-body.search-open { overflow: hidden; }
-.search-close-btn { position: absolute; top: 2rem; right: 2rem; background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text); }
-.search-box { position: relative; width: 100%; max-width: 600px; }
-.search-box input { width: 100%; height: 60px; font-size: 1.5rem; padding: 0 1rem 0 3.5rem; border: none; border-bottom: 2px solid var(--border-color); background: transparent; color: var(--text); }
-.search-box input:focus { outline: none; border-bottom-color: var(--accent); }
-.search-box svg { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; color: #94a3b8; }
-#search-results { width: 100%; max-width: 600px; margin-top: 2rem; max-height: 60vh; overflow-y: auto; }
-#search-results a { display: block; text-decoration: none; background: var(--card); padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 0.5rem; transition: background-color 0.2s; }
-#search-results a:hover { background-color: #f1f5f9; }
-[data-theme="dark"] #search-results a:hover { background-color: #475569; }
+/* ==== Search Overlay Removed ==== */
+/* Removed search-overlay related CSS */
 
 /* ==== Main Content & Homepage ==== */
 main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2rem; }
+
+/* Adjust Hero section padding for better "above the fold" visibility */
 .home-hero { text-align: center; padding-top: 1rem; padding-bottom: 1rem; }
 .home-hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.75rem; color: var(--text); }
 .home-hero .subtitle { font-size: 1.05rem; color: #475569; max-width: 650px; margin: 0 auto; }
@@ -181,15 +172,15 @@ main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2r
     position: fixed;
     top: 0;
     left: 0;
-    width: 300px; /* Adjust width as needed */
+    width: 300px;
     height: 100vh;
     padding: 2rem;
     transform: translateX(-100%);
-    opacity: 1; /* Keep opacity at 1 for slide effect */
+    opacity: 1;
     visibility: hidden;
     transition: transform 0.3s ease-in-out, visibility 0s 0.3s;
     border-radius: 0;
-    overflow-y: auto; /* Enable scrolling for long content */
+    overflow-y: auto;
     box-shadow: 0 0 20px rgba(0,0,0,0.2);
   }
   .mega-menu.show { transform: translateX(0); visibility: visible; transition: transform 0.3s ease-in-out; }
@@ -199,8 +190,9 @@ main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2r
   /* Other mobile-specific styles for main content */
   .main-nav ul { display: none; }
   .main-header { padding: 0 1rem; }
-  main { padding: 1.5rem; }
+  main { padding: 1rem; overflow-x: hidden; } /* Horizontal scroll fix */
   .popular-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .tool-grid-home { grid-template-columns: repeat(2, 1fr); gap: 1rem; } /* Adjusted grid for 2 columns on mobile */
   .feature-highlights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1rem; margin-bottom: 2rem; }
   .highlight-item { max-width: unset; }
   .highlight-item p { display: none; }
