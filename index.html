@@ -6,55 +6,114 @@
   <title>ToolMancer – All-in-One Toolkit</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    /* Sticky, scrollable category bar */
+    .sticky-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      padding-top: 1.4em;
+      margin-bottom: 2.4em;
+      box-shadow: 0 2px 12px #0001;
+    }
     .top-categories-bar {
       display: flex;
       align-items: center;
       gap: 0.4em;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-bottom: 2.2em;
-      padding-top: 1.4em;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      padding-bottom: 0.5em;
+      padding-left: 0.5em;
     }
     .cat-tab {
       background: #fff;
       color: var(--accent);
-      border: 1.5px solid var(--accent);
-      border-radius: 10px;
-      padding: 0.5em 1.3em;
+      border: none;
+      border-bottom: 3.5px solid transparent;
+      border-radius: 10px 10px 0 0;
+      padding: 0.7em 1.5em 0.6em 1.5em;
       font-size: 1em;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.14s, color 0.14s;
-      margin-bottom: 0.2em;
+      margin-bottom: -3px;
+      transition: background 0.14s, color 0.14s, border-bottom 0.18s;
+      outline: none;
+      position: relative;
     }
     .cat-tab.active, .cat-tab:focus {
-      background: var(--accent);
-      color: #fff;
-      outline: none;
+      background: #e9f2ff;
+      color: #1740a5;
+      border-bottom: 3.5px solid #2563eb;
+      z-index: 2;
       box-shadow: 0 2px 8px #2563eb22;
     }
-    .cat-dropdown {
+    .cat-tab:hover:not(.active) {
+      background: #f6faff;
+    }
+    /* More dropdown as popover */
+    .cat-dropdown-wrap {
+      position: relative;
+      margin-left: 0.5em;
+    }
+    .cat-dropdown-btn {
       background: #fff;
       color: var(--accent);
-      border: 1.5px solid var(--accent);
+      border: none;
       border-radius: 10px;
-      padding: 0.48em 0.9em;
+      padding: 0.6em 1.1em;
       font-size: 1em;
       font-weight: 600;
-      margin-left: 0.7em;
       cursor: pointer;
+      box-shadow: 0 1.5px 6px #2563eb10;
+      display: flex; align-items: center; gap: 0.4em;
     }
-    @media (max-width: 600px) {
+    .cat-dropdown-pop {
+      display: none;
+      position: absolute;
+      top: 2.7em; right: 0;
+      min-width: 180px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 28px #2563eb21;
+      padding: 0.7em 0.2em;
+      z-index: 30;
+      animation: fadeIn .13s;
+    }
+    .cat-dropdown-pop.open { display: block; }
+    .cat-dropdown-pop button {
+      display: flex; align-items: center; gap: 0.6em;
+      width: 100%; background: transparent; border: none;
+      color: var(--accent); font-size: 1em; font-weight: 500;
+      padding: 0.6em 1.1em; border-radius: 8px; cursor: pointer;
+      transition: background 0.13s;
+    }
+    .cat-dropdown-pop button.active,
+    .cat-dropdown-pop button:focus {
+      background: #e9f2ff; color: #1740a5;
+    }
+    .cat-dropdown-pop button:hover { background: #f3f7fd; }
+    @media (max-width: 900px) {
+      .top-categories-bar { font-size: 0.97em; }
+    }
+    @media (max-width: 650px) {
       .top-categories-bar {
-        flex-wrap: wrap;
-        gap: 0.2em;
-        padding-top: 0.7em;
+        gap: 0.1em;
+        padding-left: 0.2em;
+        padding-bottom: 0.3em;
       }
-      .cat-tab, .cat-dropdown {
-        font-size: .97em;
-        padding: 0.38em 0.8em;
+      .cat-tab, .cat-dropdown-btn {
+        font-size: 0.97em;
+        padding: 0.55em 0.9em 0.5em 0.9em;
+        margin-bottom: 0;
       }
+      .sticky-bar { padding-top: 0.6em; margin-bottom: 1.2em; }
     }
+    /* Home card spacing */
+    .home-card { margin-top: 0.5em; }
+    .tool-grid { margin-top: 2.1em; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
   </style>
 </head>
 <body>
@@ -62,20 +121,23 @@
     <section class="home-card">
       <h1>Welcome to <span>ToolMancer</span></h1>
       <p class="subtitle">All-in-One Online Toolkit — browser-first, privacy friendly.</p>
-      <div class="top-categories-bar">
-        <button class="cat-tab active" data-cat="all">All</button>
-        <button class="cat-tab" data-cat="image">Image Tools</button>
-        <button class="cat-tab" data-cat="text">Text Tools</button>
-        <button class="cat-tab" data-cat="convert">Converters</button>
-        <button class="cat-tab" data-cat="encode">Encoder/Decoder</button>
-        <button class="cat-tab" data-cat="ai">AI Tools</button>
-        <!-- Dropdown for extra categories (if needed) -->
-        <select class="cat-dropdown" id="catDropdown">
-          <option value="">More...</option>
-          <option value="hash">Hash Generator</option>
-          <option value="password">Password Generator</option>
-          <!-- Add more overflow categories here -->
-        </select>
+      <div class="sticky-bar">
+        <nav class="top-categories-bar" id="catBar">
+          <button class="cat-tab active" data-cat="all">All</button>
+          <button class="cat-tab" data-cat="image">Image Tools</button>
+          <button class="cat-tab" data-cat="text">Text Tools</button>
+          <button class="cat-tab" data-cat="convert">Converters</button>
+          <button class="cat-tab" data-cat="encode">Encoder/Decoder</button>
+          <button class="cat-tab" data-cat="ai">AI Tools</button>
+          <div class="cat-dropdown-wrap">
+            <button type="button" class="cat-dropdown-btn" id="moreDropBtn">More ▼</button>
+            <div class="cat-dropdown-pop" id="catDropdownPop">
+              <button data-cat="hash"><span>🛡️</span>Hash Generator</button>
+              <button data-cat="password"><span>🔑</span>Password Generator</button>
+              <!-- Add more overflow categories here -->
+            </div>
+          </div>
+        </nav>
       </div>
       <div class="tool-grid">
         <!-- Cards: Add data-cat for filtering -->
@@ -100,26 +162,47 @@
     </section>
   </main>
   <script>
-    // Top tab filter
+    // Tab filter
+    function setActiveTab(cat) {
+      document.querySelectorAll('.cat-tab').forEach(b=>{
+        if(b.dataset.cat === cat) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+      document.querySelectorAll('.cat-dropdown-pop button').forEach(b=>{
+        if(b.dataset.cat === cat) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+      document.querySelectorAll('.tool-grid .card').forEach(card => {
+        card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+      });
+    }
     document.querySelectorAll('.cat-tab').forEach(btn => {
       btn.onclick = function() {
-        document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        let cat = btn.dataset.cat;
-        document.querySelectorAll('.tool-grid .card').forEach(card => {
-          card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
-        });
-        document.getElementById('catDropdown').selectedIndex = 0;
+        setActiveTab(btn.dataset.cat);
+        document.getElementById('catDropdownPop').classList.remove('open');
       }
     });
-    // Dropdown filter
-    document.getElementById('catDropdown').onchange = function() {
-      let cat = this.value;
-      document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
-      document.querySelectorAll('.tool-grid .card').forEach(card => {
-        card.style.display = (cat === '' || card.dataset.cat === cat) ? '' : 'none';
-      });
+    // More popover
+    const moreDropBtn = document.getElementById('moreDropBtn');
+    const catDropdownPop = document.getElementById('catDropdownPop');
+    moreDropBtn.onclick = function(e){
+      catDropdownPop.classList.toggle('open');
     };
+    // Close popover on outside click
+    document.addEventListener('click', function(e){
+      if (!catDropdownPop.contains(e.target) && e.target !== moreDropBtn) {
+        catDropdownPop.classList.remove('open');
+      }
+    });
+    // Popover button filter
+    catDropdownPop.querySelectorAll('button').forEach(btn => {
+      btn.onclick = function(){
+        setActiveTab(btn.dataset.cat);
+        catDropdownPop.classList.remove('open');
+      }
+    });
+    // Touch scroll for tabs (native already works)
+    // Optional: On mobile, you can swipe the tab bar
   </script>
 </body>
 </html>
