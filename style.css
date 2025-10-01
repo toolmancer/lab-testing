@@ -1,9 +1,11 @@
+--- START OF FILE style.css ---
+
 /* ==== Global Reset & Variables ==== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root { --bg: #f8fafc; --text: #0f172a; --card: #ffffff; --accent: #2563eb; --border-color: #e2e8f0; --header-height: 70px; }
 [data-theme="dark"] { --bg: #1e293b; --text: #f8fafc; --card: #334155; --accent: #60a5fa; --border-color: #475569; }
 
-body { font-family: "Inter", "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; transition: background 0.3s, color 0.3s; }
+body { font-family: "Inter", "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; transition: background 0.3s, color 0.3s; overflow-x: hidden; }
 
 /* ==== Header & Navigation ==== */
 .main-header { height: var(--header-height); width: 100%; background: var(--card); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 1001; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
@@ -209,4 +211,9 @@ main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2r
   .feature-highlights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1rem; margin-bottom: 2rem; }
   .highlight-item { max-width: unset; }
   .highlight-item p { display: none; }
+
+  /* Hero title font size fix */
+  .home-hero h1 {
+    font-size: 2rem; /* Reduce font size for mobile screens */
+  }
 }
