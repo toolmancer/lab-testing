@@ -6,16 +6,11 @@
     <title>ToolMancer – All-in-One Online Toolkit</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
-
-    <!-- PWA Manifest Link -->
-    <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
     <header class="main-header">
         <a href="index.html" class="logo">ToolMancer</a>
-        <!-- Hamburger button moved to the left side in HTML structure -->
-        <button class="hamburger-btn" id="hamburgerBtn">☰</button>
         <nav class="main-nav">
             <ul>
                 <li><a href="#category-image">Image Tools</a></li>
@@ -25,12 +20,11 @@
             <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
             <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
             <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
+            <button class="hamburger-btn" id="hamburgerBtn">☰</button>
         </nav>
     </header>
 
     <div class="mega-menu" id="allToolsMenu">
-        <!-- Add a close button for mobile sidebar (optional, but good practice for clarity) -->
-        <!-- <button class="close-menu-btn" id="closeMenuBtn">&times;</button> -->
         <div class="mega-menu-grid">
             <div class="mega-menu-category">
                 <h3>Image Tools</h3>
@@ -85,6 +79,11 @@
                 <input type="text" id="heroSearchInput" placeholder="Search for a tool..." autocomplete="off">
             </div>
         </section>
+
+        <!-- New: Dedicated Search Results Container -->
+        <div class="search-results-container" id="searchResultsContainer" style="display: none;">
+            <!-- Search results will appear here -->
+        </div>
 
         <section class="feature-highlights" id="featureHighlights">
             <div class="highlight-item">
@@ -168,11 +167,6 @@
         </div>
     </main>
 
-    <!-- PWA Install Button -->
-    <div class="pwa-install-container">
-        <button class="btn" id="installButton" style="display:none;">Install App</button>
-    </div>
-
     <footer class="main-footer">
         <ul class="footer-links">
             <li><a href="about.html">About Us</a></li>
@@ -184,22 +178,28 @@
         <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
     </footer>
 
-    <!-- Scripts -->
     <script src="theme.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- 1. Navigation and Theme Toggle Logic ---
             const allToolsBtn = document.getElementById('allToolsBtn');
             const hamburgerBtn = document.getElementById('hamburgerBtn');
             const allToolsMenu = document.getElementById('allToolsMenu');
             const searchBtn = document.getElementById('searchBtn');
+            const heroSearchInput = document.getElementById('heroSearchInput');
+            const allToolCards = Array.from(document.querySelectorAll('.tool-card-home'));
+            const tabButtons = document.querySelectorAll('.tab-btn');
 
+            // --- Elements to manage during search ---
+            const featureHighlights = document.getElementById('featureHighlights');
+            const popularTools = document.getElementById('popularTools');
+            const allToolsTitle = document.getElementById('allToolsTitle');
+            const filterTabs = document.getElementById('filterTabs');
+            const toolGrid = document.getElementById('toolGrid');
+
+            // --- Mega Menu Logic ---
             const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
             allToolsBtn.addEventListener('click', toggleMenu);
-            hamburgerBtn.addEventListener('click', () => {
-                allToolsMenu.classList.toggle('show');
-                document.body.classList.toggle('menu-open');
-            });
+            hamburgerBtn.addEventListener('click', toggleMenu);
             document.addEventListener('click', (event) => {
                 if (window.innerWidth > 900) {
                     if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
@@ -213,100 +213,68 @@
                 }
             });
 
-            // --- 2. PWA Install Logic ---
-            let deferredPrompt;
-            const installButton = document.getElementById('installButton');
+            // --- Search Logic (In-place) ---
+            searchBtn.addEventListener('click', () => { heroSearchInput.focus(); });
 
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                installButton.style.display = 'block';
+            heroSearchInput.addEventListener('input', () => {
+                const query = heroSearchInput.value.toLowerCase().trim();
+                performInPlaceSearch(query);
             });
 
-            installButton.addEventListener('click', () => {
-                installButton.style.display = 'none';
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then((choiceResult) => {
-                        console.log('User response to install prompt:', choiceResult.outcome);
-                        deferredPrompt = null;
-                    });
+            function performInPlaceSearch(query) {
+                const lowerCaseQuery = query.toLowerCase().trim();
+
+                if (lowerCaseQuery.length === 0) {
+                    // Show regular content when search is empty
+                    featureHighlights.style.display = 'flex';
+                    popularTools.style.display = 'block';
+                    allToolsTitle.style.display = 'block';
+                    filterTabs.style.display = 'flex';
+                    updateToolVisibility(); // Restore category filtering
+                    return;
                 }
-            });
 
-            window.addEventListener('appinstalled', () => {
-                installButton.style.display = 'none';
-            });
+                // Hide sections during search
+                featureHighlights.style.display = 'none';
+                popularTools.style.display = 'none';
+                allToolsTitle.style.display = 'none';
+                filterTabs.style.display = 'none';
 
-            // --- 3. NEW Search and Category Filter Logic ---
+                let resultsFound = false;
+                allToolCards.forEach(card => {
+                    const keywords = card.dataset.keywords.toLowerCase();
+                    const title = card.querySelector('.tool-title').textContent.toLowerCase();
+                    if (keywords.includes(lowerCaseQuery) || title.includes(lowerCaseQuery)) {
+                        card.style.display = 'block';
+                        resultsFound = true;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
 
-            // Step 3a: Get all necessary elements
-            const heroSearchInput = document.getElementById('heroSearchInput');
-            // Select all tool cards in the main grid and popular tools section
-            const toolCards = document.querySelectorAll('.tool-grid-home .tool-card-home');
-            const filterTabsContainer = document.getElementById('filterTabs');
-            const tabButtons = filterTabsContainer ? filterTabsContainer.querySelectorAll('.tab-btn') : [];
-            let activeCategory = 'all'; // Default filter state
+                // Optional: show a "no results found" message
+                // if (!resultsFound) { /* Add no results message here */ }
+            }
 
-            /**
-             * applyFilters function:
-             * यह फंक्शन दो काम करता है:
-             * 1. सर्च इनपुट से टेक्स्ट लेता है.
-             * 2. एक्टिव कैटेगरी टैब (activeCategory) को चेक करता है.
-             * 3. उन कार्ड्स को दिखाता है जो दोनों से मैच करते हैं (search and category filter).
-             */
-            function applyFilters() {
-                // Get current search term, convert to lowercase for comparison
-                const searchTerm = heroSearchInput.value.toLowerCase().trim();
-
-                toolCards.forEach(card => {
-                    // Get data-category from card (e.g., "image", "text")
-                    const cardCategory = card.getAttribute('data-category');
-                    // Get data-keywords from card for searching (e.g., "image pdf jpg png convert")
-                    const cardKeywords = card.getAttribute('data-keywords').toLowerCase();
-
-                    // 1. Check if the card matches the currently active category filter
-                    // If activeCategory is 'all', then all categories match. Otherwise, check for specific match.
-                    const categoryMatch = (activeCategory === 'all' || cardCategory === activeCategory);
-
-                    // 2. Check if the card matches the search term (keywords)
-                    // If searchTerm is empty, all cards match. Otherwise, check if keywords contain search term.
-                    const searchMatch = (searchTerm === '' || cardKeywords.includes(searchTerm));
-
-                    // 3. Display the card if both category and search conditions are met
-                    if (categoryMatch && searchMatch) {
+            // --- Filter Tabs Logic ---
+            function updateToolVisibility() {
+                const activeTab = document.querySelector('.tab-btn.active').dataset.filter;
+                allToolCards.forEach(card => {
+                    if (activeTab === 'all' || card.dataset.category === activeTab) {
                         card.style.display = 'block';
                     } else {
                         card.style.display = 'none';
                     }
                 });
             }
-
-            // --- Event Listeners for new functionality ---
-
-            // Step 3b: Event Listener for Search Input
-            // जब भी यूज़र कुछ टाइप करेगा, applyFilters() फंक्शन अपने आप चल जाएगा.
-            if (heroSearchInput) {
-                heroSearchInput.addEventListener('input', applyFilters);
-            }
-
-            // Step 3c: Event Listener for Category Tabs
-            // जब भी यूज़र किसी कैटेगरी बटन पर क्लिक करेगा, activeCategory अपडेट होगा और फिर फ़िल्टर चलेगा.
-            if (filterTabsContainer) {
-                tabButtons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        // 1. Remove active class from all buttons and add to the clicked one
-                        tabButtons.forEach(btn => btn.classList.remove('active'));
-                        button.classList.add('active');
-
-                        // 2. Update the active filter state based on the button's data-filter value
-                        activeCategory = button.getAttribute('data-filter');
-
-                        // 3. Apply filters again to update the displayed cards
-                        applyFilters();
-                    });
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    updateToolVisibility();
                 });
-            }
+            });
+            updateToolVisibility(); // Initial call
         });
     </script>
 </body>
