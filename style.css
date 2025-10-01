@@ -49,7 +49,7 @@ body { font-family: "Inter", "Segoe UI", Arial, sans-serif; background: var(--bg
 .mega-menu-category ul a .tool-icon { font-size: 1.2rem; }
 
 /* ==== Main Content & Homepage ==== */
-main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2rem; }
+main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 2rem; } /* Update: Removed vertical padding here */
 .home-hero { text-align: center; padding-top: 1rem; padding-bottom: 1rem; }
 .home-hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.75rem; color: var(--text); }
 .home-hero .subtitle { font-size: 1.05rem; color: #475569; max-width: 650px; margin: 0 auto; }
@@ -130,7 +130,8 @@ main { flex-grow: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 2r
 [data-theme="dark"] .tool-desc { color: #94a3b8; }
 
 /* ==== Tool Page Layout (New) ==== */
-.tool-page { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 2rem; }
+/* Update: Added padding-bottom to tool-page to ensure content spacing before footer */
+.tool-page { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 2rem 0; flex-grow: 1; width: 100%; }
 .tool-page h1, .tool-page h2 { color: var(--accent); text-align: center; font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
 .tool-page .small { font-size: 1rem; color: #475569; max-width: 600px; text-align: center; margin-bottom: 1.5rem; }
 [data-theme="dark"] .tool-page .small { color: #94a3b8; }
