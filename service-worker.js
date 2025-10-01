@@ -31,6 +31,11 @@ const urlsToCache = [
   '/tools/qr-generator.html',
   '/tools/image-to-prompt.html',
   '/tools/json-formatter.html',
+  // --- New Tools Added Here ---
+  '/tools/html-viewer.html',
+  '/tools/line-operations.html',
+  '/tools/text-cleaner.html',
+  // --- End New Tools ---
   // Add external resources (like jspdf or font) if needed
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
