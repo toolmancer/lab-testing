@@ -9,48 +9,10 @@
     <!-- END SEO OPTIMIZATION -->
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
-    <!-- New style for favorites icon (can also be put in style.css) -->
-    <style>
-        .tool-card-home {
-            position: relative;
-        }
-        .favorite-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-            opacity: 0.8;
-            transition: opacity 0.2s, fill 0.2s, stroke 0.2s;
-            z-index: 50; /* Ensure button is above other elements in the card */
-        }
-        .favorite-btn:hover {
-            opacity: 1;
-        }
-        .favorite-btn svg {
-            width: 20px;
-            height: 20px;
-            stroke: var(--text); /* Default outline color */
-            fill: none; /* Default fill color (empty heart) */
-        }
-        .favorite-btn.active svg {
-            fill: #f59e0b; /* Filled heart color (yellow/orange) */
-            stroke: #f59e0b; /* Filled heart stroke color */
-        }
-        /* New section style for favorites display */
-        #favoritesSection {
-            margin-top: 2rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
-            display: none; /* Hide by default, show via JS when populated */
-        }
-        #favoritesSection h2 {
-            margin-bottom: 1.5rem;
-            text-align: left;
-        }
-    </style>
+    <!-- Favicon Links for different devices -->
+    <link rel="icon" type="image/png" href="icon/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icon/icon-512x512.png">
+    <link rel="shortcut icon" href="icon/icon-192x192.png" type="image/png">
 </head>
 <body>
 
@@ -89,8 +51,8 @@
                     <li><a href="tools/text-encryptor.html"><span class="tool-icon">🔐</span> Text Encryptor</a></li>
                     <li><a href="tools/text-to-pdf.html"><span class="tool-icon">📄</span> Text to PDF</a></li>
                     <li><a href="tools/word-counter.html"><span class="tool-icon">✏️</span> Word Counter</a></li>
-                    <li><a href="tools/line-operations.html"><span class="tool-icon">🔠</span> Line Operations</a></li> <!-- New Tool Added -->
-                    <li><a href="tools/text-cleaner.html"><span class="tool-icon">🧹</span> Text Cleaner</a></li> <!-- New Tool Added -->
+                    <li><a href="tools/line-operations.html"><span class="tool-icon">🔠</span> Line Operations</a></li>
+                    <li><a href="tools/text-cleaner.html"><span class="tool-icon">🧹</span> Text Cleaner</a></li>
                 </ul>
             </div>
             <div class="mega-menu-category">
@@ -114,7 +76,7 @@
                 <ul>
                     <li><a href="tools/image-to-prompt.html"><span class="tool-icon">🤖</span> Image to Prompt</a></li>
                     <li><a href="tools/json-formatter.html"><span class="tool-icon">🧩</span> JSON Formatter</a></li>
-                    <li><a href="tools/html-viewer.html"><span class="tool-icon">💻</span> HTML Viewer</a></li> <!-- New Tool Added -->
+                    <li><a href="tools/html-viewer.html"><span class="tool-icon">💻</span> HTML Viewer</a></li>
                 </ul>
             </div>
         </div>
@@ -151,7 +113,7 @@
                 <p>Fast processing on your device without server communication.</p>
             </div>
         </section>
-        
+
         <!-- New: Favourites Section -->
         <section id="favoritesSection" style="display: none;">
             <h2 class="section-title">My Favourites</h2>
@@ -358,6 +320,7 @@
     <script src="theme.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Navigation and Theme Toggle Logic ---
             const allToolsBtn = document.getElementById('allToolsBtn');
             const hamburgerBtn = document.getElementById('hamburgerBtn');
             const allToolsMenu = document.getElementById('allToolsMenu');
@@ -453,9 +416,9 @@
                     updateToolVisibility();
                 });
             });
-            // updateToolVisibility(); // Initial call is now handled by the updateFavoritesUI for a cleaner initial state
+            // --- End Code for Navigation, Search, Filters ---
 
-            // --- Favourites Logic ---
+            // --- Favourites Logic (New Code) ---
             const favoritesKey = 'oneToolFavourites';
 
             function getFavorites() {
@@ -471,7 +434,6 @@
                 renderFavorites(); // Update UI after saving
             }
 
-            // Function to clone and display favorite cards in the dedicated section
             function renderFavorites() {
                 const favorites = getFavorites();
                 favoritesGrid.innerHTML = ''; // Clear existing favorites list
@@ -483,7 +445,6 @@
                         if (favorites.includes(toolId)) {
                             // Clone the card and add it to the favorites section
                             const clonedCard = originalCard.cloneNode(true);
-                            // Ensure internal IDs are unique if necessary (for complex tools)
                             favoritesGrid.appendChild(clonedCard);
                         }
                     });
@@ -493,6 +454,7 @@
 
                 // Update icons on all cards (both original and cloned)
                 allToolCards.forEach(card => updateFavoriteIconState(card));
+                attachFavoriteListeners(); // Re-attach listeners after rendering
             }
 
             function updateFavoriteIconState(card) {
@@ -519,10 +481,9 @@
                 saveFavorites(favorites);
             }
 
-            // Attach event listeners to all favorite buttons (requires re-attaching after rendering)
             function attachFavoriteListeners() {
                 document.querySelectorAll('.favorite-btn').forEach(button => {
-                    button.removeEventListener('click', handleFavoriteClick); // Remove previous listeners first
+                    button.removeEventListener('click', handleFavoriteClick);
                     button.addEventListener('click', handleFavoriteClick);
                 });
             }
@@ -534,30 +495,36 @@
                 toggleFavorite(toolId);
             }
 
+            // --- PWA Install Logic ---
+            let deferredPrompt;
+            const installButton = document.getElementById('installButton');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installButton.style.display = 'block';
+            });
+
+            installButton.addEventListener('click', () => {
+                installButton.style.display = 'none';
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        console.log('User response to install prompt:', choiceResult.outcome);
+                        deferredPrompt = null;
+                    });
+                }
+            });
+
+            window.addEventListener('appinstalled', () => {
+                installButton.style.display = 'none';
+            });
+
             // --- Initial Setup ---
             renderFavorites(); // Load and display favorites on page load
-            attachFavoriteListeners(); // Attach listeners initially
-
-            // Re-render favorites and re-attach listeners after filter/search operations
-            // This ensures a consistent UI state after search/filter changes.
-            // (Note: The search logic above doesn't fully hide elements from allToolCards, but rather sets style.display.
-            // If we re-render favorites here, it might get complex. A simpler approach is to only render favorites on load and not during search/filter, or use a separate set of cards for favorites.)
-
-            // For simplicity, let's ensure the initial UI rendering is robust.
-            // Update: A simpler approach for filter/search is to update the favorite icon state on all cards.
-            // We need to re-attach listeners or ensure a consistent state after changes.
-
-            // The filter logic needs to be updated slightly to play nice with favorites rendering.
-            // Let's ensure the 'all' tab is active by default and then render based on filter/favorites.
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    updateToolVisibility(); // This function will now be responsible for showing/hiding all tools based on the active tab
-                });
-            });
-            updateToolVisibility(); // Initial filter call
+            updateToolVisibility(); // Call initial filter display after favorites load
         });
     </script>
 </body>
 </html>
+y updated code h isme favourite feature jod k dedo
