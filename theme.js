@@ -7,6 +7,9 @@ function setInitialTheme() {
   if (savedTheme === "dark") {
     body.setAttribute("data-theme", "dark");
     if (themeToggle) themeToggle.textContent = "☀️";
+  } else if (savedTheme === "black") {
+    body.setAttribute("data-theme", "black");
+    if (themeToggle) themeToggle.textContent = "🌑"; // New icon for black mode
   } else {
     body.removeAttribute("data-theme");
     if (themeToggle) themeToggle.textContent = "🌙";
@@ -18,14 +21,20 @@ setInitialTheme();
 
 if (themeToggle) {
   themeToggle.addEventListener("click", () => {
-    if (body.getAttribute("data-theme") === "dark") {
-      body.removeAttribute("data-theme");
-      localStorage.setItem("theme", "light");
-      themeToggle.textContent = "🌙";
-    } else {
+    const currentTheme = localStorage.getItem("theme") || "light";
+
+    if (currentTheme === "light") {
       body.setAttribute("data-theme", "dark");
       localStorage.setItem("theme", "dark");
       themeToggle.textContent = "☀️";
+    } else if (currentTheme === "dark") {
+      body.setAttribute("data-theme", "black");
+      localStorage.setItem("theme", "black");
+      themeToggle.textContent = "🌑";
+    } else { // currentTheme === "black"
+      body.removeAttribute("data-theme");
+      localStorage.setItem("theme", "light");
+      themeToggle.textContent = "🌙";
     }
   });
 }
