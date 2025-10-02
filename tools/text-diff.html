@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text Diff Checker | ToolMancer</title>
+    <title>Text Diff Checker | OneTool</title>
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
     <!-- Include Google's diff-match-patch library for word-level highlighting -->
@@ -88,7 +88,7 @@
 <body>
 
     <header class="main-header">
-        <a href="../index.html" class="logo">ToolMancer</a>
+        <a href="../index.html" class="logo">OneTool</a>
         <button class="hamburger-btn" id="hamburgerBtn">☰</button>
         <nav class="main-nav">
             <ul>
@@ -203,7 +203,7 @@
             <li><a href="../privacy.html">Privacy Policy</a></li>
             <li><a href="../disclaimer.html">Disclaimer</a></li>
         </ul>
-        <p class="footer-copyright">&copy; 2025 ToolMancer. All Tools Run in Your Browser.</p>
+        <p class="footer-copyright">&copy; 2025 OneTool. All Tools Run in Your Browser.</p>
     </footer>
 
     <!-- Scripts -->
@@ -292,56 +292,8 @@
                 const diffs = dmp.diff_main(textA.value, textB.value);
                 dmp.diff_cleanupSemantic(diffs);
 
-                // Use diff_prettyHtml to generate colored HTML output
-                const diffHtml = dmp.diff_prettyHtml(diffs);
-
-                // Split the HTML output into two parts for side-by-side view
-                // This part requires a more complex logic, but we can simplify for basic word highlighting.
-                // For a true side-by-side view, we process the diffs directly.
-
-                const resultA = [];
-                const resultB = [];
-                let i = 0; // index for diffs array
-                let linesA = textA.value.split('\n');
-                let linesB = textB.value.split('\n');
-                
-                // --- Simple line-level diff with word-level highlighting ---
-                // We'll process line by line, if lines differ, perform a word-level diff on that line.
-                // This is a common simplification for side-by-side view when a full diff view (like in GitHub) is complex.
-                
-                outputA.innerHTML = '';
-                outputB.innerHTML = '';
-                
-                // This logic is complex. Let's simplify and use the built-in diff_prettyHtml for a single output view, 
-                // or go back to the basic line-level diff if side-by-side word highlighting is too complex for this context.
-
-                // Let's re-implement the word-level diff based on line-by-line comparison from the previous working version.
-                // This code section (diffLines) had issues in a previous attempt.
-                // Let's go with a simpler approach first, then try the more advanced one again.
-
-                // --- Simplified Side-by-Side Line Comparison ---
                 const linesA_arr = textA.value.split('\n');
                 const linesB_arr = textB.value.split('\n');
-                const diffResult = dmp.diff_main(textA.value, textB.value);
-                dmp.diff_cleanupSemantic(diffResult);
-
-                const renderHtml = dmp.diff_prettyHtml(diffResult);
-                // The issue with diff_prettyHtml is it generates one single HTML string for both texts, not side-by-side.
-                // To do side-by-side, we need to manually process the diff array.
-
-                let sideA = '';
-                let sideB = '';
-                let lines_a = textA.value.split('\n');
-                let lines_b = textB.value.split('\n');
-                let line_index_a = 0;
-                let line_index_b = 0;
-                let patch = dmp.diff_main(textA.value, textB.value);
-                dmp.diff_cleanupSemantic(patch);
-
-                // Process diffs to build side-by-side HTML.
-                // This requires careful handling of line breaks in the diff array.
-                // Let's use a simplified approach that's easier to verify.
-
                 const maxLines = Math.max(linesA_arr.length, linesB_arr.length);
                 let htmlA = '';
                 let htmlB = '';
@@ -354,7 +306,6 @@
                         htmlA += `<div class="diff-line">${lineA}</div>`;
                         htmlB += `<div class="diff-line">${lineB}</div>`;
                     } else {
-                        // Lines differ, apply word-level diff highlighting
                         const wordDiffs = dmp.diff_main(lineA, lineB);
                         let highlightedA = '';
                         let highlightedB = '';
