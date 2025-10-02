@@ -50,6 +50,23 @@
             margin-bottom: 1.5rem;
             text-align: left;
         }
+
+        /* Adjustments for new search bar location */
+        .mega-menu .mega-menu-search {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .mega-menu .mega-menu-search input {
+            width: 100%;
+            height: 40px;
+            padding: 0 1rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg);
+            color: var(--text);
+        }
     </style>
 </head>
 <body>
@@ -62,13 +79,17 @@
                 <li><a href="#category-text">Text Tools</a></li>
                 <li><a href="blog.html">Blog</a></li>
             </ul>
-            <!-- Removed searchBtn and allToolsBtn from header for cleaner UI as requested -->
+            <!-- Removed redundant searchBtn and allToolsBtn from header for cleaner UI as requested -->
             <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
             <button class="hamburger-btn" id="hamburgerBtn">☰</button>
         </nav>
     </header>
 
     <div class="mega-menu" id="allToolsMenu">
+        <!-- New Search Input within Mega Menu -->
+        <div class="mega-menu-search" style="display: none;">
+             <input type="text" id="megaMenuSearchInput" placeholder="Search for a tool..." autocomplete="off">
+        </div>
         <!-- Mega menu content (full menu) -->
         <div class="mega-menu-grid">
             <div class="mega-menu-category">
@@ -88,8 +109,8 @@
                     <li><a href="tools/text-encryptor.html"><span class="tool-icon">🔐</span> Text Encryptor</a></li>
                     <li><a href="tools/text-to-pdf.html"><span class="tool-icon">📄</span> Text to PDF</a></li>
                     <li><a href="tools/word-counter.html"><span class="tool-icon">✏️</span> Word Counter</a></li>
-                    <li><a href="tools/line-operations.html"><span class="tool-icon">🔠</span> Line Operations</a></li> <!-- New Tool Added -->
-                    <li><a href="tools/text-cleaner.html"><span class="tool-icon">🧹</span> Text Cleaner</a></li> <!-- New Tool Added -->
+                    <li><a href="tools/line-operations.html"><span class="tool-icon">🔠</span> Line Operations</a></li>
+                    <li><a href="tools/text-cleaner.html"><span class="tool-icon">🧹</span> Text Cleaner</a></li>
                 </ul>
             </div>
             <div class="mega-menu-category">
@@ -113,14 +134,14 @@
                 <ul>
                     <li><a href="tools/image-to-prompt.html"><span class="tool-icon">🤖</span> Image to Prompt</a></li>
                     <li><a href="tools/json-formatter.html"><span class="tool-icon">🧩</span> JSON Formatter</a></li>
-                    <li><a href="tools/html-viewer.html"><span class="tool-icon">💻</span> HTML Viewer</a></li> <!-- New Tool Added -->
+                    <li><a href="tools/html-viewer.html"><span class="tool-icon">💻</span> HTML Viewer</a></li>
                 </ul>
             </div>
         </div>
     </div>
 
     <main>
-        <section class="home-hero">
+        <section class="home-hero" id="homeHero">
             <h1>Every tool you need, right in your browser</h1>
             <p class="subtitle">A powerful collection of online tools for developers and everyday tasks.</p>
             <div class="quick-search-bar">
@@ -371,10 +392,9 @@
             const filterTabs = document.getElementById('filterTabs');
             const favoritesSection = document.getElementById('favoritesSection');
             const favoritesGrid = document.getElementById('favoritesGrid');
+            const homeHero = document.getElementById('homeHero');
 
             // --- Mega Menu Logic ---
-            // The mega menu button (`allToolsBtn`) has been removed from the header.
-            // We now use the hamburger button to toggle the mega menu.
             hamburgerBtn.addEventListener('click', () => {
                 allToolsMenu.classList.toggle('show');
                 document.body.classList.toggle('menu-open');
@@ -403,7 +423,6 @@
 
                 if (lowerCaseQuery.length === 0) {
                     // Show regular content when search is empty
-                    // Only display features and popular tools if there are no favorites (UI/UX improvement)
                     if (getFavorites().length === 0) {
                         featureHighlights.style.display = 'flex';
                         popularTools.style.display = 'block';
@@ -480,6 +499,8 @@
                     // UI/UX Improvement: Hide feature highlights and popular tools when favorites are displayed
                     featureHighlights.style.display = 'none';
                     popularTools.style.display = 'none';
+                    // UI/UX Improvement: Hide main search bar when favorites are displayed
+                    homeHero.style.display = 'none';
 
                     // Iterate over the source list (allToolCards) to create clones for the favorites section
                     allToolCards.forEach(originalCard => {
@@ -505,6 +526,7 @@
                     favoritesSection.style.display = 'none';
                     featureHighlights.style.display = 'flex'; // Restore feature highlights if no favorites
                     popularTools.style.display = 'block'; // Restore popular tools section
+                    homeHero.style.display = 'block'; // Restore main search bar
                 }
 
                 // Update icons on all original cards (for visual consistency)
@@ -535,13 +557,6 @@
                 saveFavorites(favorites);
             }
 
-            function attachFavoriteListeners() {
-                document.querySelectorAll('.favorite-btn').forEach(button => {
-                    button.removeEventListener('click', handleFavoriteClick);
-                    button.addEventListener('click', handleFavoriteClick);
-                });
-            }
-
             function handleFavoriteClick(event) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -551,9 +566,8 @@
 
             // --- Initial Setup ---
             renderFavorites(); // Load and display favorites on page load
-            attachFavoriteListeners(); // Attach listeners initially
             updateToolVisibility(); // Initial filter call
         });
     </script>
 </body>
-</html>
+</html>```
