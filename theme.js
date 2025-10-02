@@ -29,3 +29,6 @@ if (themeToggle) {
     }
   });
 }
+
+// Site name change
+document.title = document.title.replace("ToolMancer", "OneTool");
