@@ -1,7 +1,7 @@
 // Service Worker Code for PWA installation and caching
 
 // 1. Define Cache Name and Files to Cache
-const CACHE_NAME = 'toolmancer-cache-v1'; // Cache version name
+const CACHE_NAME = 'onetool-cache-v1'; // Cache version name
 const urlsToCache = [
   '/', // The start page of your app
   '/index.html',
