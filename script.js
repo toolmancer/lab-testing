@@ -13,3 +13,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   });
 });
+
+// Site name change
+document.title = "OneTool";
