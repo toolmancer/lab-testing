@@ -62,8 +62,7 @@
                 <li><a href="#category-text">Text Tools</a></li>
                 <li><a href="blog.html">Blog</a></li>
             </ul>
-            <button class="search-btn" id="searchBtn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
-            <button class="all-tools-btn" id="allToolsBtn">All Tools <span class="arrow">▼</span></button>
+            <!-- Removed searchBtn and allToolsBtn from header for cleaner UI as requested -->
             <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">🌙</button>
             <button class="hamburger-btn" id="hamburgerBtn">☰</button>
         </nav>
@@ -358,32 +357,32 @@
     <script src="theme.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const allToolsBtn = document.getElementById('allToolsBtn');
+            // --- Elements and Initial setup ---
             const hamburgerBtn = document.getElementById('hamburgerBtn');
             const allToolsMenu = document.getElementById('allToolsMenu');
-            const searchBtn = document.getElementById('searchBtn');
             const heroSearchInput = document.getElementById('heroSearchInput');
-            // Select all tool cards on the page
+            // Select all tool cards on the page. We use document.querySelectorAll here, as new cards will be cloned into the favorites section later.
             const allToolCards = Array.from(document.querySelectorAll('.tool-card-home'));
             const tabButtons = document.querySelectorAll('.tab-btn');
 
-            // --- Elements to manage during search ---
             const featureHighlights = document.getElementById('featureHighlights');
             const popularTools = document.getElementById('popularTools');
             const allToolsTitle = document.getElementById('allToolsTitle');
             const filterTabs = document.getElementById('filterTabs');
-            const toolGrid = document.getElementById('toolGrid');
-            const favoritesSection = document.getElementById('favoritesSection'); // New
-            const favoritesGrid = document.getElementById('favoritesGrid');     // New
+            const favoritesSection = document.getElementById('favoritesSection');
+            const favoritesGrid = document.getElementById('favoritesGrid');
 
             // --- Mega Menu Logic ---
-            const toggleMenu = (event) => { event.stopPropagation(); allToolsMenu.classList.toggle('show'); allToolsBtn.classList.toggle('open'); };
-            allToolsBtn.addEventListener('click', toggleMenu);
-            hamburgerBtn.addEventListener('click', toggleMenu);
+            // The mega menu button (`allToolsBtn`) has been removed from the header.
+            // We now use the hamburger button to toggle the mega menu.
+            hamburgerBtn.addEventListener('click', () => {
+                allToolsMenu.classList.toggle('show');
+                document.body.classList.toggle('menu-open');
+            });
             document.addEventListener('click', (event) => {
                 if (window.innerWidth > 900) {
                     if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && !event.target.closest('.main-nav')) {
-                        allToolsMenu.classList.remove('show'); allToolsBtn.classList.remove('open');
+                        allToolsMenu.classList.remove('show');
                     }
                 } else {
                     if (allToolsMenu.classList.contains('show') && !allToolsMenu.contains(event.target) && event.target !== hamburgerBtn) {
@@ -393,9 +392,7 @@
                 }
             });
 
-            // --- Search Logic (In-place) ---
-            searchBtn.addEventListener('click', () => { heroSearchInput.focus(); });
-
+            // --- Search Logic ---
             heroSearchInput.addEventListener('input', () => {
                 const query = heroSearchInput.value.toLowerCase().trim();
                 performInPlaceSearch(query);
@@ -406,11 +403,14 @@
 
                 if (lowerCaseQuery.length === 0) {
                     // Show regular content when search is empty
-                    featureHighlights.style.display = 'flex';
-                    popularTools.style.display = 'block';
+                    // Only display features and popular tools if there are no favorites (UI/UX improvement)
+                    if (getFavorites().length === 0) {
+                        featureHighlights.style.display = 'flex';
+                        popularTools.style.display = 'block';
+                    }
                     allToolsTitle.style.display = 'block';
                     filterTabs.style.display = 'flex';
-                    favoritesSection.style.display = getFavorites().length > 0 ? 'block' : 'none'; // Show favorites if present
+                    favoritesSection.style.display = getFavorites().length > 0 ? 'block' : 'none';
                     updateToolVisibility(); // Restore category filtering
                     return;
                 }
@@ -420,7 +420,7 @@
                 popularTools.style.display = 'none';
                 allToolsTitle.style.display = 'none';
                 filterTabs.style.display = 'none';
-                favoritesSection.style.display = 'none'; // Hide favorites section during search
+                favoritesSection.style.display = 'none';
 
                 let resultsFound = false;
                 allToolCards.forEach(card => {
@@ -453,7 +453,6 @@
                     updateToolVisibility();
                 });
             });
-            // updateToolVisibility(); // Initial call is now handled by the updateFavoritesUI for a cleaner initial state
 
             // --- Favourites Logic ---
             const favoritesKey = 'oneToolFavourites';
@@ -462,7 +461,7 @@
                 try {
                     return JSON.parse(localStorage.getItem(favoritesKey) || '[]');
                 } catch {
-                    return []; // Handle potential parsing errors
+                    return [];
                 }
             }
 
@@ -478,20 +477,37 @@
 
                 if (favorites.length > 0) {
                     favoritesSection.style.display = 'block';
+                    // UI/UX Improvement: Hide feature highlights and popular tools when favorites are displayed
+                    featureHighlights.style.display = 'none';
+                    popularTools.style.display = 'none';
+
+                    // Iterate over the source list (allToolCards) to create clones for the favorites section
                     allToolCards.forEach(originalCard => {
                         const toolId = originalCard.dataset.toolId;
                         if (favorites.includes(toolId)) {
-                            // Clone the card and add it to the favorites section
+                            // Clone the card for display in the favorites section
                             const clonedCard = originalCard.cloneNode(true);
-                            // Ensure internal IDs are unique if necessary (for complex tools)
+                            
+                            // --- FIX: Ensure the cloned card's icon state is set correctly ---
+                            const clonedButton = clonedCard.querySelector('.favorite-btn');
+                            if (clonedButton) {
+                                // Apply active state to the cloned card's button
+                                clonedButton.classList.add('active');
+                                // Re-attach listener to the cloned button to avoid state issues on re-renders
+                                clonedButton.removeEventListener('click', handleFavoriteClick);
+                                clonedButton.addEventListener('click', handleFavoriteClick);
+                            }
+                            // -----------------------------------------------------------------
                             favoritesGrid.appendChild(clonedCard);
                         }
                     });
                 } else {
                     favoritesSection.style.display = 'none';
+                    featureHighlights.style.display = 'flex'; // Restore feature highlights if no favorites
+                    popularTools.style.display = 'block'; // Restore popular tools section
                 }
 
-                // Update icons on all cards (both original and cloned)
+                // Update icons on all original cards (for visual consistency)
                 allToolCards.forEach(card => updateFavoriteIconState(card));
             }
 
@@ -519,10 +535,9 @@
                 saveFavorites(favorites);
             }
 
-            // Attach event listeners to all favorite buttons (requires re-attaching after rendering)
             function attachFavoriteListeners() {
                 document.querySelectorAll('.favorite-btn').forEach(button => {
-                    button.removeEventListener('click', handleFavoriteClick); // Remove previous listeners first
+                    button.removeEventListener('click', handleFavoriteClick);
                     button.addEventListener('click', handleFavoriteClick);
                 });
             }
@@ -537,25 +552,6 @@
             // --- Initial Setup ---
             renderFavorites(); // Load and display favorites on page load
             attachFavoriteListeners(); // Attach listeners initially
-
-            // Re-render favorites and re-attach listeners after filter/search operations
-            // This ensures a consistent UI state after search/filter changes.
-            // (Note: The search logic above doesn't fully hide elements from allToolCards, but rather sets style.display.
-            // If we re-render favorites here, it might get complex. A simpler approach is to only render favorites on load and not during search/filter, or use a separate set of cards for favorites.)
-
-            // For simplicity, let's ensure the initial UI rendering is robust.
-            // Update: A simpler approach for filter/search is to update the favorite icon state on all cards.
-            // We need to re-attach listeners or ensure a consistent state after changes.
-
-            // The filter logic needs to be updated slightly to play nice with favorites rendering.
-            // Let's ensure the 'all' tab is active by default and then render based on filter/favorites.
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    updateToolVisibility(); // This function will now be responsible for showing/hiding all tools based on the active tab
-                });
-            });
             updateToolVisibility(); // Initial filter call
         });
     </script>
